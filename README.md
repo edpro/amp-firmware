@@ -35,7 +35,7 @@ Update firmware to a new version:
 Connect to device log:
 
 ```
-./log.sh
+./connect.sh
 ```
 
 
