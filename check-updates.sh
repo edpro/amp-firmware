@@ -1,6 +1,10 @@
 #!/usr/bin/bash
 set -e
 
+C_WARN='\033[33m'
+C_ERR='\033[1;41m'
+C_END='\033[0m'
+
 cur_date=$(date +%Y-%m-%d)
 prev_date=$(cat .date || true).
 
@@ -8,8 +12,8 @@ if [ "$cur_date" == "$prev_date" ]; then
     exit 0
 fi
 
-echo "checking for update..."
-git remote update || true > /dev/null
+echo "checking for updates..."
+(git remote update || true) > /dev/null
 
 LOCAL=$(git rev-parse @)
 REMOTE=$(git rev-parse @{u})
@@ -19,12 +23,8 @@ BASE=$(git merge-base @ @{u})
 # echo "remote: $REMOTE"
 # echo "base: $BASE"
 
-C_WARN='\033[33m'
-C_ERR='\033[1;41m'
-C_END='\033[0m'
-
 if [ $LOCAL = $REMOTE ]; then
-    echo -e "Up-to-date"
+    echo -e "up-to-date"
 elif [ $LOCAL = $BASE ]; then
     echo -e "${C_WARN}-------------------------------------${C_END}"
     echo -e "${C_WARN}Updates are available! run 'git pull'${C_END}"
