@@ -1,3 +1,4 @@
+.date
 /multimeter/*.bin
 /powersource/*.bin
 /build.conf.py
