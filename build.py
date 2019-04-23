@@ -185,17 +185,15 @@ def connect():
                    '--dtr', '0',
                    PORT, SERIAL_BAUD]
     print_cmd(call_params)
+    sys.stdout.flush()
+    p = subprocess.Popen(call_params, stdout=subprocess.PIPE)
     while True:
-        sys.stdout.flush()
-        p = subprocess.Popen(call_params, stdout=subprocess.PIPE)
-        while True:
-            output = p.stdout.readline()
-            if output == b'':
-                break
-            line = output.decode("utf-8")
-            print_device_log(line)
-        sys.stdout.flush()
-        input("Disconnected, press Enter to reconnect...")
+        output = p.stdout.readline()
+        if output == b'':
+            break
+        line = output.decode("utf-8")
+        print_device_log(line)
+    sys.stdout.flush()
 
 
 def check_env():
