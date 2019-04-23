@@ -6,7 +6,7 @@ C_ERR='\033[1;41m'
 C_END='\033[0m'
 
 cur_date=$(date +%Y-%m-%d)
-prev_date=$(cat .date || true).
+prev_date=$(cat .date || true)
 
 if [ "$cur_date" == "$prev_date" ]; then
     exit 0
