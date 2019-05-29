@@ -206,10 +206,17 @@ def detect_port_win():
         return ''
     info_list = sorted(info_list, key=lambda i: i.device)
     port = ''
+    port_count = 0
     for info in info_list:
         if 'CP210x' in info.description:
             print(': ' + info.description)
             port = info.device
+            port_count += 1
+
+    if (port_count > 1):
+        log_e("Error: Too many ports found")
+        exit(1)
+
     return port
 
 
