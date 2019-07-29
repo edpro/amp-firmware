@@ -213,7 +213,7 @@ def detect_port_win():
             port = info.device
             port_count += 1
 
-    if (port_count > 1):
+    if port_count > 1:
         log_e("Error: Too many ports found")
         exit(1)
 
