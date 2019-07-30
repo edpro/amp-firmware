@@ -29,7 +29,7 @@ def print_device_line(line: str):
         color = Colors.YELLOW
     elif line.startswith('E '):
         color = Colors.RED
-    print(f"     {color}{line}{Colors.RESET}")
+    print(f"     {color}░ {line}{Colors.RESET}")
 
 
 def decode_response(raw: str) -> Dict[str, str]:
