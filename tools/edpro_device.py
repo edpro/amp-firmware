@@ -3,7 +3,7 @@ import threading
 import time
 from typing import Optional, Dict
 
-from serial import Serial, PARITY_NONE, SerialException
+import serial
 from serial.tools import list_ports
 from tools.common.logger import Logger, Colors
 
@@ -49,8 +49,9 @@ class EdproDevice:
         self.logger = Logger(tag)
         self.logger.info("init")
         self._port: Optional[str] = None
-        self._serial: Optional[Serial] = None
-        self._alive: bool = False
+        self._serial: Optional[serial.Serial] = None
+        self._rx_thread: Optional[threading.Thread] = None
+        self._rx_alive: bool = False
         self._response: Optional[str] = ""
         self._lock = threading.Lock()
 
@@ -86,9 +87,9 @@ class EdproDevice:
         else:
             return self._detect_port_osx()
 
-    def _reader(self):
+    def _reader_proc(self):
         try:
-            while self._alive:
+            while self._rx_alive:
                 data = self._serial.readline()
                 if data:
                     line = decode_device_line(data)
@@ -96,34 +97,54 @@ class EdproDevice:
                     if line.startswith(":"):
                         with self._lock:
                             self._response = line
-        except SerialException:
-            self._alive = False
+        except serial.SerialException:
+            self._rx_alive = False
             raise
-
-    def _start_reader(self):
-        self.logger.trace("start reader")
-        self.receiver_thread = threading.Thread(target=self._reader, name='rx')
-        self.receiver_thread.daemon = True
-        self.receiver_thread.start()
 
     def connect(self):
         self.logger.info("connect")
-        self._alive = True
+        self._rx_alive = True
         self._port = self._detect_port()
-        self._serial = Serial()
-        self._serial.port = self._port
-        self._serial.baudrate = 74880
-        self._serial.timeout = 1
-        self._serial.bytesize = 8
-        self._serial.stopbits = 1
-        self._serial.parity = PARITY_NONE
+
+        self._serial = serial.serial_for_url(self._port, 74880,
+                                             parity="N",
+                                             stopbits=1,
+                                             rtscts=False,
+                                             xonxoff=False,
+                                             do_not_open=True)
+
+        # self._serial.rts = False
+        # self._serial.dtr = False
         self._serial.open()
-        self._serial.write("\n\n\n\n".encode())
         self._start_reader()
+
+    def _start_reader(self):
+        self.logger.trace("start reader")
+        self._rx_alive = True
+        self._rx_thread = threading.Thread(target=self._reader_proc, name='rx')
+        self._rx_thread.daemon = True
+        self._rx_thread.start()
+
+    def _stop_reader(self):
+        self.logger.trace("stop reader")
+        self._rx_alive = False
+        self._rx_thread.join()
+
+    def disconnect(self):
+        self.logger.info("disconnect")
+        if self._serial is None:
+            return
+        self._stop_reader()
+        self._serial.close()
+        self._serial = None
 
     def run_command(self, cmd):
         self.logger.info(f"<- '{cmd}'")
+
+        self._serial.write("\n\n\n\n".encode())
         self._serial.write(f"{cmd}\n".encode())
+
+        self._serial.flush()
         pass
 
     def run_request(self, cmd):
@@ -132,7 +153,10 @@ class EdproDevice:
         with self._lock:
             self._response = None
 
+        self._serial.write("\n\n\n\n".encode())
         self._serial.write(f"{cmd}\n".encode())
+
+        self._serial.flush()
 
         time_start = time.time()
         timeout = 4
@@ -140,7 +164,7 @@ class EdproDevice:
 
         while True:
             time.sleep(0.1)
-            if self._response == None:
+            if self._response is None:
                 elapsed = time.time() - time_start
                 if elapsed > timeout:
                     raise Exception("Request timeout!")
@@ -150,15 +174,7 @@ class EdproDevice:
                 response = decode_response(self._response)
                 break
 
-        self.logger.info(f"-> '{response}'")
-
-    def disconnect(self):
-        self.logger.info("disconnect")
-        self._alive = False
-        if self._serial is None:
-            return
-        self._serial.close()
-        self._serial = None
+        self.logger.info(f"-> {str(response)}")
 
 
 class EdproPS(EdproDevice):
@@ -175,12 +191,12 @@ def main():
     device = EdproPS()
     try:
         device.connect()
+        time.sleep(2)
+        device.run_request("i")
     except Exception as e:
         print("ERROR: " + str(e))
 
-    time.sleep(2)
-    device.run_request("i")
-    input("Press Enter to continue...\n")
+    time.sleep(1)
     device.disconnect()
 
 
