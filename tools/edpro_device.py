@@ -193,6 +193,7 @@ def main():
         device.connect()
         time.sleep(2)
         device.run_request("i")
+        device.run_command("devmode")
     except Exception as e:
         print("ERROR: " + str(e))
 
