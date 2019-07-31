@@ -102,13 +102,25 @@ class EdproDevice:
         self._serial = serial.serial_for_url(self._port, 74880,
                                              parity="N",
                                              stopbits=1,
+                                             dsrdtr=False,
                                              rtscts=False,
                                              xonxoff=False,
                                              do_not_open=True)
 
-        # self._serial.rts = False
-        # self._serial.dtr = False
+        # prepare state for reboot
+        self._serial.dtr = False
+        self._serial.rts = True
+
+        # open
         self._serial.open()
+
+        # reboot sequence
+        time.sleep(0.1)
+        self._serial.dtr = True
+        time.sleep(0.1)
+        self._serial.rts = False
+
+        # start reading thread
         self._start_reader()
 
     def _start_reader(self):
@@ -129,6 +141,10 @@ class EdproDevice:
         if self._serial is None:
             return
         self._stop_reader()
+
+        # to prevent device being in reset state after serial.Close()
+        # self._serial.rts = False
+
         self._serial.close()
         self._serial = None
 
