@@ -1,5 +1,4 @@
-export PATH=$(realpath ../toolchain/python):$PATH
-echo $(which python)
-echo $(python --version)
-
-./check-updates.sh
+PYTHON_PATH=$(realpath ../toolchain/python)
+export PATH=$PYTHON_PATH:$PATH
+echo "$(which python)"
+echo "$(python --version)"

@@ -5,7 +5,8 @@ from typing import Optional, Dict
 
 import serial
 from serial.tools import list_ports
-from tools.common.logger import Logger, Colors
+from tools.common.logger import Logger
+from tools.common.screen import Colors
 
 
 class DeviceNotFoundError(Exception):

@@ -1,5 +1,8 @@
 #!/usr/bin/bash
 set -e
-cd "$(dirname "$0")" && source ./env.sh
+cd "$(dirname "$0")"
+source ./env.sh
+
+./check-updates.sh
 
 python build.py deploy ./multimeter
