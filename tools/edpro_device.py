@@ -5,13 +5,8 @@ from typing import Optional, Dict
 
 import serial
 from serial.tools import list_ports
-from tools.common.logger import Logger
+from tools.common.logger import Logger, LoggerException
 from tools.common.screen import Colors
-
-
-class DeviceNotFoundError(Exception):
-    def __init__(self):
-        super().__init__("No port with connected device found.")
 
 
 def decode_device_line(data: bytes) -> str:
@@ -19,18 +14,6 @@ def decode_device_line(data: bytes) -> str:
     line = line.replace("\r", "")
     line = line.replace("\n", "")
     return line
-
-
-def print_device_line(line: str):
-    if line == "":
-        return
-    color = Colors.GRAY
-    line = line.strip()
-    if line.startswith('W '):
-        color = Colors.YELLOW
-    elif line.startswith('E '):
-        color = Colors.RED
-    print(f"     {color}░ {line}{Colors.RESET}")
 
 
 def decode_response(raw: str) -> Dict[str, str]:
@@ -47,20 +30,19 @@ class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
     def __init__(self, tag):
+        self.tag = tag
         self.logger = Logger(tag)
         self.logger.info("init")
         self._port: Optional[str] = None
         self._serial: Optional[serial.Serial] = None
         self._rx_thread: Optional[threading.Thread] = None
         self._rx_alive: bool = False
-        self._response: Optional[str] = ""
+        self._response: Optional[str] = None
         self._lock = threading.Lock()
+        self._uart_written = False
 
     def _detect_port_win(self):
         info_list = list_ports.comports()
-        if len(info_list) == 0:
-            raise DeviceNotFoundError()
-
         info_list = sorted(info_list, key=lambda i: i.device)
         port = ''
         port_count = 0
@@ -71,10 +53,10 @@ class EdproDevice:
                 port_count += 1
 
         if port_count == 0:
-            raise DeviceNotFoundError()
+            self.logger.throw("Device not found!")
 
         if port_count > 1:
-            raise Exception("Too many ports found: only one device should be connected.")
+            self.logger.throw("Too many ports found: only one device should be connected.")
 
         return port
 
@@ -88,13 +70,23 @@ class EdproDevice:
         else:
             return self._detect_port_osx()
 
+    def _print_device_line(self, line: str):
+        if line == "":
+            return
+        color = Colors.GRAY
+        if line.startswith('W '):
+            color = Colors.YELLOW
+        elif line.startswith('E '):
+            color = Colors.RED
+        print(f"[{self.tag}] {color}░ {line.strip()}{Colors.RESET}")
+
     def _reader_proc(self):
         try:
             while self._rx_alive:
                 data = self._serial.readline()
                 if data:
                     line = decode_device_line(data)
-                    print_device_line(line)
+                    self._print_device_line(line)
                     if line.startswith(":"):
                         with self._lock:
                             self._response = line
@@ -120,16 +112,17 @@ class EdproDevice:
         self._start_reader()
 
     def _start_reader(self):
-        self.logger.trace("start reader")
+        # self.logger.trace("start reader")
         self._rx_alive = True
         self._rx_thread = threading.Thread(target=self._reader_proc, name='rx')
         self._rx_thread.daemon = True
         self._rx_thread.start()
 
     def _stop_reader(self):
-        self.logger.trace("stop reader")
+        # self.logger.trace("stop reader")
         self._rx_alive = False
-        self._rx_thread.join()
+        if self._rx_thread:
+            self._rx_thread.join()
 
     def disconnect(self):
         self.logger.info("disconnect")
@@ -139,24 +132,27 @@ class EdproDevice:
         self._serial.close()
         self._serial = None
 
+    def _fix_uart_issue(self):
+        if self._uart_written:
+            return
+        self._serial.write(b"\n\n\n\n")
+        self._uart_written = True
+
     def run_command(self, cmd):
         self.logger.info(f"<- '{cmd}'")
-
-        self._serial.write("\n\n\n\n".encode())
+        self._fix_uart_issue()
         self._serial.write(f"{cmd}\n".encode())
-
         self._serial.flush()
         pass
 
-    def run_request(self, cmd):
+    def run_request(self, cmd) -> Dict[str, str]:
         self.logger.info(f"<- '{cmd}'")
 
         with self._lock:
             self._response = None
 
-        self._serial.write("\n\n\n\n".encode())
+        self._fix_uart_issue()
         self._serial.write(f"{cmd}\n".encode())
-
         self._serial.flush()
 
         time_start = time.time()
@@ -168,14 +164,41 @@ class EdproDevice:
             if self._response is None:
                 elapsed = time.time() - time_start
                 if elapsed > timeout:
-                    raise Exception("Request timeout!")
+                    self.logger.throw("Request timeout!")
                 continue
             with self._lock:
                 assert isinstance(self._response, str)
                 response = decode_response(self._response)
                 break
 
-        self.logger.info(f"-> {str(response)}")
+        self.logger.trace(f"-> {str(response)}")
+        return response
+
+    def wait_boot_complete(self):
+        self.logger.info("waiting for boot complete...")
+
+        time_start = time.time()
+        timeout = 4
+
+        while True:
+            time.sleep(0.1)
+            if self._response is None:
+                elapsed = time.time() - time_start
+                if elapsed > timeout:
+                    self.logger.throw("Waiting timeout!")
+                continue
+            with self._lock:
+                assert isinstance(self._response, str)
+                response = decode_response(self._response)
+
+            self.logger.trace(f"-> {response}")
+            if response.get("init") == "0":
+                self.logger.throw("Device init failed!")
+            if response.get("init") == "1":
+                break
+
+        self.logger.info("device init complete")
+
 
 
 class EdproPS(EdproDevice):
@@ -192,14 +215,14 @@ def main():
     device = EdproPS()
     try:
         device.connect()
-        time.sleep(2)
+        device.wait_boot_complete()
         device.run_request("i")
         device.run_command("devmode")
-    except Exception as e:
-        print("ERROR: " + str(e))
-
-    time.sleep(1)
-    device.disconnect()
+        device.disconnect()
+    except LoggerException:
+        print("FAILED")
+    except Exception:
+        raise
 
 
 if __name__ == "__main__":

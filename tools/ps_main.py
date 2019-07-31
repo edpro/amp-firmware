@@ -34,7 +34,6 @@ def get_choise() -> bool:
 
     return True
 
-
 def main():
     while get_choise():
         pass

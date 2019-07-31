@@ -3,6 +3,11 @@ import os
 
 from tools.common.screen import Colors
 
+
+class LoggerException(Exception):
+    pass
+
+
 class Logger:
 
     def __init__(self, tag):
@@ -25,7 +30,11 @@ class Logger:
         self.print(Colors.YELLOW, msg)
 
     def error(self, msg):
-        self.print(Colors.RED, msg)
+        self.print(Colors.RED, "Error: " + msg)
+
+    def throw(self, msg):
+        self.error(msg)
+        raise LoggerException(msg)
 
 
 def main():
