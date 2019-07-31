@@ -5,6 +5,7 @@ from tools.common.logger import LoggedError, Logger
 logger = Logger("rigol")
 
 
+# noinspection PyPep8Naming
 class RigolDevice:
     """
     handles communication with RIGOL multimeter

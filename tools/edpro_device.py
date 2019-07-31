@@ -139,14 +139,14 @@ class EdproDevice:
         self._uart_written = True
 
     def write(self, cmd):
-        self.logger.info(f"<- '{cmd}'")
+        self.logger.trace(f"<- '{cmd}'")
         self._fix_uart_issue()
         self._serial.write(f"{cmd}\n".encode())
         self._serial.flush()
         pass
 
     def ask(self, cmd) -> Dict[str, str]:
-        self.logger.info(f"<- '{cmd}'")
+        self.logger.trace(f"<- '{cmd}'")
 
         with self._lock:
             self._response = None
@@ -197,7 +197,7 @@ class EdproDevice:
             if response.get("init") == "1":
                 break
 
-        self.logger.info("device init complete")
+        self.logger.info("ready")
 
 
 class EdproPS(EdproDevice):
