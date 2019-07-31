@@ -5,15 +5,17 @@ logger = Logger("ps_cal")
 
 def ps_calibration():
     ps_device = EdproPS()
+    ps_device.connect()
+    ps_device.wait_boot_complete()
+    response = ps_device.run_request("i")
+    if response.get("name") != "Powersource":
+        logger.throw("Invalid device name!")
+    ps_device.disconnect()
+
+if __name__ == "__main__":
     try:
-        ps_device.connect()
-        response = ps_device.run_request("i")
+        ps_calibration()
     except LoggerException:
         pass
     except Exception:
         raise
-
-    ps_device.disconnect()
-
-if __name__ == "__main__":
-    ps_calibration()

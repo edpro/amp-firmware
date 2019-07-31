@@ -200,7 +200,6 @@ class EdproDevice:
         self.logger.info("device init complete")
 
 
-
 class EdproPS(EdproDevice):
     def __init__(self):
         super().__init__("ps")
