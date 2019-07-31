@@ -1,5 +1,7 @@
 import usbtmc
 
+from tools.common.logger import LoggedError
+
 
 class RigolDevice:
     """
@@ -22,8 +24,10 @@ def main():
     device = RigolDevice()
     try:
         device.connect()
-    except Exception as e:
-        print(f"ERROR: {str(e)}")
+    except LoggedError:
+        pass
+    except Exception:
+        raise
 
 
 if __name__ == "__main__":

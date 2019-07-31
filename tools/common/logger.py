@@ -4,7 +4,7 @@ import os
 from tools.common.screen import Colors
 
 
-class LoggerException(Exception):
+class LoggedError(Exception):
     pass
 
 
@@ -34,7 +34,7 @@ class Logger:
 
     def throw(self, msg):
         self.error(msg)
-        raise LoggerException(msg)
+        raise LoggedError(msg)
 
 
 def main():

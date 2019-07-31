@@ -5,7 +5,7 @@ from typing import Optional, Dict
 
 import serial
 from serial.tools import list_ports
-from tools.common.logger import Logger, LoggerException
+from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors
 
 
@@ -84,7 +84,7 @@ class EdproDevice:
         try:
             while self._rx_alive:
                 data = self._serial.readline()
-                if data:
+                if data and self._rx_alive:
                     line = decode_device_line(data)
                     self._print_device_line(line)
                     if line.startswith(":"):
@@ -210,19 +210,19 @@ class EdproMM(EdproDevice):
         super().__init__("mm")
 
 
-def main():
+def test():
     device = EdproPS()
-    try:
-        device.connect()
-        device.wait_boot_complete()
-        device.run_request("i")
-        device.run_command("devmode")
-        device.disconnect()
-    except LoggerException:
-        print("FAILED")
-    except Exception:
-        raise
+    device.connect()
+    device.wait_boot_complete()
+    device.run_command("devmode")
+    device.run_request("i")
+    device.disconnect()
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        test()
+    except LoggedError:
+        pass
+    except Exception:
+        raise
