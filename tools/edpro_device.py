@@ -138,14 +138,14 @@ class EdproDevice:
         self._serial.write(b"\n\n\n\n")
         self._uart_written = True
 
-    def run_command(self, cmd):
+    def write(self, cmd):
         self.logger.info(f"<- '{cmd}'")
         self._fix_uart_issue()
         self._serial.write(f"{cmd}\n".encode())
         self._serial.flush()
         pass
 
-    def run_request(self, cmd) -> Dict[str, str]:
+    def ask(self, cmd) -> Dict[str, str]:
         self.logger.info(f"<- '{cmd}'")
 
         with self._lock:
@@ -214,8 +214,8 @@ def test():
     device = EdproPS()
     device.connect()
     device.wait_boot_complete()
-    device.run_command("devmode")
-    device.run_request("i")
+    device.write("devmode")
+    device.ask("i")
     device.disconnect()
 
 
