@@ -33,7 +33,7 @@ class Logger:
         self.print(Colors.RED, "Error: " + msg)
 
     def throw(self, msg):
-        self.error(msg)
+        self.error(str(msg))
         raise LoggedError(msg)
 
 

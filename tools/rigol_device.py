@@ -1,6 +1,8 @@
 import usbtmc
 
-from tools.common.logger import LoggedError
+from tools.common.logger import LoggedError, Logger
+
+logger = Logger("rigol")
 
 
 class RigolDevice:
@@ -12,23 +14,50 @@ class RigolDevice:
     """
 
     def __init__(self):
-        pass
+        self.device = None
 
     def connect(self):
-        instr = usbtmc.Instrument(0x1AB1, 0x09C4)
-        print(instr.ask("*IDN?"))
-        print(instr.ask(":MEASure:VOLTage:DC?"))
+        logger.info("connect")
+        try:
+            self.device = usbtmc.Instrument(0x1AB1, 0x09C4)
+            self._ask("*IDN?")
+        except Exception as e:
+            logger.throw(str(e))
+
+    def _write(self, cmd: str):
+        logger.trace(f"<- {cmd}")
+        try:
+            self.device.write(cmd)
+        except Exception as e:
+            logger.throw(e)
+
+    def _ask(self, cmd: str) -> str:
+        logger.trace(f"<- {cmd}")
+        response = ""
+        try:
+            response = self.device.ask(cmd)
+            logger.trace(f"-> {response}")
+        except Exception as e:
+            logger.throw(e)
+
+        return response
+
+    def measure_dc_20V(self) -> float:
+        self._write(":MEASure:VOLTage:DC 2")
+        response = self._ask(":MEASure:VOLTage:DC?")
+        return float(response)
 
 
-def main():
+def test():
     device = RigolDevice()
+    device.connect()
+    device.measure_dc_20V()
+
+
+if __name__ == "__main__":
     try:
-        device.connect()
+        test()
     except LoggedError:
         pass
     except Exception:
         raise
-
-
-if __name__ == "__main__":
-    main()
