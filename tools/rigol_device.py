@@ -1,3 +1,5 @@
+from typing import Optional
+
 import usbtmc
 
 from tools.common.logger import LoggedError, Logger
@@ -15,7 +17,7 @@ class RigolDevice:
     """
 
     def __init__(self):
-        self.device = None
+        self.device: Optional[usbtmc.Instrument] = None
 
     def connect(self):
         logger.info("connect")
