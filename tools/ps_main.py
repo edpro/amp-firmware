@@ -45,7 +45,7 @@ def get_choise() -> bool:
     elif key == "c":
         print("calibration")
         try:
-            ps_calibration()
+            # ps_calibration()
             input("Press <ENTER> to continue...")
         except LoggedError:
             pass
