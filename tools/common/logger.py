@@ -23,6 +23,9 @@ class Logger:
     def trace(self, msg):
         self.print(Colors.GRAY, msg)
 
+    def success(self, msg="OK"):
+        self.print(Colors.GREEN, msg)
+
     def info(self, msg):
         self.print(Colors.LIGHT_BLUE, msg)
 
@@ -30,7 +33,7 @@ class Logger:
         self.print(Colors.YELLOW, msg)
 
     def error(self, msg):
-        self.print(Colors.RED, "Error: " + msg)
+        self.print(Colors.RED, "Error: " + str(msg))
 
     def throw(self, msg):
         self.error(str(msg))

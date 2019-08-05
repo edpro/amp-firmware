@@ -90,7 +90,8 @@ class EdproDevice:
                     if line.startswith(":"):
                         with self._lock:
                             self._response = line
-        except serial.SerialException:
+        except Exception as e:
+            self.logger.error(e)
             self._rx_alive = False
             raise
 
@@ -105,14 +106,18 @@ class EdproDevice:
                                              dsrdtr=False,
                                              rtscts=False,
                                              xonxoff=False,
-                                             do_not_open=True)
+                                             do_not_open=True,
+                                             timeout=1)
 
         # prepare state for reboot
         self._serial.dtr = False
         self._serial.rts = True
 
         # open
-        self._serial.open()
+        try:
+            self._serial.open()
+        except Exception as e:
+            self.logger.throw(e)
 
         # reboot sequence
         time.sleep(0.1)
@@ -124,14 +129,14 @@ class EdproDevice:
         self._start_reader()
 
     def _start_reader(self):
-        # self.logger.trace("start reader")
+        # self.logger.trace("starting reader")
         self._rx_alive = True
         self._rx_thread = threading.Thread(target=self._reader_proc, name='rx')
         self._rx_thread.daemon = True
         self._rx_thread.start()
 
     def _stop_reader(self):
-        # self.logger.trace("stop reader")
+        # self.logger.trace("stopping reader...")
         self._rx_alive = False
         if self._rx_thread:
             self._rx_thread.join()
@@ -144,7 +149,6 @@ class EdproDevice:
 
         # to prevent device being in reset state after serial.Close()
         # self._serial.rts = False
-
         self._serial.close()
         self._serial = None
 

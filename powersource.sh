@@ -3,4 +3,4 @@ set -e
 cd "$(dirname "$0")"
 source ./env.sh
 
-python tools/powersource.py
+python tools/ps_main.py

@@ -75,6 +75,7 @@ def ps_calibration():
 if __name__ == "__main__":
     try:
         ps_calibration()
+        logger.success()
         input("Press <ENTER> to continue...")
     except LoggedError:
         pass

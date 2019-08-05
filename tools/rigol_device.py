@@ -23,9 +23,9 @@ class RigolDevice:
         logger.info("connect")
         try:
             self.device = usbtmc.Instrument(0x1AB1, 0x09C4)
-            self._ask("*IDN?")
         except Exception as e:
             logger.throw(str(e))
+        self._ask("*IDN?")
 
     def _write(self, cmd: str):
         logger.trace(f"<- {cmd}")

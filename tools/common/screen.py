@@ -29,3 +29,6 @@ class Colors:
 
     RESET = '\033[0m'
 
+def print_color(msg: str, color: str):
+    print(f'{color}{msg}{Colors.RESET}')
+
