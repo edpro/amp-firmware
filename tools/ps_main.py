@@ -43,19 +43,17 @@ def get_choise() -> bool:
 
     if key == "f":
         print("flush")
-    elif key == "c":
+        return True
+
+    if key == "c":
         print("calibration")
-        try:
-            ps_run_calibration()
-            input("Press <ENTER> to continue...")
-        except LoggedError:
-            pass
-        except Exception:
-            raise
+        ps_run_calibration()
+        input("Press <ENTER> to continue...")
+        return True
+
     elif key == "t":
         print("test")
-
-    return True
+        return True
 
 
 def main():
