@@ -50,6 +50,10 @@ class RigolDevice:
         response = self._ask(":MEASure:VOLTage:DC?")
         return float(response)
 
+    def measure_ac_20V(self) -> float:
+        self._write(":MEASure:VOLTage:AC 2")
+        response = self._ask(":MEASure:VOLTage:AC?")
+        return float(response)
 
 def test():
     device = RigolDevice()

@@ -158,13 +158,7 @@ class EdproDevice:
         self._serial.write(b"\n\n\n\n")
         self._uart_written = True
 
-    def send(self, cmd) -> None:
-        self.logger.trace(f"<- '{cmd}'")
-        self._fix_uart_issue()
-        self._serial.write(f"{cmd}\n".encode())
-        self._serial.flush()
-
-    def receive(self, cmd) -> Dict[str, str]:
+    def request(self, cmd: str, wait: bool = True) -> Dict[str, str]:
         self.logger.trace(f"<- '{cmd}'")
 
         with self._lock:
@@ -173,6 +167,9 @@ class EdproDevice:
         self._fix_uart_issue()
         self._serial.write(f"{cmd}\n".encode())
         self._serial.flush()
+
+        if not wait:
+            return {}
 
         time_start = time.time()
         timeout = 4
@@ -192,6 +189,11 @@ class EdproDevice:
 
         self.logger.trace(f"-> {str(response)}")
         return response
+
+    def cmd(self, cmd: str):
+        r = self.request(cmd)
+        if r.get("success") != "1":
+            self.logger.throw("command failed")
 
     def wait_boot_complete(self):
         self.logger.info("waiting for boot complete...")
@@ -233,7 +235,7 @@ def test():
     device = EdproPS()
     device.connect()
     device.wait_boot_complete()
-    device.send("devmode")
+    device.request("devmode")
     device.receive("i")
     device.disconnect()
 
