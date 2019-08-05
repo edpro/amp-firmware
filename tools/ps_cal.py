@@ -41,7 +41,7 @@ def _cal_adc(ps, rigol):
     ps.cmd("cal adc0")
     ps.cmd("set l 10")
     time.sleep(0.25)
-    v = rigol.measure_dc_2V()
+    v = rigol.measure_dc_20V()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal adc {v:0.6f}")
 
@@ -68,7 +68,7 @@ def _cal_aac(ps, rigol):
     ps.cmd("cal aac0")
     ps.cmd("set l 10")
     time.sleep(0.25)
-    v = rigol.measure_ac_2V()
+    v = rigol.measure_ac_20V()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal aac {v:0.6f}")
     pass
@@ -113,9 +113,9 @@ if __name__ == "__main__":
     try:
         # ps_calibration(PSCal.ALL)
         # ps_calibration(PSCal.VDC)
-        # ps_calibration(PSCal.ADC)
+        ps_calibration(PSCal.ADC)
         # ps_calibration(PSCal.VAC)
-        ps_calibration(PSCal.AAC)
+        # ps_calibration(PSCal.AAC)
         logger.success()
     except LoggedError:
         pass
