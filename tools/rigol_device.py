@@ -27,6 +27,10 @@ class RigolDevice:
             logger.throw(str(e))
         self._ask("*IDN?")
 
+    def close(self):
+        if (self.device):
+            self.device.close()
+
     def _write(self, cmd: str):
         logger.trace(f"<- {cmd}")
         try:

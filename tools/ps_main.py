@@ -1,6 +1,8 @@
 import os
 import sys
 
+from tools.common.screen import prompt
+
 sys.path.insert(0, ".")
 
 from tools.common.logger import LoggedError
@@ -15,7 +17,7 @@ def clear():
 
 
 def draw_menu():
-    # clear()
+    clear()
     print("---------------------")
     print("EdPro Powersource")
     print("---------------------")
@@ -23,16 +25,15 @@ def draw_menu():
     print("(c) Calibrate")
     print("(t) Test")
     print("(q) Quit")
-    print()
 
 
 def get_choise() -> bool:
     draw_menu()
 
     try:
-        key = input("Enter your choise: ")
+        key = prompt("Enter your choise: ")
     except KeyboardInterrupt:
-        key="q"
+        key = "q"
     except Exception:
         raise
 
@@ -45,7 +46,7 @@ def get_choise() -> bool:
     elif key == "c":
         print("calibration")
         try:
-            # ps_calibration()
+            ps_run_calibration()
             input("Press <ENTER> to continue...")
         except LoggedError:
             pass

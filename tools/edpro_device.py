@@ -141,7 +141,7 @@ class EdproDevice:
         if self._rx_thread:
             self._rx_thread.join()
 
-    def disconnect(self):
+    def close(self):
         self.logger.info("disconnect")
         if self._serial is None:
             return
@@ -236,8 +236,8 @@ def test():
     device.connect()
     device.wait_boot_complete()
     device.request("devmode")
-    device.receive("i")
-    device.disconnect()
+    device.request("i")
+    device.close()
 
 
 if __name__ == "__main__":

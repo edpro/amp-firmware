@@ -32,3 +32,7 @@ class Colors:
 def print_color(msg: str, color: str):
     print(f'{color}{msg}{Colors.RESET}')
 
+
+def prompt(msg):
+    return input(f"\n{Colors.GREEN}>> {msg}{Colors.RESET}")
+
