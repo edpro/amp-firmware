@@ -62,7 +62,7 @@ def _cal_aac0(ps):
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 0")
-    time.sleep(1)
+    time.sleep(0.25)
     ps.cmd("cal aac0")
 
 
@@ -71,7 +71,7 @@ def _cal_aac(ps, ri):
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 10")
-    time.sleep(1)
+    time.sleep(0.25)
     v = ri.measure_ac_20V()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal aac {v:0.6f}")
@@ -110,8 +110,14 @@ def ps_run_calibration():
 
         prompt("Connect wires to powersource output, then press <Enter>")
 
+        ps.cmd("mode dc")
+        time.sleep(1)
+
         _cal_vdc(ps, ri)
         _cal_adc0(ps)
+
+        ps.cmd("mode ac")
+        time.sleep(1)
 
         _cal_vac(ps, ri)
         _cal_aac0(ps)
@@ -119,9 +125,11 @@ def ps_run_calibration():
         prompt("Connect wires to 1Ω resistor, then press <Enter>")
 
         _cal_aac(ps, ri)
-        _cal_adc(ps, ri)
 
         ps.cmd("mode dc")
+        time.sleep(1)
+        _cal_adc(ps, ri)
+
         ps.cmd("conf s")
     except LoggedError:
         pass
