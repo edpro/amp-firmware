@@ -4,7 +4,7 @@ import sys
 sys.path.insert(0, ".")
 
 from tools.common.logger import LoggedError
-from tools.ps_cal import ps_calibration
+from tools.ps_cal import ps_run_calibration
 
 
 def clear():

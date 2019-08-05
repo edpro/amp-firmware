@@ -1,19 +1,11 @@
 import time
-from enum import Enum
+from typing import Tuple
 
 from tools.common.logger import Logger, LoggedError
 from tools.edpro_device import EdproPS
 from tools.rigol_device import RigolDevice
 
 logger = Logger("ps_cal")
-
-
-class PSCal(Enum):
-    ALL = "ALL"
-    VDC = "VDC"
-    VAC = "VAC"
-    ADC = "ADC"
-    AAC = "AAC"
 
 
 def check(val: bool, message: str):
@@ -33,19 +25,6 @@ def _cal_vdc(ps: EdproPS, rigol: RigolDevice):
     ps.cmd("cal vdcp")
 
 
-def _cal_adc(ps, rigol):
-    logger.info("calibrate ADC:")
-    ps.cmd("mode dc")
-    ps.cmd("set l 0")
-    time.sleep(0.25)
-    ps.cmd("cal adc0")
-    ps.cmd("set l 10")
-    time.sleep(0.25)
-    v = rigol.measure_dc_20V()
-    check(0.1 < v < 0.2, "Measured value must be about 0.15A")
-    ps.cmd(f"cal adc {v:0.6f}")
-
-
 def _cal_vac(ps, rigol):
     logger.info("calibrate VAC:")
     ps.cmd("mode ac")
@@ -59,22 +38,45 @@ def _cal_vac(ps, rigol):
     ps.cmd("cal vacp")
 
 
+def _cal_adc0(ps):
+    logger.info("calibrate ADC zero:")
+    ps.cmd("mode dc")
+    ps.cmd("set l 0")
+    time.sleep(0.25)
+    ps.cmd("cal adc0")
+
+
+def _cal_adc(ps, rigol):
+    logger.info("calibrate ADC:")
+    ps.cmd("mode dc")
+    ps.cmd("set l 10")
+    time.sleep(0.25)
+    v = rigol.measure_dc_20V()
+    check(0.1 < v < 0.2, "Measured value must be about 0.15A")
+    ps.cmd(f"cal adc {v:0.6f}")
+
+
+def _cal_aac0(ps):
+    logger.info("calibrate AAC zero:")
+    ps.cmd("mode ac")
+    ps.cmd("set f 1000")
+    ps.cmd("set l 0")
+    time.sleep(0.25)
+    ps.cmd("cal aac0")
+
+
 def _cal_aac(ps, rigol):
     logger.info("calibrate AAC:")
     ps.cmd("mode ac")
-    ps.cmd("set l 0")
     ps.cmd("set f 1000")
-    time.sleep(0.25)
-    ps.cmd("cal aac0")
     ps.cmd("set l 10")
     time.sleep(0.25)
     v = rigol.measure_ac_20V()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal aac {v:0.6f}")
-    pass
 
 
-def ps_calibration(type: PSCal):
+def _init_devices() -> Tuple[EdproPS, RigolDevice]:
     # init rigol
     rigol = RigolDevice()
     rigol.connect()
@@ -91,33 +93,41 @@ def ps_calibration(type: PSCal):
         ps.disconnect()
         logger.throw("Invalid device name!")
 
-    # do calibrations
+    return ps, rigol
 
-    if type == PSCal.VDC or type == PSCal.ALL:
-        _cal_vdc(ps, rigol)
 
-    if type == PSCal.ADC or type == PSCal.ALL:
-        _cal_adc(ps, rigol)
+def ps_run_calibration():
+    ps, rigol = _init_devices()
 
-    if type == PSCal.VAC or type == PSCal.ALL:
-        _cal_vac(ps, rigol)
+    input(">> Connect wires to posersource output, then press <Enter>")
 
-    if type == PSCal.AAC or type == PSCal.ALL:
-        _cal_aac(ps, rigol)
+    _cal_vdc(ps, rigol)
+    _cal_vac(ps, rigol)
 
+    _cal_adc0(ps)
+    _cal_aac0(ps)
+
+    input(">> Connect wires to 1Ω resistor, then press <Enter>")
+
+    _cal_adc(ps, rigol)
+    _cal_aac(ps, rigol)
+
+    ps.cmd("mode dc")
     ps.cmd("conf s")
     ps.disconnect()
 
 
+def _run():
+    ps, rigol = _init_devices()
+    _cal_adc0(ps)
+    _cal_aac0(ps)
+
+
 if __name__ == "__main__":
     try:
-        # ps_calibration(PSCal.ALL)
-        # ps_calibration(PSCal.VDC)
-        ps_calibration(PSCal.ADC)
-        # ps_calibration(PSCal.VAC)
-        # ps_calibration(PSCal.AAC)
-        logger.success()
+        _run()
     except LoggedError:
         pass
     except Exception:
         raise
+    logger.success()
