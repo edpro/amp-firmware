@@ -1,4 +1,6 @@
+from tools.common.logger import LoggedError
 from tools.common.screen import prompt, clear
+from tools.edpro_device import EdproPS
 from tools.ps_cal import ps_run_calibration
 
 
@@ -10,6 +12,7 @@ def draw_menu():
     print("(f) Flush firmware")
     print("(c) Calibrate")
     print("(t) Test")
+    print("(l) Log")
     print("(q) Quit")
 
 
@@ -41,6 +44,23 @@ def get_choise() -> bool:
         print("test")
         return True
 
+    elif key == "l":
+        print("log")
+        ps = EdproPS()
+        try:
+            ps.connect()
+            ps.wait_boot_complete()
+            ps.cmd("devmode")
+            prompt("Press <Enter> to close...\n")
+        except LoggedError:
+            pass
+        except KeyboardInterrupt:
+            pass
+        except Exception:
+            raise
+        finally:
+            ps.close()
+        return True
 
 def main():
     while get_choise():
