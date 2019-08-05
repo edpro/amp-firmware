@@ -131,6 +131,7 @@ def ps_run_calibration():
         _dispose_devices(ps, ri)
     logger.success()
 
+
 def _run():
     ps: Optional[EdproPS] = None
     ri: Optional[RigolDevice] = None
