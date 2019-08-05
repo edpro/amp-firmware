@@ -1,19 +1,5 @@
-import os
-import sys
-
-from tools.common.screen import prompt
-
-sys.path.insert(0, ".")
-
-from tools.common.logger import LoggedError
+from tools.common.screen import prompt, clear
 from tools.ps_cal import ps_run_calibration
-
-
-def clear():
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('clear')
 
 
 def draw_menu():
