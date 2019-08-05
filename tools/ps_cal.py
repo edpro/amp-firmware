@@ -1,3 +1,4 @@
+import time
 from enum import Enum
 
 from tools.common.logger import Logger, LoggedError
@@ -17,15 +18,16 @@ class PSCal(Enum):
 
 def check(val: bool, message: str):
     if not val:
-        logger.throw("Measured value must be about 5V")
+        logger.throw(message)
 
 
 def _cal_vdc(ps: EdproPS, rigol: RigolDevice):
     logger.info("calibrate VDC:")
     ps.cmd("mode dc")
     ps.cmd("set l 50")
+    time.sleep(0.25)
     v = rigol.measure_dc_20V()
-    check(v < v < 6, "Measured value must be about 5V")
+    check(4 < v < 6, "Measured value must be about 5V")
     ps.cmd(f"cal vdc {v:0.6f}")
     ps.cmd("set l 0")
     ps.cmd("cal vdcp")
@@ -45,6 +47,7 @@ def _cal_vac(ps, rigol):
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 30")
+    time.sleep(0.25)
     v = rigol.measure_ac_20V()
     check(2 < v < 4, "Measured value must be about 3V")
     ps.cmd(f"cal vac {v:0.6f}")
@@ -89,15 +92,16 @@ def ps_calibration(type: PSCal):
     if type == PSCal.AAC or type == PSCal.ALL:
         _cal_aac(ps, rigol)
 
+    ps.cmd("conf s")
     ps.disconnect()
 
 
 if __name__ == "__main__":
     try:
         # ps_calibration(PSCal.ALL)
-        # ps_calibration(PSCal.VDC)
+        ps_calibration(PSCal.VDC)
         # ps_calibration(PSCal.ADC)
-        ps_calibration(PSCal.VAC)
+        # ps_calibration(PSCal.VAC)
         # ps_calibration(PSCal.AAC)
         logger.success()
     except LoggedError:
