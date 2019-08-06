@@ -25,9 +25,11 @@ BASE=$(git merge-base @ @\{u\})
 if [ "$LOCAL" = "$REMOTE" ]; then
     echo -e "up-to-date"
 elif [ "$LOCAL" = "$BASE" ]; then
-    echo -e "${C_WARN}-------------------------------------${C_END}"
-    echo -e "${C_WARN}Updates are available! run 'git pull'${C_END}"
-    echo -e "${C_WARN}-------------------------------------${C_END}"
+    read -p "${C_WARN}Updates are available, update now? (y/n):'${C_END}"
+    case $REPLY in
+        [Yy]* ) echo "git pull";;
+    esac
+
 elif [ "$REMOTE" = "$BASE" ]; then
     echo -e "${C_WARN}Need to push${C_END}"
 else
