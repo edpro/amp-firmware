@@ -7,6 +7,7 @@ import serial
 from serial.tools import list_ports
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors
+from tools.esp_util import detect_port
 
 
 def decode_device_line(data: bytes) -> str:
@@ -41,35 +42,6 @@ class EdproDevice:
         self._lock = threading.Lock()
         self._uart_written = False
 
-    def _detect_port_win(self):
-        info_list = list_ports.comports()
-        info_list = sorted(info_list, key=lambda i: i.device)
-        port = ''
-        port_count = 0
-        for info in info_list:
-            if 'CP210x' in info.description:
-                self.logger.trace(info.description)
-                port = info.device
-                port_count += 1
-
-        if port_count == 0:
-            self.logger.throw("Device not found!")
-
-        if port_count > 1:
-            self.logger.throw("Too many ports found: only one device should be connected.")
-
-        return port
-
-    @staticmethod
-    def _detect_port_osx():
-        return '/dev/tty.SLAB_USBtoUART'
-
-    def _detect_port(self):
-        if os.name == "nt":
-            return self._detect_port_win()
-        else:
-            return self._detect_port_osx()
-
     def _print_device_line(self, line: str):
         if line == "":
             return
@@ -98,7 +70,7 @@ class EdproDevice:
     def connect(self):
         self.logger.info("connect")
         self._rx_alive = True
-        self._port = self._detect_port()
+        self._port = detect_port()
 
         self._serial = serial.serial_for_url(self._port, 74880,
                                              parity="N",
