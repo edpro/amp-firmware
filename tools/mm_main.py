@@ -7,14 +7,14 @@ from tools.mm_cal import mm_run_calibration
 def draw_menu():
     clear()
     print("---------------------")
-    print("EdPro Multimeter")
+    print(" EdPro Multimeter")
     print("---------------------")
-    print("(i) Firmware Init")
-    print("(u) Firmware Update")
-    print("(c) Calibrate Device")
-    # print("(t) Test Device")
-    print("(l) Log")
-    print("(q) Quit")
+    print(" (i) Firmware Init")
+    print(" (u) Firmware Update")
+    print(" (c) Calibrate Device")
+    # print(" (t) Test Device")
+    print(" (l) Log")
+    print(" (q) Quit")
 
 
 def process_menu():
@@ -29,13 +29,13 @@ def process_menu():
         print("quit")
         exit(0)
 
-    elif key == "1":
+    elif key == "i":
         print("init")
         flush_esp_init()
         flush_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
 
-    elif key == "2":
+    elif key == "u":
         print("update")
         flush_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
