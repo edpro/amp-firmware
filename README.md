@@ -20,25 +20,8 @@ git clone https://github.com/edpro/firmware.git
 
 ### Commands
 
-Flash first time:
-
 ```
-./devicename-init.sh
+./multimeter.sh
+./powersource.sh
 ```
-
-Update firmware to a new version:
-
-```
-./devicename-update.sh
-```
-
-Connect to device log:
-
-```
-./connect.sh
-```
-
-
-
-
 
