@@ -114,7 +114,7 @@ class EdproDevice:
     def close(self):
         if self._serial is None:
             return
-        
+
         self.logger.info("disconnect")
         self._stop_reader()
 
@@ -203,7 +203,7 @@ class EdproDevice:
             input("Press <Enter> to continue...\n")
         except KeyboardInterrupt:
             self.close()
-        except:
+        except Exception:
             self.close()
             raise
 

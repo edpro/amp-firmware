@@ -135,7 +135,7 @@ def ps_run_calibration():
         logger.success()
     except LoggedError:
         _dispose_devices(ps, ri)
-    except:
+    except Exception:
         _dispose_devices(ps, ri)
         raise
 
