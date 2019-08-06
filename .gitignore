@@ -1,5 +1,4 @@
 .date
 .vscode
-/multimeter/*.bin
-/powersource/*.bin
-/build.conf.py
+/images/multimeter/*.bin
+/images/powersource/*.bin
