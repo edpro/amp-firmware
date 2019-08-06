@@ -6,7 +6,7 @@
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
       <env name="PYTHONDONTWRITEBYTECODE" value="1" />
-      <env name="CHECK_UPDATE_EACH_LAUNCH" value="1" />
+      <env name="CHECK_UPDATE_EACH_LAUNCH" value="0" />
     </envs>
     <option name="SDK_HOME" value="D:\work\amperia\toolchain\python\python.exe" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
