@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 import usbtmc
@@ -5,6 +6,13 @@ import usbtmc
 from tools.common.logger import LoggedError, Logger
 
 logger = Logger("rigol")
+
+
+class RigolMode(Enum):
+    VDC_2 = ":MEASure:VOLTage:DC 1"
+    VDC_20 = ":MEASure:VOLTage:DC 2"
+    VAC_2 = ":MEASure:VOLTage:AC 1"
+    VAC_20 = ":MEASure:VOLTage:AC 2"
 
 
 # noinspection PyPep8Naming
@@ -49,21 +57,12 @@ class RigolDevice:
 
         return response
 
-    def mode_vdc_2(self):
-        self._write(":MEASure:VOLTage:DC 1")
-
-    def mode_vdc_20(self):
-        self._write(":MEASure:VOLTage:DC 2")
+    def mode(self, mode: RigolMode):
+        self._write(mode.value)
 
     def measure_vdc(self) -> float:
         response = self._ask(":MEASure:VOLTage:DC?")
         return float(response)
-
-    def mode_vac_2(self):
-        self._write(":MEASure:VOLTage:AC 1")
-
-    def mode_vac_20(self):
-        self._write(":MEASure:VOLTage:AC 2")
 
     def measure_vac(self) -> float:
         response = self._ask(":MEASure:VOLTage:AC?")
@@ -73,7 +72,7 @@ class RigolDevice:
 def test():
     device = RigolDevice()
     device.connect()
-    device.mode_vdc_20()
+    device.mode(RigolMode.VDC_20)
     device.measure_vdc()
 
 

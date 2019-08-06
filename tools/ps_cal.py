@@ -4,7 +4,7 @@ from typing import Tuple, Optional
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import prompt
 from tools.edpro_device import EdproPS
-from tools.rigol_device import RigolDevice
+from tools.rigol_device import RigolDevice, RigolMode
 
 logger = Logger("ps_cal")
 
@@ -17,7 +17,7 @@ def check(val: bool, message: str):
 def _cal_vdc(ps: EdproPS, ri: RigolDevice):
     logger.info("calibrate VDC:")
 
-    ri.mode_vdc_20()
+    ri.mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 50")
     time.sleep(0.5)
@@ -32,7 +32,7 @@ def _cal_vdc(ps: EdproPS, ri: RigolDevice):
 def _cal_vac(ps, ri):
     logger.info("calibrate VAC:")
 
-    ri.mode_vac_20()
+    ri.mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 30")
@@ -56,7 +56,7 @@ def _cal_adc0(ps):
 def _cal_adc(ps, ri):
     logger.info("calibrate ADC:")
 
-    ri.mode_vdc_2()
+    ri.mode(RigolMode.VDC_2)
     ps.cmd("mode dc")
     ps.cmd("set l 10")
     time.sleep(0.5)
@@ -78,7 +78,7 @@ def _cal_aac0(ps):
 def _cal_aac(ps, ri):
     logger.info("calibrate AAC:")
 
-    ri.mode_vac_2()
+    ri.mode(RigolMode.VAC_2)
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 10")
