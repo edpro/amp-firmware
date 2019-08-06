@@ -3,12 +3,11 @@ set -e
 
 C_WARN='\033[33m'
 C_END='\033[0m'
-CHECK_UPDATE_EACH_LAUNCH=1
 
 cur_date=$(date +%Y-%m-%d)
-prev_date=$(cat .date || true)
+prev_date=$(test -f ".date" && cat .date || true)
 
-if [ "$CHECK_UPDATE_EACH_LAUNCH" != "1" ]; then
+if [ "${CHECK_UPDATE_EACH_LAUNCH:-1}" != "1" ]; then
   if [ "$cur_date" == "$prev_date" ] || [ "$CHECK_UPDATE_EACH_LAUNCH" == "1" ]; then
       exit 0
   fi
