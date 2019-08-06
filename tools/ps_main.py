@@ -1,4 +1,3 @@
-from tools.common.logger import LoggedError
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
 from tools.edpro_device import EdproPS
@@ -25,7 +24,7 @@ def process_menu() -> bool:
         key = prompt("Enter your choise: ")
     except KeyboardInterrupt:
         key = "q"
-    except:
+    except Exception:
         raise
 
     if key == "q":
