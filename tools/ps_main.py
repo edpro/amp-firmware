@@ -17,25 +17,23 @@ def draw_menu():
     print("(q) Quit")
 
 
-def process_menu() -> bool:
+def process_menu():
     draw_menu()
 
     try:
         key = prompt("Enter your choise: ")
     except KeyboardInterrupt:
         key = "q"
-    except Exception:
-        raise
 
     if key == "q":
-        return False
+        print("quit")
+        exit(0)
 
     elif key == "1":
         print("init")
         flush_esp_init()
         flush_firmware("./images/powersource")
         input("Press <ENTER> to continue...")
-        return True
 
     elif key == "2":
         print("update")
@@ -58,12 +56,13 @@ def process_menu() -> bool:
         ps = EdproPS()
         ps.show_log()
 
-    return True
-
 
 def main():
-    while process_menu():
-        pass
+    while True:
+        try:
+            process_menu()
+        except KeyboardInterrupt:
+            pass
 
 
 main()
