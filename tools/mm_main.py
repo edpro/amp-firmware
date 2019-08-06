@@ -1,7 +1,7 @@
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
 from tools.edpro_device import EdproMM
-from tools.ps_cal import ps_run_calibration
+from tools.mm_cal import mm_run_calibration
 
 
 def draw_menu():
@@ -42,7 +42,7 @@ def process_menu():
 
     elif key == "c":
         print("calibration")
-        ps_run_calibration()
+        mm_run_calibration()
         input("Press <ENTER> to continue...")
 
     elif key == "t":
