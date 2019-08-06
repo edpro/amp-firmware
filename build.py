@@ -131,8 +131,8 @@ def init():
             '--flash_freq', '40m',
             '--flash_mode', 'qio',
             '--flash_size', '4MB',
-            '0x3fc000', './esp/esp_init_data_default.bin',
-            '0x7E000', './esp/blank.bin')
+            '0x3fc000', './images/esp/esp_init_data_default.bin',
+            '0x7E000', './images/esp/blank.bin')
 
 
 def elf2bin():

@@ -14,7 +14,7 @@ set CR=[92m
 set CN=[0m
 set cmd=atprogram -t atmelice -i ISP -d attiny13a program^
  --chiperase --flash --verify^
- --file "bin\powerATtiny13.elf"
+ --file "images\attiny\powerATtiny13.elf"
 
 :loop
 echo.

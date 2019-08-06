@@ -6,4 +6,4 @@ source ./env.sh
 ./check-updates.sh
 
 python build.py init
-python build.py deploy ./multimeter
+python build.py deploy ./images/multimeter
