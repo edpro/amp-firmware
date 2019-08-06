@@ -31,11 +31,11 @@ if [ "$LOCAL" = "$REMOTE" ]; then
     echo -e "up-to-date"
 elif [ "$LOCAL" = "$BASE" ]; then
     echo -e "${C_WARN}Updates are available!${C_END}"
-    read -p "update now? (y/n): "
+    read -rp "update now? (y/n): "
     case $REPLY in
         [Yy]* )
           git pull
-          read -p "Press <Enter> to continue..."
+          read -rp "Press <Enter> to continue..."
         ;;
     esac
 elif [ "$REMOTE" = "$BASE" ]; then
