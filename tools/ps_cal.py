@@ -16,10 +16,13 @@ def check(val: bool, message: str):
 
 def _cal_vdc(ps: EdproPS, ri: RigolDevice):
     logger.info("calibrate VDC:")
+
+    ri.mode_vdc_20()
     ps.cmd("mode dc")
     ps.cmd("set l 50")
-    time.sleep(0.25)
-    v = ri.measure_dc_20V()
+    time.sleep(0.5)
+
+    v = ri.measure_vdc()
     check(4 < v < 6, "Measured value must be about 5V")
     ps.cmd(f"cal vdc {v:0.6f}")
     ps.cmd("set l 0")
@@ -28,11 +31,14 @@ def _cal_vdc(ps: EdproPS, ri: RigolDevice):
 
 def _cal_vac(ps, ri):
     logger.info("calibrate VAC:")
+
+    ri.mode_vac_20()
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 30")
-    time.sleep(0.25)
-    v = ri.measure_ac_20V()
+    time.sleep(0.5)
+
+    v = ri.measure_vac()
     check(2 < v < 4, "Measured value must be about 3V")
     ps.cmd(f"cal vac {v:0.6f}")
     ps.cmd("set l 0")
@@ -43,16 +49,19 @@ def _cal_adc0(ps):
     logger.info("calibrate ADC zero:")
     ps.cmd("mode dc")
     ps.cmd("set l 0")
-    time.sleep(0.25)
+    time.sleep(0.5)
     ps.cmd("cal adc0")
 
 
 def _cal_adc(ps, ri):
     logger.info("calibrate ADC:")
+
+    ri.mode_vdc_2()
     ps.cmd("mode dc")
     ps.cmd("set l 10")
-    time.sleep(0.25)
-    v = ri.measure_dc_20V()
+    time.sleep(0.5)
+
+    v = ri.measure_vdc()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal adc {v:0.6f}")
 
@@ -62,17 +71,20 @@ def _cal_aac0(ps):
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 0")
-    time.sleep(0.25)
+    time.sleep(1)
     ps.cmd("cal aac0")
 
 
 def _cal_aac(ps, ri):
     logger.info("calibrate AAC:")
+
+    ri.mode_vac_2()
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 10")
-    time.sleep(0.25)
-    v = ri.measure_ac_20V()
+
+    time.sleep(1)
+    v = ri.measure_vac()
     check(0.1 < v < 0.2, "Measured value must be about 0.15A")
     ps.cmd(f"cal aac {v:0.6f}")
 
@@ -108,36 +120,49 @@ def ps_run_calibration():
     try:
         ps, ri = _init_devices()
 
-        prompt("Connect wires to powersource output, then press <Enter>")
+        choise = prompt("Connect wires to powersource output. <Enter> - continue, <s> - skip: ")
+        done = False
 
-        ps.cmd("mode dc")
-        time.sleep(1)
+        if choise == "":
+            while True:
+                try:
+                    _cal_vdc(ps, ri)
+                    _cal_adc0(ps)
+                    _cal_vac(ps, ri)
+                    _cal_aac0(ps)
+                    done = True
+                    break
+                except LoggedError:
+                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    if choise == "":
+                        break
+                except Exception:
+                    raise
 
-        _cal_vdc(ps, ri)
-        _cal_adc0(ps)
+        choise = prompt("Connect wires to 1Ω resistor. <Enter> - continue, <s> - skip: ")
+        if choise == "":
+            while True:
+                try:
+                    _cal_adc(ps, ri)
+                    _cal_aac(ps, ri)
+                    done = True
+                    break
+                except LoggedError:
+                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    if choise == "":
+                        break
+                except Exception:
+                    raise
 
-        ps.cmd("mode ac")
-        time.sleep(1)
-
-        _cal_vac(ps, ri)
-        _cal_aac0(ps)
-
-        prompt("Connect wires to 1Ω resistor, then press <Enter>")
-
-        _cal_aac(ps, ri)
-
-        ps.cmd("mode dc")
-        time.sleep(1)
-        _cal_adc(ps, ri)
-
-        ps.cmd("conf s")
-        _dispose_devices(ps, ri)
-        logger.success()
+        if done:
+            ps.cmd("conf s")
+            logger.success()
     except LoggedError:
-        _dispose_devices(ps, ri)
+        pass
     except Exception:
-        _dispose_devices(ps, ri)
         raise
+    finally:
+        _dispose_devices(ps, ri)
 
 
 def _run():

@@ -28,7 +28,7 @@ class RigolDevice:
         self._ask("*IDN?")
 
     def close(self):
-        if (self.device):
+        if self.device:
             self.device.close()
 
     def _write(self, cmd: str):
@@ -49,30 +49,32 @@ class RigolDevice:
 
         return response
 
-    def measure_dc_2V(self) -> float:
+    def mode_vdc_2(self):
         self._write(":MEASure:VOLTage:DC 1")
-        response = self._ask(":MEASure:VOLTage:DC?")
-        return float(response)
 
-    def measure_dc_20V(self) -> float:
+    def mode_vdc_20(self):
         self._write(":MEASure:VOLTage:DC 2")
+
+    def measure_vdc(self) -> float:
         response = self._ask(":MEASure:VOLTage:DC?")
         return float(response)
 
-    def measure_ac_2V(self) -> float:
+    def mode_vac_2(self):
         self._write(":MEASure:VOLTage:AC 1")
+
+    def mode_vac_20(self):
+        self._write(":MEASure:VOLTage:AC 2")
+
+    def measure_vac(self) -> float:
         response = self._ask(":MEASure:VOLTage:AC?")
         return float(response)
 
-    def measure_ac_20V(self) -> float:
-        self._write(":MEASure:VOLTage:AC 2")
-        response = self._ask(":MEASure:VOLTage:AC?")
-        return float(response)
 
 def test():
     device = RigolDevice()
     device.connect()
-    device.measure_dc_20V()
+    device.mode_vdc_20()
+    device.measure_vdc()
 
 
 if __name__ == "__main__":
