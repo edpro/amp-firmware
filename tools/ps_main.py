@@ -1,5 +1,6 @@
 from tools.common.logger import LoggedError
 from tools.common.screen import prompt, clear
+from tools.common.utils import flush_firmware, flush_esp_init
 from tools.edpro_device import EdproPS
 from tools.ps_cal import ps_run_calibration
 
@@ -9,14 +10,15 @@ def draw_menu():
     print("---------------------")
     print("EdPro Powersource")
     print("---------------------")
-    print("(f) Flush firmware")
-    print("(c) Calibrate")
-    print("(t) Test")
+    print("(1) Firmware Init")
+    print("(2) Firmware Update")
+    print("(c) Calibrate Device")
+    print("(t) Test Device")
     print("(l) Log")
     print("(q) Quit")
 
 
-def get_choise() -> bool:
+def process_menu() -> bool:
     draw_menu()
 
     try:
@@ -27,8 +29,20 @@ def get_choise() -> bool:
         raise
 
     if key == "q":
-        print("quit")
         return False
+
+    if key == "1":
+        print("init")
+        flush_esp_init()
+        flush_firmware("./images/powersource")
+        input("Press <ENTER> to continue...")
+        return True
+
+    if key == "2":
+        print("update")
+        flush_firmware("./images/powersource")
+        input("Press <ENTER> to continue...")
+        return True
 
     if key == "f":
         print("flush")
@@ -62,8 +76,9 @@ def get_choise() -> bool:
             ps.close()
         return True
 
+
 def main():
-    while get_choise():
+    while process_menu():
         pass
 
 

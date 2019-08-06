@@ -1,13 +1,11 @@
-import os
 import threading
 import time
 from typing import Optional, Dict
 
 import serial
-from serial.tools import list_ports
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors
-from tools.esp_util import detect_port
+from tools.common.utils import detect_port
 
 
 def decode_device_line(data: bytes) -> str:
