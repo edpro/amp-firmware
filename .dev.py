@@ -4,6 +4,9 @@ import sys
 entrypoint = sys.argv[1]
 
 if os.name == "nt":
-    os.system(f'start "" "C:\\Program Files\\git\\bin\\bash.exe" {entrypoint}')
+    cmd = f'start "" "C:\\Program Files\\git\\bin\\bash.exe" {entrypoint}'
 else:
-    os.system(entrypoint)
+    cmd = entrypoint
+
+print(cmd)
+os.system(cmd)

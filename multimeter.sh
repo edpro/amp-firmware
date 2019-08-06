@@ -5,7 +5,7 @@ source ./env.sh
 
 ./update.sh
 
-python tools/ps_main.py
+python tools/mm_main.py
 
 if [[ "$?" != "0" ]]; then
   read -p "Error has occured..."

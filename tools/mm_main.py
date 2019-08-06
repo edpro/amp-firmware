@@ -1,13 +1,13 @@
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
-from tools.edpro_device import EdproPS
+from tools.edpro_device import EdproMM
 from tools.ps_cal import ps_run_calibration
 
 
 def draw_menu():
     clear()
     print("---------------------")
-    print("EdPro Powersource")
+    print("EdPro Multimeter")
     print("---------------------")
     print("(1) Firmware Init")
     print("(2) Firmware Update")
@@ -32,12 +32,12 @@ def process_menu():
     elif key == "1":
         print("init")
         flush_esp_init()
-        flush_firmware("./images/powersource")
+        flush_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
 
     elif key == "2":
         print("update")
-        flush_firmware("./images/powersource")
+        flush_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
 
     elif key == "c":
@@ -50,8 +50,8 @@ def process_menu():
 
     elif key == "l":
         print("log")
-        ps = EdproPS()
-        ps.show_log()
+        mm = EdproMM()
+        mm.show_log()
 
 
 def main():
