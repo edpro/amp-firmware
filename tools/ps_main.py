@@ -5,7 +5,7 @@ from tools.ps_cal import ps_run_calibration
 
 
 def draw_menu():
-    clear()
+    print()
     print("---------------------")
     print("EdPro Powersource")
     print("---------------------")
