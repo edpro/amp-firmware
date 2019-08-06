@@ -3,6 +3,7 @@ import time
 from typing import Optional, Dict
 
 import serial
+
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors, prompt
 from tools.common.utils import detect_port
@@ -29,6 +30,7 @@ class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
     def __init__(self, tag):
+        self.log_mode = False
         self.tag = tag
         self.logger = Logger(tag)
         self.logger.info("init")
@@ -43,12 +45,29 @@ class EdproDevice:
     def _print_device_line(self, line: str):
         if line == "":
             return
+
         color = Colors.GRAY
-        if line.startswith('W '):
-            color = Colors.YELLOW
-        elif line.startswith('E '):
-            color = Colors.RED
-        print(f"[{self.tag}] {color}░ {line.strip()}{Colors.RESET}")
+
+        if self.log_mode:
+            if line.startswith('D '):
+                line = line[2:]
+                color = Colors.GRAY
+            if line.startswith('I '):
+                line = line[2:]
+                color = Colors.LIGHT_BLUE
+            if line.startswith('W '):
+                line = line[2:]
+                color = Colors.YELLOW
+            elif line.startswith('E '):
+                line = line[2:]
+                color = Colors.RED
+            print(f"[{self.tag}] {color}░ {line.strip()}{Colors.RESET}")
+        else:
+            if line.startswith('W '):
+                color = Colors.YELLOW
+            elif line.startswith('E '):
+                color = Colors.RED
+            print(f"[{self.tag}] {color}░ {line.strip()}{Colors.RESET}")
 
     def _reader_proc(self):
         try:
@@ -193,6 +212,7 @@ class EdproDevice:
 
     def show_log(self):
         try:
+            self.log_mode = True
             self.connect()
             self.wait_boot_complete()
             self.cmd("devmode")
