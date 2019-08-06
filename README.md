@@ -1,20 +1,27 @@
-# Binary images for all amperia devices
+# EdPro Amperia tools
 
-### Clone sources:
+### Download firmware and toolchain:
 
-```
+```bash
+mkdir amperia
+cd amperia
 git clone https://github.com/edpro/firmware.git
+
+# windows toolchain:
+git clone https://github.com/edpro/toolchain.git
 ```
 
-### Windows Toolchain:
-
-* Download `amperia_toolchain.zip` from the [Google Drive](https://drive.google.com/drive/folders/0B1MSlIDvzD9TV21lRmVJT1gxUlk?usp=sharing)
-* Extract it alongside this repository directory
 
 ### OSX Toolchain:
 
 * Install python3
-* Install esptool: `pip install esptool`
+
+* Install python libs: 
+
+  `pip install esptool`
+
+  `pip install usbtmc `
+
 * Install UART driver: [Silicon Labs CP210x USB to UART Bridge](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers)  
 
 
