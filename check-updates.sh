@@ -21,15 +21,16 @@ BASE=$(git merge-base @ @\{u\})
 # echo "local: $LOCAL"
 # echo "remote: $REMOTE"
 # echo "base: $BASE"
+LOCAL="-"; BASE="-"
 
 if [ "$LOCAL" = "$REMOTE" ]; then
     echo -e "up-to-date"
 elif [ "$LOCAL" = "$BASE" ]; then
-    read -p "${C_WARN}Updates are available, update now? (y/n):'${C_END}"
+    echo -e "${C_WARN}Updates are available!${C_END}"
+    read -p "update now? (y/n): "
     case $REPLY in
-        [Yy]* ) echo "git pull";;
+        [Yy]* ) git pull;;
     esac
-
 elif [ "$REMOTE" = "$BASE" ]; then
     echo -e "${C_WARN}Need to push${C_END}"
 else
