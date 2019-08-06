@@ -4,7 +4,7 @@ from typing import Optional, Dict
 
 import serial
 from tools.common.logger import Logger, LoggedError
-from tools.common.screen import Colors
+from tools.common.screen import Colors, prompt
 from tools.common.utils import detect_port
 
 
@@ -112,9 +112,10 @@ class EdproDevice:
             self._rx_thread.join()
 
     def close(self):
-        self.logger.info("disconnect")
         if self._serial is None:
             return
+        
+        self.logger.info("disconnect")
         self._stop_reader()
 
         # to prevent device being in reset state after serial.Close()
@@ -189,6 +190,22 @@ class EdproDevice:
                 break
 
         self.logger.info("ready")
+
+    def show_log(self):
+        try:
+            self.connect()
+            self.wait_boot_complete()
+            self.cmd("devmode")
+            prompt("Press <Enter> to close...\n")
+            self.close()
+        except LoggedError:
+            self.close()
+            input("Press <Enter> to continue...\n")
+        except KeyboardInterrupt:
+            self.close()
+        except:
+            self.close()
+            raise
 
 
 class EdproPS(EdproDevice):

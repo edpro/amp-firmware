@@ -13,7 +13,7 @@ def draw_menu():
     print("(1) Firmware Init")
     print("(2) Firmware Update")
     print("(c) Calibrate Device")
-    print("(t) Test Device")
+    # print("(t) Test Device")
     print("(l) Log")
     print("(q) Quit")
 
@@ -25,56 +25,41 @@ def process_menu() -> bool:
         key = prompt("Enter your choise: ")
     except KeyboardInterrupt:
         key = "q"
-    except Exception:
+    except:
         raise
 
     if key == "q":
         return False
 
-    if key == "1":
+    elif key == "1":
         print("init")
         flush_esp_init()
         flush_firmware("./images/powersource")
         input("Press <ENTER> to continue...")
         return True
 
-    if key == "2":
+    elif key == "2":
         print("update")
         flush_firmware("./images/powersource")
         input("Press <ENTER> to continue...")
-        return True
 
-    if key == "f":
+    elif key == "f":
         print("flush")
-        return True
 
-    if key == "c":
+    elif key == "c":
         print("calibration")
         ps_run_calibration()
         input("Press <ENTER> to continue...")
-        return True
 
     elif key == "t":
         print("test")
-        return True
 
     elif key == "l":
         print("log")
         ps = EdproPS()
-        try:
-            ps.connect()
-            ps.wait_boot_complete()
-            ps.cmd("devmode")
-            prompt("Press <Enter> to close...\n")
-        except LoggedError:
-            pass
-        except KeyboardInterrupt:
-            pass
-        except Exception:
-            raise
-        finally:
-            ps.close()
-        return True
+        ps.show_log()
+
+    return True
 
 
 def main():

@@ -131,13 +131,13 @@ def ps_run_calibration():
         _cal_adc(ps, ri)
 
         ps.cmd("conf s")
-    except LoggedError:
-        pass
-    except Exception:
-        raise
-    finally:
         _dispose_devices(ps, ri)
-    logger.success()
+        logger.success()
+    except LoggedError:
+        _dispose_devices(ps, ri)
+    except:
+        _dispose_devices(ps, ri)
+        raise
 
 
 def _run():
