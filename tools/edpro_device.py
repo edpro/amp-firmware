@@ -10,10 +10,15 @@ from tools.common.utils import detect_port
 
 
 def decode_device_line(data: bytes) -> str:
-    line = data.decode("utf-8")
-    line = line.replace("\r", "")
-    line = line.replace("\n", "")
-    return line
+    try:
+        line = data.decode("utf-8")
+        line = line.replace("\r", "")
+        line = line.replace("\n", "")
+        return line
+    except UnicodeDecodeError:
+        data = data.replace(b"\r", b"")
+        data = data.replace(b"\n", b"")
+        return str(data)
 
 
 def decode_response(raw: str) -> Dict[str, str]:
@@ -148,7 +153,8 @@ class EdproDevice:
     def _fix_uart_issue(self):
         if self._uart_written:
             return
-        self._serial.write(b"\n\n\n\n")
+        for i in range(0, 8):
+            self._serial.write(b"\n")
         self._uart_written = True
 
     def request(self, cmd: str, wait: bool = True, trace: bool = True) -> Dict[str, str]:
@@ -219,12 +225,10 @@ class EdproDevice:
         try:
             self.log_mode = True
             self.connect(reboot=False)
-            time.sleep(1)
-            self.request("i", trace=False)
             print_color("\n<?> - help, <q> - exit", Colors.GREEN)
             while True:
                 cmd = input("")
-                if cmd == "":
+                if cmd == "q":
                     break
                 try:
                     self.request(cmd, wait=False, trace=False)
