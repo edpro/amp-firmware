@@ -5,7 +5,7 @@ from typing import Optional, Dict
 import serial
 
 from tools.common.logger import Logger, LoggedError
-from tools.common.screen import Colors, prompt
+from tools.common.screen import Colors, print_color
 from tools.common.utils import detect_port
 
 
@@ -84,7 +84,7 @@ class EdproDevice:
             self._rx_alive = False
             raise
 
-    def connect(self):
+    def connect(self, reboot: bool = True):
         self.logger.info("connect")
         self._rx_alive = True
         self._port = detect_port()
@@ -98,9 +98,12 @@ class EdproDevice:
                                              do_not_open=True,
                                              timeout=1)
 
-        # prepare state for reboot
-        self._serial.dtr = False
-        self._serial.rts = True
+        if reboot:
+            self._serial.dtr = False
+            self._serial.rts = True
+        else:
+            self._serial.dtr = False
+            self._serial.rts = False
 
         # open
         try:
@@ -108,11 +111,11 @@ class EdproDevice:
         except Exception as e:
             self.logger.throw(e)
 
-        # reboot sequence
-        time.sleep(0.1)
-        self._serial.dtr = True
-        time.sleep(0.1)
-        self._serial.rts = False
+        if reboot:
+            time.sleep(0.1)
+            self._serial.dtr = True
+            time.sleep(0.1)
+            self._serial.rts = False
 
         # start reading thread
         self._start_reader()
@@ -148,8 +151,9 @@ class EdproDevice:
         self._serial.write(b"\n\n\n\n")
         self._uart_written = True
 
-    def request(self, cmd: str, wait: bool = True) -> Dict[str, str]:
-        self.logger.trace(f"<- '{cmd}'")
+    def request(self, cmd: str, wait: bool = True, trace: bool = True) -> Dict[str, str]:
+        if trace:
+            self.logger.trace(f"<- '{cmd}'")
 
         with self._lock:
             self._response = None
@@ -177,7 +181,8 @@ class EdproDevice:
                 response = decode_response(self._response)
                 break
 
-        self.logger.trace(f"-> {str(response)}")
+        if trace:
+            self.logger.trace(f"-> {str(response)}")
         return response
 
     def cmd(self, cmd: str):
@@ -213,14 +218,21 @@ class EdproDevice:
     def show_log(self):
         try:
             self.log_mode = True
-            self.connect()
-            self.wait_boot_complete()
-            self.cmd("devmode")
-            prompt("Press <Enter> to close...\n")
+            self.connect(reboot=False)
+            time.sleep(1)
+            self.request("i", trace=False)
+            print_color("\n<?> - help, <q> - exit", Colors.GREEN)
+            while True:
+                cmd = input("")
+                if cmd == "":
+                    break
+                try:
+                    self.request(cmd, wait=False, trace=False)
+                except LoggedError:
+                    pass
             self.close()
         except LoggedError:
             self.close()
-            input("Press <Enter> to continue...\n")
         except KeyboardInterrupt:
             self.close()
         except Exception:
