@@ -2,6 +2,7 @@ from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
 from tools.edpro_device import EdproPS
 from tools.ps_cal import ps_run_calibration
+from tools.ps_test import ps_run_test
 
 
 def draw_menu():
@@ -12,7 +13,7 @@ def draw_menu():
     print(" (i) Firmware Init")
     print(" (u) Firmware Update")
     print(" (c) Calibrate Device")
-    # print("(t) Test Device")
+    print(" (t) Test Device")
     print(" (l) Log")
     print(" (q) Quit")
 
@@ -46,7 +47,9 @@ def process_menu():
         input("Press <ENTER> to continue...")
 
     elif key == "t":
+        ps_run_test()
         print("test")
+        input("Press <ENTER> to continue...")
 
     elif key == "l":
         print("log")

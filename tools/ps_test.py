@@ -18,6 +18,10 @@ VAC_STEP_ABS = 0.05
 FREQ_REL = 0.01
 
 
+def wait_mode():
+    time.sleep(1)
+
+
 def check(val: bool, message: str):
     if not val:
         logger.throw(message)
@@ -32,24 +36,36 @@ def print_table(title: str, records: List[Tuple[bool, str]]):
             logger.error(msg)
 
 
-def _test_fac(ps: EdproPS, ri: RigolDevice) -> bool:
+def _test_freq(ps: EdproPS, ri: RigolDevice) -> bool:
     logger.info("test F(AC)")
     ri.mode(RigolMode.FREQ_20)
     ps.cmd("mode ac")
     ps.cmd("set l 30")
-    time.sleep(1)
+    wait_mode()
     records: List[Tuple[bool, str]] = []
     all_succeed = True
     f = 10
-    while f <= 100_000:
+    while f <= 1_000_000:
         ps.cmd(f"set f {f}")
         time.sleep(0.2)
         ps_val = ps.request_values()
         ri_val = ri.measure_freq()
         e_abs = abs(f - ri_val)
         e_rel = e_abs / abs(ri_val)
-        msg = f"expected: {f} | actual: {ri_val:0f} | abs: {e_abs:0f} | rel: {e_rel * 100:0.2f}%"
-        success = e_rel <= FREQ_REL
+        msg = f"U: {ps_val.U:0.3f} expected: {f} | actual: {ri_val:0f} | abs: {e_abs:0f} | rel: {e_rel * 100:0.2f}%"
+
+        if (f < 50):
+            rel_u = 0.3
+        elif (f < 100):
+            rel_u = 0.05
+        elif (f < 10_000):
+            rel_u = 0.02
+        elif (f < 100_000):
+            rel_u = 0.03
+        else:
+            rel_u = 5.0
+
+        success = e_rel <= FREQ_REL and abs((ps_val.U - 3) / 3) <= rel_u
 
         records.append((success, msg))
         if success:
@@ -69,6 +85,8 @@ def _test_fac(ps: EdproPS, ri: RigolDevice) -> bool:
         else:
             f += 100_000
 
+    ps.cmd("mode dc")
+    ps.cmd("set l 0")
     print_table("F(AC) test result:", records)
 
     return all_succeed
@@ -80,7 +98,7 @@ def _test_vac(ps: EdproPS, ri: RigolDevice) -> bool:
     ps.cmd("mode ac")
     ps.cmd("set l 0")
     ps.cmd("set f 1000")
-    time.sleep(1)
+    wait_mode()
     records: List[Tuple[bool, str]] = []
     all_succeed = True
 
@@ -104,6 +122,8 @@ def _test_vac(ps: EdproPS, ri: RigolDevice) -> bool:
             all_succeed = False
             logger.error(msg)
 
+    ps.cmd("mode dc")
+    ps.cmd("set l 0")
     print_table("V(AC) test result (1000Hz):", records)
 
     return all_succeed
@@ -114,7 +134,7 @@ def _test_vdc(ps: EdproPS, ri: RigolDevice) -> bool:
     ri.mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 0")
-    time.sleep(1)
+    wait_mode()
     records: List[Tuple[bool, str]] = []
     all_succeed = True
 
@@ -126,7 +146,7 @@ def _test_vdc(ps: EdproPS, ri: RigolDevice) -> bool:
         e_rel = e_abs / abs(ri_val)
         msg = f"expected: {ps_val.U:0.6f} | actual: {ri_val:0.6f} | abs: {e_abs:0.6f} | rel: {e_rel * 100:0.2f}%"
         if level == 0:
-            success = e_abs <= VDC_ABS and (0.1 * level - ri_val) < VDC_STEP_ABS
+            success = e_abs <= 2 * VDC_ABS and (0.1 * level - ri_val) < VDC_STEP_ABS
         else:
             success = e_rel <= VDC_REL and (0.1 * level - ri_val) < VDC_STEP_ABS
 
@@ -137,6 +157,8 @@ def _test_vdc(ps: EdproPS, ri: RigolDevice) -> bool:
             all_succeed = False
             logger.error(msg)
 
+    ps.cmd("mode dc")
+    ps.cmd("set l 0")
     print_table("V(DC) test result:", records)
 
     return all_succeed
@@ -166,9 +188,20 @@ def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolDevice]):
     if ri: ri.close()
 
 
-# def ps_run_test():
-#     ps: Optional[EdproPS] = None
-#     ri: Optional[RigolDevice] = None
+def ps_run_test():
+    ps: Optional[EdproPS] = None
+    ri: Optional[RigolDevice] = None
+    try:
+        ps, ri = _init_devices()
+        check(_test_vdc(ps, ri), "Test completed with errors")
+        check(_test_vac(ps, ri), "Test completed with errors")
+        check(_test_freq(ps, ri), "Test completed with errors")
+    except LoggedError:
+        pass
+    except Exception:
+        raise
+    finally:
+        _dispose_devices(ps, ri)
 
 
 def _run():
@@ -178,7 +211,7 @@ def _run():
         ps, ri = _init_devices()
         # check(_test_vdc(ps, ri), "Test completed with errors")
         # check(_test_vac(ps, ri), "Test completed with errors")
-        check(_test_fac(ps, ri), "Test completed with errors")
+        check(_test_freq(ps, ri), "Test completed with errors")
     except LoggedError:
         pass
     except Exception:

@@ -252,7 +252,6 @@ class PSValues:
     def __init__(self, U: float = 0, I: float = 0, F: float = 0):
         self.U = U
         self.I = I
-        self.F = F
 
 
 class EdproPS(EdproDevice):
@@ -263,13 +262,7 @@ class EdproPS(EdproDevice):
         r = self.request("v")
         if r.get("success") != "1":
             self.logger.throw("Request not succeed!")
-        u = float(r.get("U"))
-        i = float(r.get("I"))
-        if r.get("F") != None:
-            f = float(r["F"])
-        else:
-            f = 0
-        return PSValues(u, i, f)
+        return PSValues(float(r["U"]), float(r["I"]))
 
 
 class EdproMM(EdproDevice):
