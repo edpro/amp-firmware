@@ -54,13 +54,13 @@ def _test_freq(ps: EdproPS, ri: RigolDevice) -> bool:
         e_rel = e_abs / abs(ri_val)
         msg = f"U: {ps_val.U:0.3f} expected: {f} | actual: {ri_val:0f} | abs: {e_abs:0f} | rel: {e_rel * 100:0.2f}%"
 
-        if (f < 50):
+        if f < 50:
             rel_u = 0.3
-        elif (f < 100):
+        elif f < 100:
             rel_u = 0.05
-        elif (f < 10_000):
+        elif f < 10_000:
             rel_u = 0.02
-        elif (f < 100_000):
+        elif f < 100_000:
             rel_u = 0.03
         else:
             rel_u = 5.0
@@ -85,8 +85,8 @@ def _test_freq(ps: EdproPS, ri: RigolDevice) -> bool:
         else:
             f += 100_000
 
-    ps.cmd("mode dc")
     ps.cmd("set l 0")
+    ps.cmd("set f 1000")
     print_table("F(AC) test result:", records)
 
     return all_succeed
@@ -102,7 +102,9 @@ def _test_vac(ps: EdproPS, ri: RigolDevice) -> bool:
     records: List[Tuple[bool, str]] = []
     all_succeed = True
 
-    for level in range(0, 31, 2):
+    levels = [l for l in range(0, 30, 2)] + [0, 30, 0]
+
+    for level in levels:
         ps.cmd(f"set l {level}")
         time.sleep(0.2)
         ps_val = ps.request_values()
@@ -122,8 +124,6 @@ def _test_vac(ps: EdproPS, ri: RigolDevice) -> bool:
             all_succeed = False
             logger.error(msg)
 
-    ps.cmd("mode dc")
-    ps.cmd("set l 0")
     print_table("V(AC) test result (1000Hz):", records)
 
     return all_succeed
@@ -138,7 +138,9 @@ def _test_vdc(ps: EdproPS, ri: RigolDevice) -> bool:
     records: List[Tuple[bool, str]] = []
     all_succeed = True
 
-    for level in range(0, 51, 2):
+    levels = [l for l in range(0, 50, 2)] + [0, 50, 0]
+
+    for level in levels:
         ps.cmd(f"set l {level}")
         ps_val = ps.request_values()
         ri_val = ri.measure_vdc()
@@ -157,8 +159,6 @@ def _test_vdc(ps: EdproPS, ri: RigolDevice) -> bool:
             all_succeed = False
             logger.error(msg)
 
-    ps.cmd("mode dc")
-    ps.cmd("set l 0")
     print_table("V(DC) test result:", records)
 
     return all_succeed
@@ -210,8 +210,8 @@ def _run():
     try:
         ps, ri = _init_devices()
         # check(_test_vdc(ps, ri), "Test completed with errors")
-        # check(_test_vac(ps, ri), "Test completed with errors")
-        check(_test_freq(ps, ri), "Test completed with errors")
+        check(_test_vac(ps, ri), "Test completed with errors")
+        # check(_test_freq(ps, ri), "Test completed with errors")
     except LoggedError:
         pass
     except Exception:
