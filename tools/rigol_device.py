@@ -13,6 +13,7 @@ class RigolMode(Enum):
     VDC_20 = ":MEASure:VOLTage:DC 2"
     VAC_2 = ":MEASure:VOLTage:AC 1"
     VAC_20 = ":MEASure:VOLTage:AC 2"
+    FREQ_20 = ":MEASure:FREQuency 2"
 
 
 # noinspection PyPep8Naming
@@ -68,6 +69,9 @@ class RigolDevice:
         response = self._ask(":MEASure:VOLTage:AC?")
         return float(response)
 
+    def measure_freq(self) -> float:
+        response = self._ask(":MEASure:FREQuency?")
+        return float(response)
 
 def test():
     device = RigolDevice()
