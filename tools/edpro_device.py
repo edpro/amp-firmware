@@ -38,6 +38,7 @@ class EdproDevice:
         self.log_mode = False
         self.tag = tag
         self.logger = Logger(tag)
+        self.trace_commands = True
         self.logger.info("init")
         self._port: Optional[str] = None
         self._serial: Optional[serial.Serial] = None
@@ -158,7 +159,7 @@ class EdproDevice:
         self._uart_written = True
 
     def request(self, cmd: str, wait: bool = True, trace: bool = True) -> Dict[str, str]:
-        if trace:
+        if self.trace_commands and trace:
             self.logger.trace(f"<- '{cmd}'")
 
         with self._lock:
@@ -187,7 +188,7 @@ class EdproDevice:
                 response = decode_response(self._response)
                 break
 
-        if trace:
+        if self.trace_commands and trace:
             self.logger.trace(f"-> {str(response)}")
         return response
 

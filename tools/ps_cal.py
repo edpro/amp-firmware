@@ -119,9 +119,9 @@ def ps_run_calibration():
 
     try:
         ps, ri = _init_devices()
+        is_done = False
 
-        choise = prompt("Connect wires to powersource output. <Enter> - continue, <s> - skip: ")
-        done = False
+        choise = prompt("Connect Rigol to Powersource output. <Enter> - continue, <s> - skip: ")
 
         if choise == "":
             while True:
@@ -130,7 +130,7 @@ def ps_run_calibration():
                     _cal_adc0(ps)
                     _cal_vac(ps, ri)
                     _cal_aac0(ps)
-                    done = True
+                    is_done = True
                     break
                 except LoggedError:
                     choise = prompt("<Enter> - continue, <r> - retry: ")
@@ -139,13 +139,14 @@ def ps_run_calibration():
                 except Exception:
                     raise
 
-        choise = prompt("Connect wires to 1Ω resistor. <Enter> - continue, <s> - skip: ")
+        choise = prompt("Connect Rigol to 1Ω resistor. <Enter> - continue, <s> - skip: ")
+
         if choise == "":
             while True:
                 try:
                     _cal_adc(ps, ri)
                     _cal_aac(ps, ri)
-                    done = True
+                    is_done = True
                     break
                 except LoggedError:
                     choise = prompt("<Enter> - continue, <r> - retry: ")
@@ -154,7 +155,7 @@ def ps_run_calibration():
                 except Exception:
                     raise
 
-        if done:
+        if is_done:
             ps.cmd("conf s")
             logger.success()
     except LoggedError:
