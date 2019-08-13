@@ -1,4 +1,5 @@
 .date
 .vscode
+__pycache__
 /images/multimeter/*.bin
 /images/powersource/*.bin
