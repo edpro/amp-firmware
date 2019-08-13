@@ -12,7 +12,7 @@ def erel(expected: float, actual: float) -> float:
     return abs(expected - actual) / max(abs(expected), abs(actual))
 
 
-class TestRecorder:
+class TestReporter:
     def __init__(self, tag: str):
         self.tag = tag
         self.records: List[Tuple[int, str]] = []
