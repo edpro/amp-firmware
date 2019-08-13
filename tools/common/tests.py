@@ -37,7 +37,7 @@ class TestReporter:
         if e <= err:
             return
         self.success = False
-        self.add_err_line(f"Error: relatime error ({e:0.6f}) must be less then {err:0.6f}")
+        self.add_err_line(f"Error: relative error ({e:0.6f}) must be less then {err:0.6f}")
         self.add_err_line(f"    expected: {expected:0.6f}")
         self.add_err_line(f"    actual:   {actual:0.6f}")
 

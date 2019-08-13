@@ -60,7 +60,7 @@ def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolDevice]):
 
 
 def test_v_dc(ps: EdproPS, ri: RigolDevice) -> bool:
-    t = TestReporter("test_vds")
+    rec = TestReporter("test_vds")
     ri.mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 0")
@@ -76,15 +76,15 @@ def test_v_dc(ps: EdproPS, ri: RigolDevice) -> bool:
         ri_val = ri.measure_vdc()
         ea = eabs(ps_val, ri_val)
         er = erel(ps_val, ri_val)
-        t.trace(f"step: {step_u:0.1f}V | ps: {ps_val:0.6f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
+        rec.trace(f"step: {step_u:0.1f}V | ps: {ps_val:0.6f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         if level == 0:
-            t.expect_abs(ps_val, ri_val, VDC_ZERO_ABS)
+            rec.expect_abs(ps_val, ri_val, VDC_ZERO_ABS)
         else:
-            t.expect_abs(step_u, ps_val, VDC_STEP_ABS)
-            t.expect_rel(ps_val, ri_val, 2 * VDC_REL)
+            rec.expect_abs(step_u, ps_val, VDC_STEP_ABS)
+            rec.expect_rel(ps_val, ri_val, 2 * VDC_REL)
 
-    t.print_result()
-    return t.success
+    rec.print_result()
+    return rec.success
 
 
 def test_v_ac(ps: EdproPS, ri: RigolDevice) -> bool:
@@ -176,7 +176,7 @@ def test_a_dc(ps: EdproPS, ri: RigolDevice) -> bool:
     for level in levels:
         step_u = 0.1 * level
         ps.cmd(f"set l {level}")
-        time.sleep(0.05)
+        time.sleep(0.1)
         ps_val = ps.request_values()
         ri_val = ri.measure_vdc()
         ea = eabs(ps_val.I, ri_val)
@@ -184,8 +184,10 @@ def test_a_dc(ps: EdproPS, ri: RigolDevice) -> bool:
         t.trace(f"step: {step_u:0.1f}V | U: {ps_val.U:0.3f} I: {ps_val.I:0.3f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         t.expect_abs(step_u, ps_val.U, VDC_STEP_ABS)
         if level == 0:
+            t.expect_abs(0, ri_val, 0.01)
             t.expect_abs(ri_val, ps_val.I, ADC_ZERO_ABS)
         else:
+            t.expect_rel(ps_val.U / CIRCUIT_R, ri_val, 0.05)
             t.expect_rel(ri_val, ps_val.I, ADC_REL)
 
     t.print_result()
