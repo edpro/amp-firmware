@@ -221,6 +221,8 @@ def test_a_ac(ps: EdproPS, ri: RigolDevice) -> bool:
             f"step: {step_u:0.1f}V | U: {ps_val.U:0.3f} I: {ps_val.I:0.3f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         t.expect_abs(step_u, ps_val.U, VAC_STEP_ABS)
         t.expect_abs(ri_val, ps_val.I, AAC_ABS)
+        if level > 0:
+            t.expect_rel(ps_val.U / CIRCUIT_R, ri_val, 0.1)
 
     t.print_result()
     return t.success
