@@ -28,24 +28,25 @@ def usb_find_writer(interface):
     )
 
 
-class OwonGenerator:
+class OwonPowerSupply:
     """
-    handles communication with OWON generator
-    https://www.owon.com.hk/products_owon_1-ch_low_frequency_arbitrary_waveform_generator
-    http://files.owon.com.cn/software/Application/AG_Series_Waveform_Generator_SCPI_Protocol.pdf
+    handles communication with OWON ODP3031 programmable power supply
+    http://files.owon.com.cn/probook/ODP3031_Power_Supply_USER_MANUAL.pdf
     """
+
     def __init__(self):
         self._device: Optional[usb.core.Device] = None
         self._reader = None
         self._writer = None
 
     def connect(self):
+
         logger.info("connect")
 
         def matcher(d):
             return d.idVendor == 0x5345 \
                    and d.idProduct == 0x1234 \
-                   and d.serial_number.startswith("AG051")
+                   and d.serial_number.startswith("ODP3031")
 
         found_list = list(usb.core.find(find_all=True, custom_match=matcher))
 
@@ -74,8 +75,6 @@ class OwonGenerator:
         rec_arr: array = self._reader.read(length, READ_TIMEOUT)
         bb: bytearray = rec_arr.tobytes()
         text = bb.decode()
-        if text.endswith("->\n"):
-            text = text[0:-4]
         logger.trace(f"-> {text}")
         return text
 
@@ -83,47 +82,18 @@ class OwonGenerator:
         logger.info("disconnect")
         usb.util.release_interface(self._device, INTERFACE_NUM)
 
-    # def set_output_off(self):
-    #     self.write()
-
-    def set_ac(self, amp: int, freq: int):
-        self.write(f":FUNC:SINE:FREQ {freq}")
-        self.read(BUF_SIZE)
-        self.write(f":FUNC:SINE:AMPL {amp}")
-        self.read(BUF_SIZE)
-
-    def set_dc(self, voltage: int):
-        self.write(f":FUNCtion:ARB:BUILtinwform 39")
-        self.read(BUF_SIZE)
-        self.write(f":FUNCtion:ARB:BUILtinwform?")  # DC,39
-        self.read(BUF_SIZE)
-        self.write(f":FUNCtion:ARB:offset {voltage}")
-        self.read(BUF_SIZE)
-
-    def set_on(self):
-        self.write(f":CHANnel:CH1 ON")
-        self.read(BUF_SIZE)
-
-    def set_off(self):
-        self.write(f":CHANnel:CH1 OFF")
-        self.read(BUF_SIZE)
-
-    def reset(self):
-        self.write(f"*RST")
-        self.read(BUF_SIZE)
-
     def get_info(self):
         self.write(f"*IDN?")
         self.read(BUF_SIZE)
 
 
 def _run():
-    dev = OwonGenerator()
+    dev = OwonPowerSupply()
     dev.connect()
     dev.get_info()
-    dev.reset()
+    # dev.reset()
     # dev.set_ac(2, 500)
-    dev.set_dc(3)
+    # dev.set_dc(3)
     # dev.set_on()
     dev.close()
 
