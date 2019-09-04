@@ -5,7 +5,7 @@ import usb.util
 
 from tools.common.logger import Logger, LoggedError
 
-logger = Logger("gen")
+logger = Logger("ow_gen")
 
 READ_TIMEOUT = 5000
 INTERFACE_NUM = 0
@@ -42,10 +42,10 @@ class OwonGenerator:
     def connect(self):
         logger.info("connect")
 
-        def matcher(d):
-            return d.idVendor == 0x5345 \
-                   and d.idProduct == 0x1234 \
-                   and d.serial_number.startswith("AG051")
+        def matcher(it):
+            return it.idVendor == 0x5345 \
+                   and it.idProduct == 0x1234 \
+                   and it.serial_number.startswith("AG051")
 
         found_list = list(usb.core.find(find_all=True, custom_match=matcher))
 
@@ -81,7 +81,7 @@ class OwonGenerator:
 
     def close(self):
         logger.info("disconnect")
-        if self._device != None:
+        if self._device is not None:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def set_ac(self, amp: int, freq: int):
