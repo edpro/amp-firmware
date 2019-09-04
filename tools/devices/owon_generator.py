@@ -1,4 +1,3 @@
-import time
 from array import array
 from typing import Optional
 
@@ -16,26 +15,25 @@ BUF_SIZE = 1024
 def usb_find_reader(interface):
     return usb.util.find_descriptor(
         interface,
-        # match the first IN endpoint
-        custom_match=(
-            lambda e:
-            usb.util.endpoint_direction(e.bEndpointAddress) ==
-            usb.util.ENDPOINT_IN)
+        custom_match=lambda e:
+        usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_IN
     )
 
 
 def usb_find_writer(interface):
     return usb.util.find_descriptor(
         interface,
-        # match the first OUT endpoint
-        custom_match=(
-            lambda e:
-            usb.util.endpoint_direction(e.bEndpointAddress) ==
-            usb.util.ENDPOINT_OUT)
+        custom_match=lambda e:
+        usb.util.endpoint_direction(e.bEndpointAddress) == usb.util.ENDPOINT_OUT
     )
 
 
-class USBSource:
+class OwonGenerator:
+    """
+    handles communication with OWON generator
+    https://www.owon.com.hk/products_owon_1-ch_low_frequency_arbitrary_waveform_generator
+    http://files.owon.com.cn/software/Application/AG_Series_Waveform_Generator_SCPI_Protocol.pdf
+    """
     def __init__(self):
         self._device: Optional[usb.core.Device] = None
         self._reader = None
@@ -61,13 +59,12 @@ class USBSource:
     def write(self, cmd: str):
         logger.trace(f"<- {cmd}")
         self._writer.write(cmd.encode())
-        self._writer.write(b"\n")
 
     def read(self, length) -> str:
         rec_arr: array = self._reader.read(length, READ_TIMEOUT)
         bb: bytearray = rec_arr.tobytes()
         text = bb.decode()
-        if text.endswith("\n->\n"):
+        if text.endswith("->\n"):
             text = text[0:-4]
         logger.trace(f"-> {text}")
         return text
@@ -80,19 +77,44 @@ class USBSource:
     #     self.write()
 
     def set_ac(self, amp: int, freq: int):
-        self.write(f":FUNC:SINE")
         self.write(f":FUNC:SINE:FREQ {freq}")
+        self.read(BUF_SIZE)
         self.write(f":FUNC:SINE:AMPL {amp}")
+        self.read(BUF_SIZE)
+
+    def set_dc(self, voltage: int):
+        self.write(f":FUNCtion:ARB:BUILtinwform 39")
+        self.read(BUF_SIZE)
+        self.write(f":FUNCtion:ARB:BUILtinwform?")  # DC,39
+        self.read(BUF_SIZE)
+        self.write(f":FUNCtion:ARB:offset {voltage}")
+        self.read(BUF_SIZE)
+
+    def set_on(self):
+        self.write(f":CHANnel:CH1 ON")
+        self.read(BUF_SIZE)
+
+    def set_off(self):
+        self.write(f":CHANnel:CH1 OFF")
+        self.read(BUF_SIZE)
+
+    def reset(self):
+        self.write(f"*RST")
+        self.read(BUF_SIZE)
+
+    def get_info(self):
+        self.write(f"*IDN?")
+        self.read(BUF_SIZE)
 
 
 def _run():
-    dev = USBSource()
+    dev = OwonGenerator()
     dev.connect()
-    # dev.write("*RST")
-    dev.write("*IDN?")
-    dev.read(BUF_SIZE)
-    time.sleep(1)
-    dev.set_ac(2, 500)
+    dev.get_info()
+    dev.reset()
+    # dev.set_ac(2, 500)
+    dev.set_dc(3)
+    # dev.set_on()
     dev.close()
 
 
