@@ -5,7 +5,7 @@ import usb.util
 
 from tools.common.logger import Logger, LoggedError
 
-logger = Logger("ow_pwr")
+logger = Logger("ow_power")
 
 READ_TIMEOUT = 5000
 INTERFACE_NUM = 0

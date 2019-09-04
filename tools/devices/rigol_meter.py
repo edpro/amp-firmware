@@ -5,7 +5,7 @@ import usbtmc
 
 from tools.common.logger import LoggedError, Logger
 
-logger = Logger("ri_mtr")
+logger = Logger("ri_meter")
 
 
 class RigolMode(Enum):
