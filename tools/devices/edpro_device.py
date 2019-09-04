@@ -246,13 +246,9 @@ class EdproDevice:
 
 
 class PSValues:
-    U: float
-    I: float
-    F: float
-
-    def __init__(self, U: float = 0, I: float = 0, F: float = 0):
-        self.U = U
-        self.I = I
+    def __init__(self, U: float = 0, I: float = 0):
+        self.U: float = U
+        self.I: float = I
 
 
 class EdproPS(EdproDevice):

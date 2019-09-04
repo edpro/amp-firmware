@@ -17,7 +17,7 @@ class RigolMode(Enum):
 
 
 # noinspection PyPep8Naming
-class RigolDevice:
+class RigolMeter:
     """
     handles communication with RIGOL multimeter
     USB lib: https://github.com/python-ivi/python-usbtmc
@@ -74,7 +74,7 @@ class RigolDevice:
         return float(response)
 
 def test():
-    device = RigolDevice()
+    device = RigolMeter()
     device.connect()
     device.mode(RigolMode.VDC_20)
     device.measure_vdc()

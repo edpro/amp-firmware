@@ -3,8 +3,8 @@ from typing import Tuple, Optional
 
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import prompt
-from tools.edpro_device import EdproPS
-from tools.rigol_device import RigolDevice, RigolMode
+from tools.devices.edpro_device import EdproPS
+from tools.devices.rigol_meter import RigolMeter, RigolMode
 
 logger = Logger("ps_cal")
 
@@ -14,7 +14,7 @@ def check(val: bool, message: str):
         logger.throw(message)
 
 
-def _cal_vdc(ps: EdproPS, ri: RigolDevice):
+def _cal_vdc(ps: EdproPS, ri: RigolMeter):
     logger.info("calibrate VDC:")
 
     ri.mode(RigolMode.VDC_20)
@@ -89,9 +89,9 @@ def _cal_aac(ps, ri):
     ps.cmd(f"cal aac {v:0.6f}")
 
 
-def _init_devices() -> Tuple[EdproPS, RigolDevice]:
+def _init_devices() -> Tuple[EdproPS, RigolMeter]:
     # init rigol
-    rigol = RigolDevice()
+    rigol = RigolMeter()
     rigol.connect()
 
     # init powersource
@@ -108,14 +108,14 @@ def _init_devices() -> Tuple[EdproPS, RigolDevice]:
     return ps, rigol
 
 
-def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolDevice]):
+def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolMeter]):
     if ps: ps.close()
     if ri: ri.close()
 
 
 def ps_run_calibration():
     ps: Optional[EdproPS] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
 
     try:
         ps, ri = _init_devices()
@@ -168,7 +168,7 @@ def ps_run_calibration():
 
 def _run():
     ps: Optional[EdproPS] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
     try:
         ps, ri = _init_devices()
         _cal_adc0(ps)

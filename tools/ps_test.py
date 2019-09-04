@@ -4,8 +4,8 @@ from typing import Tuple, Optional
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import prompt
 from tools.common.tests import TestReporter, erel, eabs
-from tools.edpro_device import EdproPS
-from tools.rigol_device import RigolDevice, RigolMode
+from tools.devices.edpro_device import EdproPS
+from tools.devices.rigol_meter import RigolMeter, RigolMode
 
 logger = Logger("ps_test")
 
@@ -36,9 +36,9 @@ def wait_mode():
     time.sleep(1)
 
 
-def _init_devices() -> Tuple[EdproPS, RigolDevice]:
+def _init_devices() -> Tuple[EdproPS, RigolMeter]:
     # init rigol
-    rigol = RigolDevice()
+    rigol = RigolMeter()
     rigol.connect()
 
     # init powersource
@@ -56,12 +56,12 @@ def _init_devices() -> Tuple[EdproPS, RigolDevice]:
     return ps, rigol
 
 
-def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolDevice]):
+def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolMeter]):
     if ps: ps.close()
     if ri: ri.close()
 
 
-def test_v_dc(ps: EdproPS, ri: RigolDevice) -> bool:
+def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
     rec = TestReporter("test_vds")
     ri.mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
@@ -90,7 +90,7 @@ def test_v_dc(ps: EdproPS, ri: RigolDevice) -> bool:
     return rec.success
 
 
-def test_v_ac(ps: EdproPS, ri: RigolDevice) -> bool:
+def test_v_ac(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("test_vac")
     ri.mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
@@ -120,7 +120,7 @@ def test_v_ac(ps: EdproPS, ri: RigolDevice) -> bool:
     return t.success
 
 
-def test_freq(ps: EdproPS, ri: RigolDevice) -> bool:
+def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
     level = 30
     t = TestReporter("test_fr")
     ri.mode(RigolMode.FREQ_20)
@@ -168,7 +168,7 @@ def test_freq(ps: EdproPS, ri: RigolDevice) -> bool:
     return t.success
 
 
-def test_a_dc(ps: EdproPS, ri: RigolDevice) -> bool:
+def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_adc")
     ri.mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
@@ -199,7 +199,7 @@ def test_a_dc(ps: EdproPS, ri: RigolDevice) -> bool:
     return t.success
 
 
-def test_a_ac(ps: EdproPS, ri: RigolDevice) -> bool:
+def test_a_ac(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_aac")
     ri.mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
@@ -230,7 +230,7 @@ def test_a_ac(ps: EdproPS, ri: RigolDevice) -> bool:
 
 def ps_run_test():
     ps: Optional[EdproPS] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
     try:
         ps, ri = _init_devices()
 
@@ -273,7 +273,7 @@ def ps_run_test():
 
 def _run():
     ps: Optional[EdproPS] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
     try:
         ps, ri = _init_devices()
         # check(test_v_dc(ps, ri), "Test Failed!")

@@ -1,15 +1,16 @@
 from typing import Tuple, Optional
 
 from tools.common.logger import Logger, LoggedError
-from tools.edpro_device import EdproMM
-from tools.rigol_device import RigolDevice
+from tools.devices.edpro_device import EdproMM
+from tools.devices.rigol_meter import RigolMeter
+
 
 logger = Logger("mm_cal")
 
 
-def _init_devices() -> Tuple[EdproMM, RigolDevice]:
+def _init_devices() -> Tuple[EdproMM, RigolMeter]:
     # init rigol
-    rigol = RigolDevice()
+    rigol = RigolMeter()
     rigol.connect()
 
     # init powersource
@@ -26,14 +27,14 @@ def _init_devices() -> Tuple[EdproMM, RigolDevice]:
     return mm, rigol
 
 
-def _dispose_devices(ps: Optional[EdproMM], ri: Optional[RigolDevice]):
+def _dispose_devices(ps: Optional[EdproMM], ri: Optional[RigolMeter]):
     if ps: ps.close()
     if ri: ri.close()
 
 
 def mm_run_calibration():
     mm: Optional[EdproMM] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
 
     try:
         mm, ri = _init_devices()
@@ -49,7 +50,7 @@ def mm_run_calibration():
 
 def _run():
     mm: Optional[EdproMM] = None
-    ri: Optional[RigolDevice] = None
+    ri: Optional[RigolMeter] = None
     try:
         mm, ri = _init_devices()
     except LoggedError:

@@ -1,6 +1,6 @@
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
-from tools.edpro_device import EdproMM
+from tools.devices.edpro_device import EdproMM
 from tools.mm_cal import mm_run_calibration
 
 

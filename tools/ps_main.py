@@ -1,6 +1,6 @@
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
-from tools.edpro_device import EdproPS
+from tools.devices.edpro_device import EdproPS
 from tools.ps_cal import ps_run_calibration
 from tools.ps_test import ps_run_test
 

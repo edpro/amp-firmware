@@ -28,7 +28,7 @@ def usb_find_writer(interface):
     )
 
 
-class OwonPowerSupply:
+class OwonPower:
     """
     handles communication with OWON ODP3031 programmable power supply
     http://files.owon.com.cn/probook/ODP3031_Power_Supply_USER_MANUAL.pdf
@@ -88,7 +88,7 @@ class OwonPowerSupply:
 
 
 def _run():
-    dev = OwonPowerSupply()
+    dev = OwonPower()
     dev.connect()
     dev.get_info()
     # dev.reset()
