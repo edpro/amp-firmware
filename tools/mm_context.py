@@ -1,6 +1,6 @@
 import time
 
-from tools.common.logger import LoggedError, Logger
+from tools.common.logger import Logger, LoggedError
 from tools.devices.edpro_device import EdproMM
 from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
@@ -43,8 +43,8 @@ def run_test():
         time.sleep(1)
     except LoggedError:
         pass
-    except Exception as e:
-        raise e
+    except Exception:
+        raise
     finally:
         c.dispose()
 

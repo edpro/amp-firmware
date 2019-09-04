@@ -8,6 +8,7 @@ from tools.devices.rigol_meter import RigolMeter
 
 logger = Logger("ps_context")
 
+
 class PSContext:
     def __init__(self):
         self.ps: EdproPS = EdproPS()
@@ -42,10 +43,11 @@ def run_test():
         time.sleep(1)
     except LoggedError:
         pass
-    except:
+    except Exception:
         raise
     finally:
         c.dispose()
+
 
 if __name__ == "__main__":
     run_test()
