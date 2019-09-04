@@ -53,7 +53,7 @@ class OwonGenerator:
             logger.trace(f'found: {d.manufacturer} {d.product} {d.serial_number}')
 
         if len(found_list) == 0:
-            logger.throw("Device not found!")
+            logger.throw("Cannot find device: OWON-AG051")
         elif len(found_list) > 1:
             logger.throw("Too much devices found!")
 
@@ -81,10 +81,8 @@ class OwonGenerator:
 
     def close(self):
         logger.info("disconnect")
-        usb.util.release_interface(self._device, INTERFACE_NUM)
-
-    # def set_output_off(self):
-    #     self.write()
+        if self._device != None:
+            usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def set_ac(self, amp: int, freq: int):
         self.write(f":FUNC:SINE:FREQ {freq}")

@@ -5,7 +5,7 @@ import usb.util
 
 from tools.common.logger import Logger, LoggedError
 
-logger = Logger("gen")
+logger = Logger("pwr")
 
 READ_TIMEOUT = 5000
 INTERFACE_NUM = 0
@@ -54,7 +54,7 @@ class OwonPower:
             logger.trace(f'found: {d.manufacturer} {d.product} {d.serial_number}')
 
         if len(found_list) == 0:
-            logger.throw("Device not found!")
+            logger.throw("Cannot find device: OWON-ODP3031")
         elif len(found_list) > 1:
             logger.throw("Too much devices found!")
 
@@ -80,7 +80,8 @@ class OwonPower:
 
     def close(self):
         logger.info("disconnect")
-        usb.util.release_interface(self._device, INTERFACE_NUM)
+        if self._device != None:
+            usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def get_info(self):
         self.write(f"*IDN?")

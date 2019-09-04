@@ -26,24 +26,25 @@ class RigolMeter:
     """
 
     def __init__(self):
-        self.device: Optional[usbtmc.Instrument] = None
+        self._device: Optional[usbtmc.Instrument] = None
 
     def connect(self):
         logger.info("connect")
         try:
-            self.device = usbtmc.Instrument(0x1AB1, 0x09C4)
+            self._device = usbtmc.Instrument(0x1AB1, 0x09C4)
         except Exception as e:
             logger.throw(str(e))
         self._ask("*IDN?")
 
     def close(self):
-        if self.device:
-            self.device.close()
+        logger.info("disconnect")
+        if self._device:
+            self._device.close()
 
     def _write(self, cmd: str):
         logger.trace(f"<- {cmd}")
         try:
-            self.device.write(cmd)
+            self._device.write(cmd)
         except Exception as e:
             logger.throw(e)
 
@@ -51,7 +52,7 @@ class RigolMeter:
         logger.trace(f"<- {cmd}")
         response = ""
         try:
-            response = self.device.ask(cmd)
+            response = self._device.ask(cmd)
             logger.trace(f"-> {response}")
         except Exception as e:
             logger.throw(e)
@@ -72,6 +73,7 @@ class RigolMeter:
     def measure_freq(self) -> float:
         response = self._ask(":MEASure:FREQuency?")
         return float(response)
+
 
 def test():
     device = RigolMeter()

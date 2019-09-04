@@ -140,10 +140,9 @@ class EdproDevice:
             self._rx_thread.join()
 
     def close(self):
+        self.logger.info("disconnect")
         if self._serial is None:
             return
-
-        self.logger.info("disconnect")
         self._stop_reader()
 
         # to prevent device being in reset state after serial.Close()
