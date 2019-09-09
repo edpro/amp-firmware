@@ -52,12 +52,13 @@ def _test_vac(c: MMContext):
 
             time.sleep(1.0)
 
-            c.meter.measure_vac() # duty cycle
+            c.meter.measure_vac()  # duty cycle
             expected = c.meter.measure_vac()
             actual = c.mm.request_value()
             ea = eabs(expected, actual)
             er = erel(expected, actual)
-            t.trace(f"f: {freq}Hz | v: {v}V | expected: {expected:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
+            t.trace(
+                f"f: {freq}Hz | v: {v}V | expected: {expected:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
             t.expect_abs_rel(expected, actual, 0.02, 0.04)
 
     t.print_result()
