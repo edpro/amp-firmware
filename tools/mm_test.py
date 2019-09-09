@@ -28,21 +28,36 @@ def _test_vac(c: MMContext):
     t = TestReporter("test_vac")
     check(c.mm.request_mode() == "VAC", "Require multimeter is in VAC mode")
 
+    rigol_mode = RigolMode.VAC_2
+    c.meter.mode(rigol_mode)
+    c.gen.set_ac(0.001, 50)
+    time.sleep(1)
+
     for freq in [50, 100, 1_000, 10_000, 20_000, 40_000, 80_000]:
         for v in [0, 0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]:
 
-            if v < 1.5: c.meter.mode(RigolMode.VAC_2)
-            else: c.meter.mode(RigolMode.VAC_20)
+            if v <= 1:
+                if rigol_mode != RigolMode.VAC_2:
+                    rigol_mode = RigolMode.VAC_2
+                    c.meter.mode(rigol_mode)
+            else:
+                if rigol_mode != RigolMode.VAC_20:
+                    rigol_mode = RigolMode.VAC_20
+                    c.meter.mode(rigol_mode)
 
-            if v == 0: c.gen.set_ac(0.001, freq)
-            else: c.gen.set_ac(to_amp(v), freq)
+            if v == 0:
+                c.gen.set_ac(0.001, freq)
+            else:
+                c.gen.set_ac(to_amp(v), freq)
 
-            time.sleep(0.1)
+            time.sleep(1.0)
+
+            c.meter.measure_vac() # duty cycle
             expected = c.meter.measure_vac()
             actual = c.mm.request_value()
             ea = eabs(expected, actual)
             er = erel(expected, actual)
-            t.trace(f"f: {freq}Hz | expected: {expected:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
+            t.trace(f"f: {freq}Hz | v: {v}V | expected: {expected:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
             t.expect_abs_rel(expected, actual, 0.02, 0.04)
 
     t.print_result()
