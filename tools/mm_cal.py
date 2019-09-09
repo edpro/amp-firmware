@@ -37,7 +37,7 @@ def _cal_vac_values(c: MMContext):
     # point 1
     expected_v = 0.1
     c.gen.set_ac(to_amp(expected_v), freq)
-    time.sleep(0.5)
+    time.sleep(1.0)
     actual_v = c.meter.measure_vac()
     check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 0.1V")
     c.mm.cmd(f"cal vac 1 {actual_v:0.6f}")
@@ -45,7 +45,7 @@ def _cal_vac_values(c: MMContext):
     # point 2
     expected_v = 1.0
     c.gen.set_ac(to_amp(expected_v), freq)
-    time.sleep(0.5)
+    time.sleep(1.0)
     actual_v = c.meter.measure_vac()
     check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 1.0V")
     c.mm.cmd(f"cal vac 2 {actual_v:0.6f}")
@@ -53,7 +53,7 @@ def _cal_vac_values(c: MMContext):
     # point 3
     expected_v = from_amp(25)  # maximum GENERATOR amplitude
     c.gen.set_ac(to_amp(expected_v), freq)
-    time.sleep(0.5)
+    time.sleep(1.0)
     actual_v = c.meter.measure_vac()
     check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 10V")
     c.mm.cmd(f"cal vac 3 {actual_v:0.6f}")
@@ -141,7 +141,7 @@ def main():
     try:
         ctx.init()
         # _cal_ac0(ctx)
-        _cal_vac_values(ctx)
+        # _cal_vac_values(ctx)
         logger.success()
     except LoggedError:
         pass
