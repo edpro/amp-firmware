@@ -77,7 +77,6 @@ def mm_run_cal_vac():
     try:
         c.init()
         _cal_vac(c)
-        logger.success()
     except LoggedError:
         pass
     except Exception:
@@ -91,7 +90,6 @@ def mm_run_cal_vdc():
     try:
         c.init()
         # _cal_vac(c)
-        logger.success()
     except LoggedError:
         pass
     except Exception:
