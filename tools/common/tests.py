@@ -23,6 +23,23 @@ class TestReporter:
         self.records.append((1, text))
         print_color(f'[{self.tag}] {text}', Colors.LIGHT_RED)
 
+    def expect_abs_rel(self, expected: float, actual: float, abs: float, rel: float):
+        ea = eabs(expected, actual)
+        er = erel(expected, actual)
+        if ea <= abs or er <= rel:
+            return
+        
+        if ea > abs:
+            self.success = False
+            self.add_err_line(f"Error: absolute error ({ea:0.6f}) must be less then {abs:0.6f}")
+            self.add_err_line(f"    expected: {expected:0.6f}")
+            self.add_err_line(f"    actual:   {actual:0.6f}")
+        else:
+            self.success = False
+            self.add_err_line(f"Error: relative error ({er:0.6f}) must be less then {rel:0.6f}")
+            self.add_err_line(f"    expected: {expected:0.6f}")
+            self.add_err_line(f"    actual:   {actual:0.6f}")
+
     def expect_abs(self, expected: float, actual: float, err: float):
         e = eabs(expected, actual)
         if e <= err:

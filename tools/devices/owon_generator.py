@@ -84,7 +84,7 @@ class OwonGenerator:
         if self._device is not None:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 
-    def set_ac(self, amp: int, freq: int):
+    def set_ac(self, amp: float, freq: int):
         self.write(f":FUNC:SINE:FREQ {freq}")
         self.read(BUF_SIZE)
         self.write(f":FUNC:SINE:AMPL {amp}")

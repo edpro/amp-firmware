@@ -18,7 +18,7 @@ class MMContext:
 
     def init(self):
         self.meter.connect()
-        self.power.connect()
+        # self.power.connect()
         self.gen.connect()
 
         self.mm.connect()

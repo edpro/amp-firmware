@@ -265,6 +265,14 @@ class EdproMM(EdproDevice):
     def __init__(self):
         super().__init__("mm")
 
+    def request_mode(self) -> str:
+        response = self.request("mode")
+        return response["mode"]
+
+    def request_value(self) -> float:
+        response = self.request("v")
+        return float(response["value"])
+
 
 def test():
     device = EdproPS()
