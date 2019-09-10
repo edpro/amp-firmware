@@ -1,6 +1,6 @@
 import threading
 import time
-from typing import Optional, Dict
+from typing import Optional, Dict, NamedTuple
 
 import serial
 
@@ -31,6 +31,11 @@ def decode_response(raw: str) -> Dict[str, str]:
     return result
 
 
+class EInfoResult(NamedTuple):
+    name: str
+    version: str
+
+
 class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
@@ -39,7 +44,6 @@ class EdproDevice:
         self.tag = tag
         self.logger = Logger(tag)
         self.trace_commands = True
-        self.logger.info("init")
         self._port: Optional[str] = None
         self._serial: Optional[serial.Serial] = None
         self._rx_thread: Optional[threading.Thread] = None
@@ -245,6 +249,10 @@ class EdproDevice:
         except Exception:
             self.close()
             raise
+
+    def request_info(self) -> EInfoResult:
+        r = self.request("i")
+        return EInfoResult(name=r["name"], version=r["version"])
 
 
 class PSValues:
