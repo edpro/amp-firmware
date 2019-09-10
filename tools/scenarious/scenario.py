@@ -13,6 +13,7 @@ class Scenario:
     def __init__(self, tag: str):
         self.tag: str = tag
         self.logger: Logger = Logger(tag)
+        self.success: bool = True
 
         self.edpro_mm: EdproMM = EdproMM()
         self.edpro_ps: EdproPS = EdproPS()
@@ -89,21 +90,23 @@ class Scenario:
             self.generator.close()
 
     def run(self):
-        success = False
         self.logger.print(Colors.GREEN, "begin")
+
         try:
             self.on_run()
-            success = True
         except LoggedError:
+            self.success = False
             pass
         except Exception:
+            self.success = False
             raise
         finally:
             self._dispose()
-        if success:
+
+        if self.success:
             self.logger.print(Colors.GREEN, "OK")
         else:
-            self.logger.print(Colors.LIGHT_RED, "Scenario FAILED")
+            self.logger.print(Colors.LIGHT_RED, "Test FAILED!")
 
 
 class TestScenario(Scenario):

@@ -1,4 +1,4 @@
-from tools.common.tests import eabs, erel
+from tools.common.tests import eabs, erel, TestReporter
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
@@ -24,6 +24,8 @@ class MMTestVDC(Scenario):
         t.power.set_volt(0)
         t.wait(1)
 
+        r = TestReporter(t.tag)
+
         for v in [0.001, 0.010, 0.100, 1.0, 1.1, 10.0, 20.0, 30.0]:
             if v <= 0.1:
                 if meter_mode != RigolMode.VDC_200m:
@@ -47,16 +49,16 @@ class MMTestVDC(Scenario):
             t.meter.measure_vdc()  # duty cycle
             expect = t.meter.measure_vdc()
             actual = t.edpro_mm.request_value()
+            t.check(abs(v - expect) < 0.1, f"Cannot set voltage: v={v}")
             ea = eabs(expect, actual)
             er = erel(expect, actual)
-            t.logger.info(
+            r.trace(
                 f"v: {v}V | expected: {expect:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
-            # t.expect_abs_rel(expect, actual, 0.01, 0.04)
-            # t.expect_abs_rel(expect, actual, 0.01, 0.04)
+            r.expect_abs_rel(expect, actual, 0.01, 0.02)
 
         t.power.set_volt(0)
-        # t.print_result()
-        # return t.success
+        r.print_result()
+        t.success &= r.success
 
 
 if __name__ == "__main__":
