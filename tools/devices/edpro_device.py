@@ -196,6 +196,9 @@ class EdproDevice:
         if r.get("success") != "1":
             self.logger.throw("command failed")
 
+    def cmd_save_conf(self):
+        self.cmd("conf s")
+
     def wait_boot_complete(self):
         self.logger.info("waiting for boot complete...")
 

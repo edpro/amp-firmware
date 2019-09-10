@@ -24,6 +24,21 @@ def check(val: bool, message: str):
         logger.throw(message)
 
 
+def _cal_dc0(c: MMContext):
+    c.mm.cmd("mode dc")
+    c.mm.cmd("cal dc0")
+
+
+def _cal_vdc_values(c: MMContext):
+    c.mm.cmd("mode dc")
+    c.meter.mode(RigolMode.VDC_2)
+    c.power.set_volt(1.0)
+    time.sleep(1)
+    expected = c.meter.measure_vdc()
+    check(erel(expected, 1.0) < 0.1, "Cannot set DC volatge 1V")
+    c.mm.cmd(f"cal vdc {expected:0.6f}")
+
+
 def _cal_ac0(c: MMContext):
     c.mm.cmd("mode ac")
     c.mm.cmd("cal ac0")
@@ -89,13 +104,51 @@ def mm_run_cal_vdc():
     c = MMContext()
     try:
         c.init()
-        # _cal_vac(c)
+        _cal_vdc(c)
     except LoggedError:
         pass
     except Exception:
         raise
     finally:
         c.dispose()
+
+
+def _cal_vdc(c: MMContext):
+    is_done: bool = False
+
+    choise = prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
+    if choise == "":
+        is_done = False
+        while True:
+            try:
+                _cal_dc0(c)
+                is_done = True
+                break
+            except LoggedError:
+                choise = prompt("<Enter> - continue, <r> - retry: ")
+                if choise == "":
+                    break
+            except Exception:
+                raise
+
+    choise = prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
+    if choise == "":
+        is_done = False
+        while True:
+            try:
+                _cal_vdc_values(c)
+                is_done = True
+                break
+            except LoggedError:
+                choise = prompt("<Enter> - continue, <r> - retry: ")
+                if choise == "":
+                    break
+            except Exception:
+                raise
+
+    if is_done:
+        c.mm.cmd_save_conf()
+        logger.success()
 
 
 def _cal_vac(c: MMContext):
@@ -132,23 +185,26 @@ def _cal_vac(c: MMContext):
                 raise
 
     if is_done:
-        c.mm.cmd("conf s")
+        c.mm.cmd_save_conf()
         logger.success()
 
 
 def main():
-    ctx = MMContext()
+    c = MMContext()
     try:
-        ctx.init()
+        c.init()
+        # _cal_dc0(c)
+        _cal_vdc_values(c)
         # _cal_ac0(ctx)
         # _cal_vac_values(ctx)
+        # c.mm.cmd_save_conf()
         logger.success()
     except LoggedError:
         pass
     except Exception:
         raise
     finally:
-        ctx.dispose()
+        c.dispose()
 
 
 if __name__ == "__main__":

@@ -31,6 +31,7 @@ def usb_find_writer(interface):
 class OwonPower:
     """
     handles communication with OWON ODP3031 programmable power supply
+    https://static.eleshop.nl/mage/media/downloads/DCPowerSupplySCPICommands.pdf
     http://files.owon.com.cn/probook/ODP3031_Power_Supply_USER_MANUAL.pdf
     """
 
@@ -43,10 +44,10 @@ class OwonPower:
 
         logger.info("connect")
 
-        def matcher(d):
-            return d.idVendor == 0x5345 \
-                   and d.idProduct == 0x1234 \
-                   and d.serial_number.startswith("ODP3031")
+        def matcher(it):
+            return it.idVendor == 0x5345 \
+                   and it.idProduct == 0x1234 \
+                   and it.serial_number.startswith("ODP3031")
 
         found_list = list(usb.core.find(find_all=True, custom_match=matcher))
 
@@ -69,7 +70,7 @@ class OwonPower:
 
     def write(self, cmd: str):
         logger.trace(f"<- {cmd}")
-        self._writer.write(cmd.encode())
+        self._writer.write(cmd)
 
     def read(self, length) -> str:
         rec_arr: array = self._reader.read(length, READ_TIMEOUT)
@@ -80,28 +81,30 @@ class OwonPower:
 
     def close(self):
         logger.info("disconnect")
-        if self._device != None:
+        if self._device is not None:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def get_info(self):
         self.write(f"*IDN?")
         self.read(BUF_SIZE)
 
+    def set_volt(self, value: float):
+        self.write(f':VOLT:OUT:IND1 {value:0.3f}')
 
-def _run():
+    def set_current(self, value: float):
+        self.write(f':CURR:OUT:IND1 {value:0.3f}')
+
+
+def main():
     dev = OwonPower()
     dev.connect()
     dev.get_info()
-    # dev.reset()
-    # dev.set_ac(2, 500)
-    # dev.set_dc(3)
-    # dev.set_on()
     dev.close()
 
 
 if __name__ == '__main__':
     try:
-        _run()
+        main()
     except LoggedError:
         pass
     except Exception:

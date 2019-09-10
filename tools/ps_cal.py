@@ -156,7 +156,7 @@ def ps_run_calibration():
                     raise
 
         if is_done:
-            ps.cmd("conf s")
+            ps.cmd_save_conf()
             logger.success()
     except LoggedError:
         pass
