@@ -71,7 +71,7 @@ def _test_vdc(c: MMContext):
     check(c.mm.request_mode() == "VDC", "Require multimeter is in VDC mode")
 
     rigol_mode = RigolMode.VDC_200m
-    c.power.set_volt(0)
+    c.power.set_vdc(0)
     c.meter.set_mode(rigol_mode)
     time.sleep(1)
 
@@ -93,7 +93,7 @@ def _test_vdc(c: MMContext):
             rigol_mode = RigolMode.VDC_200
             c.meter.set_mode(rigol_mode)
 
-        c.power.set_volt(v)
+        c.power.set_vdc(v)
         time.sleep(1)
 
         c.meter.measure_vdc() # duty cycle
@@ -105,7 +105,7 @@ def _test_vdc(c: MMContext):
             f"v: {v}V | expected: {expected:0.6f} | actual: {actual:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         t.expect_abs_rel(expected, actual, 0.01, 0.04)
 
-    c.power.set_volt(0)
+    c.power.set_vdc(0)
     t.print_result()
     return t.success
 

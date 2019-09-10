@@ -88,7 +88,7 @@ class OwonPower:
         self.write(f"*IDN?")
         self.read(BUF_SIZE)
 
-    def set_volt(self, value: float):
+    def set_vdc(self, value: float):
         self.write(f':VOLT:OUT:IND1 {value:0.3f}')
 
     def get_volt(self):

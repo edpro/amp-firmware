@@ -31,6 +31,7 @@ class RigolMeter:
 
     def __init__(self):
         self._device: Optional[usbtmc.Instrument] = None
+        self._current_mode: Optional[RigolMode] = None
 
     def connect(self):
         logger.info("connect")
@@ -64,7 +65,36 @@ class RigolMeter:
         return response
 
     def set_mode(self, mode: RigolMode):
+        self._current_mode = mode
         self._write(mode.value)
+
+    def set_vdc_range(self, v: float):
+        mode = self._current_mode
+        if v <= 0.1:
+            mode = RigolMode.VDC_200m
+        elif v <= 1.0:
+            mode = RigolMode.VDC_2
+        elif v <= 10.0:
+            mode = RigolMode.VDC_20
+        else:
+            mode = RigolMode.VDC_200
+
+        if (mode != self._current_mode):
+            self.set_mode(mode)
+
+    def set_vac_range(self, v: float):
+        new_mode = self._current_mode
+        if v <= 0.1:
+            new_mode = RigolMode.VAC_200m
+        elif v <= 1.0:
+            new_mode = RigolMode.VAC_2
+        elif v <= 10.0:
+            new_mode = RigolMode.VAC_20
+        else:
+            new_mode = RigolMode.VAC_200
+
+        if (new_mode != self._current_mode):
+            self.set_mode(new_mode)
 
     def measure_vdc(self) -> float:
         response = self._ask(":MEASure:VOLTage:DC?")

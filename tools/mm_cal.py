@@ -32,7 +32,7 @@ def _cal_dc0(c: MMContext):
 def _cal_vdc_values(c: MMContext):
     c.mm.cmd("mode dc")
     c.meter.set_mode(RigolMode.VDC_2)
-    c.power.set_volt(1.0)
+    c.power.set_vdc(1.0)
     time.sleep(1)
     expected = c.meter.measure_vdc()
     check(erel(expected, 1.0) < 0.1, "Cannot set DC volatge 1V")
