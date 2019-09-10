@@ -91,6 +91,11 @@ class OwonPower:
     def set_volt(self, value: float):
         self.write(f':VOLT:OUT:IND1 {value:0.3f}')
 
+    def get_volt(self):
+        self.write(f':MEAS:VOLT:CHAN1')
+        response = self.read(BUF_SIZE)
+        return float(response)
+
     def set_current(self, value: float):
         self.write(f':CURR:OUT:IND1 {value:0.3f}')
 

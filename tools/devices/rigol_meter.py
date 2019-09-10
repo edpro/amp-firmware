@@ -9,10 +9,14 @@ logger = Logger("ri_meter")
 
 
 class RigolMode(Enum):
+    VDC_200m = ":MEASure:VOLTage:DC 0"
     VDC_2 = ":MEASure:VOLTage:DC 1"
     VDC_20 = ":MEASure:VOLTage:DC 2"
+    VDC_200 = ":MEASure:VOLTage:DC 3"
+    VAC_200m = ":MEASure:VOLTage:AC 0"
     VAC_2 = ":MEASure:VOLTage:AC 1"
     VAC_20 = ":MEASure:VOLTage:AC 2"
+    VAC_200 = ":MEASure:VOLTage:AC 3"
     FREQ_20 = ":MEASure:FREQuency 2"
 
 
