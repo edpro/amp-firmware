@@ -63,7 +63,7 @@ def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolMeter]):
 
 def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
     rec = TestReporter("test_vds")
-    ri.mode(RigolMode.VDC_20)
+    ri.set_mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 0")
     wait_mode()
@@ -92,7 +92,7 @@ def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
 
 def test_v_ac(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("test_vac")
-    ri.mode(RigolMode.VAC_20)
+    ri.set_mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
     ps.cmd("set l 0")
     ps.cmd("set f 1000")
@@ -123,7 +123,7 @@ def test_v_ac(ps: EdproPS, ri: RigolMeter) -> bool:
 def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
     level = 30
     t = TestReporter("test_fr")
-    ri.mode(RigolMode.FREQ_20)
+    ri.set_mode(RigolMode.FREQ_20)
     ps.cmd("mode ac")
     ps.cmd(f"set l {level}")
     wait_mode()
@@ -170,7 +170,7 @@ def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
 
 def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_adc")
-    ri.mode(RigolMode.VDC_20)
+    ri.set_mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 0")
     wait_mode()
@@ -201,7 +201,7 @@ def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
 
 def test_a_ac(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_aac")
-    ri.mode(RigolMode.VAC_20)
+    ri.set_mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
     ps.cmd("set l 0")
     ps.cmd("set f 1000")

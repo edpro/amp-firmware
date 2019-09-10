@@ -29,7 +29,7 @@ def _test_vac(c: MMContext):
     check(c.mm.request_mode() == "VAC", "Require multimeter is in VAC mode")
 
     rigol_mode = RigolMode.VAC_2
-    c.meter.mode(rigol_mode)
+    c.meter.set_mode(rigol_mode)
     c.gen.set_ac(0.001, 50)
     time.sleep(1)
 
@@ -39,11 +39,11 @@ def _test_vac(c: MMContext):
             if v <= 1:
                 if rigol_mode != RigolMode.VAC_2:
                     rigol_mode = RigolMode.VAC_2
-                    c.meter.mode(rigol_mode)
+                    c.meter.set_mode(rigol_mode)
             else:
                 if rigol_mode != RigolMode.VAC_20:
                     rigol_mode = RigolMode.VAC_20
-                    c.meter.mode(rigol_mode)
+                    c.meter.set_mode(rigol_mode)
 
             if v == 0:
                 c.gen.set_ac(0.001, freq)
@@ -72,7 +72,7 @@ def _test_vdc(c: MMContext):
 
     rigol_mode = RigolMode.VDC_200m
     c.power.set_volt(0)
-    c.meter.mode(rigol_mode)
+    c.meter.set_mode(rigol_mode)
     time.sleep(1)
 
     for v in [0.001, 0.010, 0.100, 1.0, 1.1, 10.0, 20.0, 30.0]:
@@ -80,18 +80,18 @@ def _test_vdc(c: MMContext):
         if v <= 0.1:
             if rigol_mode != RigolMode.VDC_200m:
                 rigol_mode = RigolMode.VDC_200m
-                c.meter.mode(rigol_mode)
+                c.meter.set_mode(rigol_mode)
         elif v <= 1.0:
             if rigol_mode != RigolMode.VDC_2:
                 rigol_mode = RigolMode.VDC_2
-                c.meter.mode(rigol_mode)
+                c.meter.set_mode(rigol_mode)
         elif v <= 10.0:
             if rigol_mode != RigolMode.VDC_20:
                 rigol_mode = RigolMode.VDC_20
-                c.meter.mode(rigol_mode)
+                c.meter.set_mode(rigol_mode)
         else:
             rigol_mode = RigolMode.VDC_200
-            c.meter.mode(rigol_mode)
+            c.meter.set_mode(rigol_mode)
 
         c.power.set_volt(v)
         time.sleep(1)

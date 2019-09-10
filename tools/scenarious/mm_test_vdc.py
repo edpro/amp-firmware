@@ -20,7 +20,7 @@ class MMTestVDC(Scenario):
         t.check_str(mm_mode, "VDC", "Invalid device mode!")
 
         meter_mode = RigolMode.VDC_200m
-        t.meter.mode(meter_mode)
+        t.meter.set_mode(meter_mode)
         t.power.set_volt(0)
         t.wait(1)
 
@@ -30,18 +30,18 @@ class MMTestVDC(Scenario):
             if v <= 0.1:
                 if meter_mode != RigolMode.VDC_200m:
                     meter_mode = RigolMode.VDC_200m
-                    t.meter.mode(meter_mode)
+                    t.meter.set_mode(meter_mode)
             elif v <= 1.0:
                 if meter_mode != RigolMode.VDC_2:
                     meter_mode = RigolMode.VDC_2
-                    t.meter.mode(meter_mode)
+                    t.meter.set_mode(meter_mode)
             elif v <= 10.0:
                 if meter_mode != RigolMode.VDC_20:
                     meter_mode = RigolMode.VDC_20
-                    t.meter.mode(meter_mode)
+                    t.meter.set_mode(meter_mode)
             else:
                 meter_mode = RigolMode.VDC_200
-                t.meter.mode(meter_mode)
+                t.meter.set_mode(meter_mode)
 
             t.power.set_volt(v)
             t.wait(1)

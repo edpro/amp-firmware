@@ -63,7 +63,7 @@ class RigolMeter:
 
         return response
 
-    def mode(self, mode: RigolMode):
+    def set_mode(self, mode: RigolMode):
         self._write(mode.value)
 
     def measure_vdc(self) -> float:
@@ -82,7 +82,7 @@ class RigolMeter:
 def test():
     device = RigolMeter()
     device.connect()
-    device.mode(RigolMode.VDC_20)
+    device.set_mode(RigolMode.VDC_20)
     device.measure_vdc()
 
 

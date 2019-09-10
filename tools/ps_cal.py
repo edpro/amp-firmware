@@ -17,7 +17,7 @@ def check(val: bool, message: str):
 def _cal_vdc(ps: EdproPS, ri: RigolMeter):
     logger.info("calibrate VDC:")
 
-    ri.mode(RigolMode.VDC_20)
+    ri.set_mode(RigolMode.VDC_20)
     ps.cmd("mode dc")
     ps.cmd("set l 50")
     time.sleep(0.5)
@@ -32,7 +32,7 @@ def _cal_vdc(ps: EdproPS, ri: RigolMeter):
 def _cal_vac(ps, ri):
     logger.info("calibrate VAC:")
 
-    ri.mode(RigolMode.VAC_20)
+    ri.set_mode(RigolMode.VAC_20)
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 30")
@@ -56,7 +56,7 @@ def _cal_adc0(ps):
 def _cal_adc(ps, ri):
     logger.info("calibrate ADC:")
 
-    ri.mode(RigolMode.VDC_2)
+    ri.set_mode(RigolMode.VDC_2)
     ps.cmd("mode dc")
     ps.cmd("set l 10")
     time.sleep(0.5)
@@ -78,7 +78,7 @@ def _cal_aac0(ps):
 def _cal_aac(ps, ri):
     logger.info("calibrate AAC:")
 
-    ri.mode(RigolMode.VAC_2)
+    ri.set_mode(RigolMode.VAC_2)
     ps.cmd("mode ac")
     ps.cmd("set f 1000")
     ps.cmd("set l 10")

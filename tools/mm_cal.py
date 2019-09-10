@@ -31,7 +31,7 @@ def _cal_dc0(c: MMContext):
 
 def _cal_vdc_values(c: MMContext):
     c.mm.cmd("mode dc")
-    c.meter.mode(RigolMode.VDC_2)
+    c.meter.set_mode(RigolMode.VDC_2)
     c.power.set_volt(1.0)
     time.sleep(1)
     expected = c.meter.measure_vdc()
@@ -47,7 +47,7 @@ def _cal_ac0(c: MMContext):
 def _cal_vac_values(c: MMContext):
     freq = 1000
     c.mm.cmd("mode ac")
-    c.meter.mode(RigolMode.VAC_20)
+    c.meter.set_mode(RigolMode.VAC_20)
 
     # point 1
     expected_v = 0.1
