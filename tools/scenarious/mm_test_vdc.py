@@ -2,6 +2,8 @@ from tools.common.tests import eabs, erel
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
+
+# noinspection PyMethodParameters
 class MMTestVDC(Scenario):
     def __init__(self):
         super().__init__("test_vdc")
@@ -42,7 +44,7 @@ class MMTestVDC(Scenario):
             t.power.set_volt(v)
             t.wait(1)
 
-            t.meter.measure_vdc() # duty cycle
+            t.meter.measure_vdc()  # duty cycle
             expect = t.meter.measure_vdc()
             actual = t.edpro_mm.request_value()
             ea = eabs(expect, actual)
