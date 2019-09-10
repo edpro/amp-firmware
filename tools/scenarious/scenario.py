@@ -69,7 +69,8 @@ class Scenario:
         err_msg += f'    actual   : "{actual}"'
         self.logger.throw(err_msg)
 
-    def wait(self, seconds: int):
+    @staticmethod
+    def wait(seconds: int):
         time.sleep(seconds)
 
     def on_run(self):
@@ -105,7 +106,7 @@ class Scenario:
             self.logger.print(Colors.LIGHT_RED, "Scenario FAILED")
 
 
-class _TestScenario_(Scenario):
+class TestScenario(Scenario):
     def __init__(self):
         super().__init__("test")
 
@@ -115,4 +116,4 @@ class _TestScenario_(Scenario):
 
 
 if __name__ == "__main__":
-    _TestScenario_().run()
+    TestScenario().run()
