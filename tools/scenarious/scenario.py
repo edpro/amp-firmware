@@ -105,7 +105,7 @@ class Scenario:
             self.logger.print(Colors.LIGHT_RED, "Scenario FAILED")
 
 
-class TestScenario(Scenario):
+class _TestScenario_(Scenario):
     def __init__(self):
         super().__init__("test")
 
@@ -115,4 +115,4 @@ class TestScenario(Scenario):
 
 
 if __name__ == "__main__":
-    TestScenario().run()
+    _TestScenario_().run()
