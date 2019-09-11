@@ -2,6 +2,7 @@ import time
 
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
+from tools.common.tests import erel, rel_str
 from tools.devices.edpro_device import EdproMM, EdproPS
 from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
@@ -27,7 +28,7 @@ class Scenario:
         self._power_used: bool = False
         self._generator_used: bool = False
 
-    def init_edpro_mm(self):
+    def use_edpro_mm(self):
         self._edpro_mm_used = True
         self.edpro_mm.connect()
         self.edpro_mm.wait_boot_complete()
@@ -35,7 +36,7 @@ class Scenario:
         info = self.edpro_mm.request_info()
         self.check_str(info.name, "Multimeter", "Invalid device name!")
 
-    def init_edpro_ps(self):
+    def use_edpro_ps(self):
         self._edpro_ps_used = True
         self.edpro_ps.connect()
         self.edpro_ps.wait_boot_complete()
@@ -43,11 +44,11 @@ class Scenario:
         info = self.edpro_ps.request_info()
         self.check_str(info.name, "Powersource", "Invalid device name!")
 
-    def init_power(self):
+    def use_power(self):
         self._power_used = True
         self.power.connect()
 
-    def init_meter(self):
+    def use_meter(self):
         self._meter_used = True
         self.meter.connect()
 
@@ -68,6 +69,15 @@ class Scenario:
         err_msg = f'{msg}\n'
         err_msg += f'    expected : "{expected}"\n'
         err_msg += f'    actual   : "{actual}"'
+        self.logger.throw(err_msg)
+
+    def check_rel(self, actual: float, expected: float, err: float, msg: str):
+        e = erel(actual, expected)
+        if e <= err:
+            return
+        err_msg = f'{msg}\n'
+        err_msg += f'\texpected : {expected} +- {rel_str(err)}\n'
+        err_msg += f'\tactual   : {actual}'
         self.logger.throw(err_msg)
 
     @staticmethod
@@ -115,7 +125,7 @@ class TestScenario(Scenario):
 
     def on_run(self):
         # self.init_edpro_mm()
-        self.init_edpro_ps()
+        self.use_edpro_ps()
 
 
 if __name__ == "__main__":

@@ -81,10 +81,10 @@ def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
         rec.trace(
             f"step: {step_u:0.1f}V | ps: {ps_val:0.6f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         if level == 0:
-            rec.expect_abs(ps_val, ri_val, VDC_ZERO_ABS)
+            rec.expect_abs(ri_val, ps_val, VDC_ZERO_ABS)
         else:
-            rec.expect_abs(step_u, ps_val, VDC_STEP_ABS)
-            rec.expect_rel(ps_val, ri_val, 2 * VDC_REL)
+            rec.expect_abs(ps_val, step_u, VDC_STEP_ABS)
+            rec.expect_rel(ri_val, ps_val, 2 * VDC_REL)
 
     rec.print_result()
     return rec.success
@@ -111,10 +111,10 @@ def test_v_ac(ps: EdproPS, ri: RigolMeter) -> bool:
         t.trace(
             f"step: {step_u:0.1f}V | ps: {ps_val:0.6f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
         if level == 0:
-            t.expect_abs(ps_val, ri_val, VAC_ZERO_ABS)
+            t.expect_abs(ri_val, ps_val, VAC_ZERO_ABS)
         else:
-            t.expect_abs(step_u, ps_val, VAC_STEP_ABS)
-            t.expect_rel(ps_val, ri_val, VAC_REL)
+            t.expect_abs(ps_val, step_u, VAC_STEP_ABS)
+            t.expect_rel(ri_val, ps_val, VAC_REL)
 
     t.print_result()
     return t.success
@@ -149,8 +149,8 @@ def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
         ea = eabs(fr, actual_fr)
         er = erel(fr, actual_fr)
         t.trace(f"U: {actual_u: 0.3f}V | f: {fr} | actual: {actual_fr:0f} | abs: {ea:0f} | rel: {er * 100:0.2f}%")
-        t.expect_rel(fr, actual_fr, FREQ_REL)
-        t.expect_rel(0.1 * level, actual_u, max_rel_u(fr))
+        t.expect_rel(actual_fr, fr, FREQ_REL)
+        t.expect_rel(actual_u, 0.1 * level, max_rel_u(fr))
         if fr < 100:
             fr += 10
         elif fr < 1_000:
@@ -187,13 +187,13 @@ def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
         er = erel(ps_val.I, ri_val)
         t.trace(
             f"step: {step_u:0.1f}V | U: {ps_val.U:0.3f} I: {ps_val.I:0.3f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
-        t.expect_abs(step_u, ps_val.U, VDC_STEP_ABS)
+        t.expect_abs(ps_val.U, step_u, VDC_STEP_ABS)
         if level == 0:
-            t.expect_abs(0, ri_val, 0.01)
-            t.expect_abs(ri_val, ps_val.I, ADC_ZERO_ABS)
+            t.expect_abs(ri_val, 0, 0.01)
+            t.expect_abs(ps_val.I, ri_val, ADC_ZERO_ABS)
         else:
-            t.expect_rel(ps_val.U / CIRCUIT_R, ri_val, 0.05)
-            t.expect_rel(ri_val, ps_val.I, ADC_REL)
+            t.expect_rel(ri_val, ps_val.U / CIRCUIT_R, 0.05)
+            t.expect_rel(ps_val.I, ri_val, ADC_REL)
 
     t.print_result()
     return t.success
@@ -219,10 +219,10 @@ def test_a_ac(ps: EdproPS, ri: RigolMeter) -> bool:
         er = erel(ps_val.I, ri_val)
         t.trace(
             f"step: {step_u:0.1f}V | U: {ps_val.U:0.3f} I: {ps_val.I:0.3f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
-        t.expect_abs(step_u, ps_val.U, VAC_STEP_ABS)
-        t.expect_abs(ri_val, ps_val.I, AAC_ABS)
+        t.expect_abs(ps_val.U, step_u, VAC_STEP_ABS)
+        t.expect_abs(ps_val.I, ri_val, AAC_ABS)
         if level > 0:
-            t.expect_rel(ps_val.U / CIRCUIT_R, ri_val, 0.1)
+            t.expect_rel(ri_val, ps_val.U / CIRCUIT_R, 0.1)
 
     t.print_result()
     return t.success

@@ -31,9 +31,17 @@ def decode_response(raw: str) -> Dict[str, str]:
     return result
 
 
-class EInfoResult(NamedTuple):
+class EDeviceInfo(NamedTuple):
     name: str
     version: str
+
+
+class EMResult(NamedTuple):
+    mode: str
+    rdiv: int
+    gain: int
+    finit: bool
+    value: float
 
 
 class EdproDevice:
@@ -250,9 +258,9 @@ class EdproDevice:
             self.close()
             raise
 
-    def request_info(self) -> EInfoResult:
+    def request_info(self) -> EDeviceInfo:
         r = self.request("i")
-        return EInfoResult(name=r["name"], version=r["version"])
+        return EDeviceInfo(name=r["name"], version=r["version"])
 
 
 class PSValues:
@@ -276,13 +284,17 @@ class EdproMM(EdproDevice):
     def __init__(self):
         super().__init__("mm")
 
-    def request_mode(self) -> str:
+    def get_mode(self) -> str:
         response = self.request("mode")
         return response["mode"]
 
-    def request_value(self) -> float:
-        response = self.request("v")
-        return float(response["value"])
+    def get_result(self) -> EMResult:
+        r = self.request("v")
+        return EMResult(mode=r["mode"],
+                        rdiv=int(r["rdiv"]),
+                        gain=int(r["gain"]),
+                        finit=r["finit"] == '1',
+                        value=float(r["value"]))
 
 
 def test():
