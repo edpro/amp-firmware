@@ -77,7 +77,7 @@ class Scenario:
         self.logger.throw(err_msg)
 
     @staticmethod
-    def wait(seconds: int):
+    def wait(seconds: float):
         time.sleep(seconds)
 
     def on_run(self):

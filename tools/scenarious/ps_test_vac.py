@@ -1,6 +1,7 @@
 import math
 from typing import NamedTuple, List, Optional
 from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
+from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
 
@@ -11,8 +12,15 @@ class TData(NamedTuple):
     rel: Optional[float]
 
 
-ALL_FREQ = [50, 100, 1_000, 10_000, 20_000, 40_000, 80_000]
-ALL_VOLT = [0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]
+test_data = [
+    TData(f=1000, v=0, abs=0.03, rel=None),
+    TData(f=1000, v=0.1, abs=None, rel=0.03),
+    TData(f=1000, v=0.2, abs=None, rel=0.03),
+    TData(f=1000, v=0.5, abs=None, rel=0.03),
+    TData(f=1000, v=1.0, abs=None, rel=0.03),
+    TData(f=1000, v=2.0, abs=None, rel=0.03),
+    TData(f=1000, v=5.0, abs=None, rel=0.03),
+]
 
 
 def make_data(freq, volt) -> List[TData]:
@@ -26,7 +34,7 @@ def make_data(freq, volt) -> List[TData]:
 
 
 # test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
-test_data = make_data(freq=[80_000], volt=ALL_VOLT)
+# test_data = make_data(freq=[80_000], volt=ALL_VOLT)
 
 
 # noinspection PyMethodParameters
@@ -40,15 +48,20 @@ class MMTestVAC(Scenario):
         t.test_vac()
 
     def test_vac(t):
-        t.edpro_ps.cmd("mode ac")
+        t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(0)
         t.edpro_ps.set_freq(1000)
-        t.meter.set_vac_range(v=0)
+        t.meter.set_mode(RigolMode.VAC_20)
         t.wait(1)
 
         r = TestReporter(t.tag)
 
         for d in test_data:
+            t.edpro_ps.set_volt(d.v)
+            t.edpro_ps.set_freq(d.f)
+            t.wait(0.5)
+
+            ################ //TODO
             t.meter.set_vac_range(d.v)
             t.generator.set_ac(to_amp(d.v), d.f)
             t.wait(1)

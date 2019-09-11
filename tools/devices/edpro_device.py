@@ -272,6 +272,9 @@ class EdproPS(EdproDevice):
         return PSValues(U=float(r["U"]),
                         I=float(r["I"]))
 
+    def set_mode(self, mode: str):
+        self.cmd(f"mode {mode}")
+
     def set_volt(self, v: float):
         level = int(round(v, 1) * 10)
         self.cmd(f"set l {level}")
