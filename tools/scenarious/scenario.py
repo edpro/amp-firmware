@@ -27,7 +27,7 @@ class Scenario:
         self.edpro_mm.connect()
         self.edpro_mm.wait_boot_complete()
         self.edpro_mm.request("devmode")
-        info = self.edpro_mm.request_info()
+        info = self.edpro_mm.get_info()
         self.check_str(info.name, "Multimeter", "Invalid device name!")
 
     def use_edpro_ps(self):
@@ -35,7 +35,7 @@ class Scenario:
         self.edpro_ps.connect()
         self.edpro_ps.wait_boot_complete()
         self.edpro_ps.request("devmode")
-        info = self.edpro_ps.request_info()
+        info = self.edpro_ps.get_info()
         self.check_str(info.name, "Powersource", "Invalid device name!")
 
     def use_power(self):

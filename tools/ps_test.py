@@ -74,7 +74,7 @@ def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
         step_u = 0.1 * level
         ps.cmd(f"set l {level}")
         time.sleep(0.05)
-        ps_val = ps.request_values().U
+        ps_val = ps.get_values().U
         ri_val = ri.measure_vdc()
         ea = eabs(ps_val, ri_val)
         er = erel(ps_val, ri_val)
@@ -104,7 +104,7 @@ def test_v_ac(ps: EdproPS, ri: RigolMeter) -> bool:
         step_u = 0.1 * level
         ps.cmd(f"set l {level}")
         time.sleep(0.25)
-        ps_val = ps.request_values().U
+        ps_val = ps.get_values().U
         ri_val = ri.measure_vac()
         ea = eabs(ps_val, ri_val)
         er = erel(ps_val, ri_val)
@@ -144,7 +144,7 @@ def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
     while fr <= 1_000_000:
         ps.cmd(f"set f {fr}")
         time.sleep(0.2)
-        actual_u = ps.request_values().U
+        actual_u = ps.get_values().U
         actual_fr = ri.measure_freq()
         ea = eabs(fr, actual_fr)
         er = erel(fr, actual_fr)
@@ -181,7 +181,7 @@ def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
         step_u = 0.1 * level
         ps.cmd(f"set l {level}")
         time.sleep(0.1)
-        ps_val = ps.request_values()
+        ps_val = ps.get_values()
         ri_val = ri.measure_vdc()
         ea = eabs(ps_val.I, ri_val)
         er = erel(ps_val.I, ri_val)
@@ -213,7 +213,7 @@ def test_a_ac(ps: EdproPS, ri: RigolMeter) -> bool:
         step_u = 0.1 * level
         ps.cmd(f"set l {level}")
         time.sleep(0.25)
-        ps_val = ps.request_values()
+        ps_val = ps.get_values()
         ri_val = ri.measure_vac()
         ea = eabs(ps_val.I, ri_val)
         er = erel(ps_val.I, ri_val)

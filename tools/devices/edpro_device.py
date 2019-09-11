@@ -36,14 +36,6 @@ class EDeviceInfo(NamedTuple):
     version: str
 
 
-class EMResult(NamedTuple):
-    mode: str
-    rdiv: int
-    gain: int
-    finit: bool
-    value: float
-
-
 class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
@@ -208,9 +200,6 @@ class EdproDevice:
         if r.get("success") != "1":
             self.logger.throw("command failed")
 
-    def cmd_save_conf(self):
-        self.cmd("conf s")
-
     def wait_boot_complete(self):
         self.logger.info("waiting for boot complete...")
 
@@ -258,26 +247,45 @@ class EdproDevice:
             self.close()
             raise
 
-    def request_info(self) -> EDeviceInfo:
+    def save_conf(self):
+        self.cmd("conf s")
+
+    def get_info(self) -> EDeviceInfo:
         r = self.request("i")
-        return EDeviceInfo(name=r["name"], version=r["version"])
+        return EDeviceInfo(name=r["name"],
+                           version=r["version"])
 
 
-class PSValues:
-    def __init__(self, U: float = 0, I: float = 0):
-        self.U: float = U
-        self.I: float = I
+class PSValues(NamedTuple):
+    U: float
+    I: float
 
 
 class EdproPS(EdproDevice):
     def __init__(self):
         super().__init__("ps")
 
-    def request_values(self) -> PSValues:
+    def get_values(self) -> PSValues:
         r = self.request("v")
         if r.get("success") != "1":
             self.logger.throw("Request not succeed!")
-        return PSValues(float(r["U"]), float(r["I"]))
+        return PSValues(U=float(r["U"]),
+                        I=float(r["I"]))
+
+    def set_volt(self, v: float):
+        level = int(round(v, 1) * 10)
+        self.cmd(f"set l {level}")
+
+    def set_freq(self, f: int):
+        self.cmd(f"set f {f}")
+
+
+class MMResult(NamedTuple):
+    mode: str
+    rdiv: int
+    gain: int
+    finit: bool
+    value: float
 
 
 class EdproMM(EdproDevice):
@@ -288,9 +296,9 @@ class EdproMM(EdproDevice):
         response = self.request("mode")
         return response["mode"]
 
-    def get_result(self) -> EMResult:
+    def get_result(self) -> MMResult:
         r = self.request("v")
-        return EMResult(mode=r["mode"],
+        return MMResult(mode=r["mode"],
                         rdiv=int(r["rdiv"]),
                         gain=int(r["gain"]),
                         finit=r["finit"] == '1',

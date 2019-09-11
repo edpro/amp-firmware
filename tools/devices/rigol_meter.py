@@ -69,7 +69,6 @@ class RigolMeter:
         self._write(mode.value)
 
     def set_vdc_range(self, v: float):
-        mode = self._current_mode
         if v <= 0.1:
             mode = RigolMode.VDC_200m
         elif v <= 1.0:
@@ -83,18 +82,17 @@ class RigolMeter:
             self.set_mode(mode)
 
     def set_vac_range(self, v: float):
-        new_mode = self._current_mode
         if v <= 0.1:
-            new_mode = RigolMode.VAC_200m
+            mode = RigolMode.VAC_200m
         elif v <= 1.0:
-            new_mode = RigolMode.VAC_2
+            mode = RigolMode.VAC_2
         elif v <= 10.0:
-            new_mode = RigolMode.VAC_20
+            mode = RigolMode.VAC_20
         else:
-            new_mode = RigolMode.VAC_200
+            mode = RigolMode.VAC_200
 
-        if (new_mode != self._current_mode):
-            self.set_mode(new_mode)
+        if (mode != self._current_mode):
+            self.set_mode(mode)
 
     def measure_vdc(self) -> float:
         response = self._ask(":MEASure:VOLTage:DC?")

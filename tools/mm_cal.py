@@ -147,7 +147,7 @@ def _cal_vdc(c: MMContext):
                 raise
 
     if is_done:
-        c.mm.cmd_save_conf()
+        c.mm.save_conf()
         logger.success()
 
 
@@ -185,7 +185,7 @@ def _cal_vac(c: MMContext):
                 raise
 
     if is_done:
-        c.mm.cmd_save_conf()
+        c.mm.save_conf()
         logger.success()
 
 

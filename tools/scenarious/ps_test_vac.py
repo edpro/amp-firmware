@@ -25,7 +25,7 @@ def make_data(freq, volt) -> List[TData]:
     return data
 
 
-# test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
+# test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
 test_data = make_data(freq=[80_000], volt=ALL_VOLT)
 
 
@@ -35,18 +35,15 @@ class MMTestVAC(Scenario):
         super().__init__("test_vac")
 
     def on_run(t):
-        t.use_edpro_mm()
+        t.use_edpro_ps()
         t.use_meter()
-        t.use_generator()
         t.test_vac()
 
     def test_vac(t):
-        t.edpro_mm.cmd("mode ac")
-        mm_mode = t.edpro_mm.get_mode()
-        t.check_str(mm_mode, "VAC", "Invalid device mode!")
-
-        t.meter.set_vac_range(0)
-        t.generator.set_ac(0.001, 50)
+        t.edpro_ps.cmd("mode ac")
+        t.edpro_ps.set_volt(0)
+        t.edpro_ps.set_freq(1000)
+        t.meter.set_vac_range(v=0)
         t.wait(1)
 
         r = TestReporter(t.tag)
