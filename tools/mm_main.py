@@ -2,6 +2,8 @@ from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
 from tools.devices.edpro_device import EdproMM
 from tools.mm_cal import mm_run_calibration, mm_run_cal_vac, mm_run_cal_vdc
+from tools.scenarious.mm_test_vac import MMTestVAC
+from tools.scenarious.mm_test_vdc import MMTestVDC
 
 
 def draw_menu():
@@ -14,7 +16,8 @@ def draw_menu():
     print(" (c) Calibrate Device")
     print(" (c1) Calibrate DC Voltage")
     print(" (c2) Calibrate AC Voltage")
-    # print(" (t) Test Device")
+    print(" (tvdc) Test DC Voltage")
+    print(" (tvac) Test AC Voltage")
     print(" (l) Log")
     print(" (q) Quit")
 
@@ -57,8 +60,15 @@ def process_menu():
         mm_run_cal_vac()
         input("Press <ENTER> to continue...")
 
-    elif key == "t":
-        print("test")
+    elif key == "tvdc":
+        print("test VDC")
+        MMTestVDC().run()
+        input("Press <ENTER> to continue...")
+
+    elif key == "tvac":
+        print("test VAC")
+        MMTestVAC().run()
+        input("Press <ENTER> to continue...")
 
     elif key == "l":
         print("log")

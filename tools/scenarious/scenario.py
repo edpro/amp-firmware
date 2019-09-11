@@ -1,4 +1,5 @@
 import time
+from typing import Optional
 
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
@@ -10,26 +11,19 @@ from tools.devices.rigol_meter import RigolMeter
 
 
 class Scenario:
+    edpro_mm: Optional[EdproMM] = None
+    edpro_ps: Optional[EdproPS] = None
+    meter: Optional[RigolMeter] = None
+    generator: Optional[OwonGenerator] = None
+    power: Optional[OwonPower] = None
 
     def __init__(self, tag: str):
         self.tag: str = tag
         self.logger: Logger = Logger(tag)
         self.success: bool = True
 
-        self.edpro_mm: EdproMM = EdproMM()
-        self.edpro_ps: EdproPS = EdproPS()
-        self.meter: RigolMeter = RigolMeter()
-        self.generator: OwonGenerator = OwonGenerator()
-        self.power: OwonPower = OwonPower()
-
-        self._edpro_mm_used: bool = False
-        self._edpro_ps_used: bool = False
-        self._meter_used: bool = False
-        self._power_used: bool = False
-        self._generator_used: bool = False
-
     def use_edpro_mm(self):
-        self._edpro_mm_used = True
+        self.edpro_mm = EdproMM()
         self.edpro_mm.connect()
         self.edpro_mm.wait_boot_complete()
         self.edpro_mm.request("devmode")
@@ -37,7 +31,7 @@ class Scenario:
         self.check_str(info.name, "Multimeter", "Invalid device name!")
 
     def use_edpro_ps(self):
-        self._edpro_ps_used = True
+        self.edpro_ps = EdproPS()
         self.edpro_ps.connect()
         self.edpro_ps.wait_boot_complete()
         self.edpro_ps.request("devmode")
@@ -45,16 +39,17 @@ class Scenario:
         self.check_str(info.name, "Powersource", "Invalid device name!")
 
     def use_power(self):
-        self._power_used = True
+        self.power = OwonPower()
         self.power.connect()
 
     def use_meter(self):
-        self._meter_used = True
+        self.meter = RigolMeter()
         self.meter.connect()
 
-    def init_generator(self):
-        self._generator_used = True
+    def use_generator(self):
+        self.generator = OwonGenerator()
         self.generator.connect()
+        self.generator.set_output_on()
 
     def fail(self, msg: str):
         self.logger.throw(msg)
@@ -88,15 +83,15 @@ class Scenario:
         pass
 
     def _dispose(self):
-        if self._edpro_mm_used:
+        if (self.edpro_mm):
             self.edpro_mm.close()
-        if self._edpro_ps_used:
+        if (self.edpro_ps):
             self.edpro_ps.close()
-        if self._meter_used:
+        if (self.meter):
             self.meter.close()
-        if self._power_used:
+        if (self.power):
             self.power.close()
-        if self._generator_used:
+        if (self.generator):
             self.generator.close()
 
     def run(self):

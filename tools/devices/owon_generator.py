@@ -91,6 +91,7 @@ class OwonGenerator:
         self.read(BUF_SIZE)
 
     def set_dc(self, voltage: int):
+        # setting voltage is not working
         self.write(f":FUNCtion:ARB:BUILtinwform 39")
         self.read(BUF_SIZE)
         self.write(f":FUNCtion:ARB:BUILtinwform?")  # DC,39
@@ -98,11 +99,11 @@ class OwonGenerator:
         self.write(f":FUNCtion:ARB:offset {voltage}")
         self.read(BUF_SIZE)
 
-    def set_on(self):
+    def set_output_on(self):
         self.write(f":CHANnel:CH1 ON")
         self.read(BUF_SIZE)
 
-    def set_off(self):
+    def set_output_off(self):
         self.write(f":CHANnel:CH1 OFF")
         self.read(BUF_SIZE)
 
