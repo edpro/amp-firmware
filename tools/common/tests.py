@@ -75,6 +75,6 @@ class TestReporter:
         print_color(f'[{self.tag}] result:', Colors.LIGHT_BLUE)
         for t, text in self.records:
             if t == 0:
-                print_color(f'[{self.tag}] {text}', Colors.GRAY)
+                print_color(f'| {text}', Colors.GRAY)
             elif t == 1:
-                print_color(f'[{self.tag}] {text}', Colors.LIGHT_RED)
+                print_color(f'| {text}', Colors.LIGHT_RED)

@@ -34,6 +34,7 @@ class OwonGenerator:
     https://www.owon.com.hk/products_owon_1-ch_low_frequency_arbitrary_waveform_generator
     http://files.owon.com.cn/software/Application/AG_Series_Waveform_Generator_SCPI_Protocol.pdf
     """
+
     def __init__(self):
         self._device: Optional[usb.core.Device] = None
         self._reader = None
@@ -83,6 +84,12 @@ class OwonGenerator:
         logger.info("disconnect")
         if self._device is not None:
             usb.util.release_interface(self._device, INTERFACE_NUM)
+
+    def set_load_on(self, load_resistance: int):
+        self.write(f":FUNC:SINE:LOAD {load_resistance}")
+
+    def set_load_off(self):
+        self.write(f":FUNC:SINE:LOAD OFF")
 
     def set_ac(self, amp: float, freq: int):
         self.write(f":FUNC:SINE:FREQ {freq}")

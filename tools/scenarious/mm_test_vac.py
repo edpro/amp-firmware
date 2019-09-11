@@ -1,7 +1,5 @@
-from typing import NamedTuple, List, Optional
-
 import math
-
+from typing import NamedTuple, List, Optional
 from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
 from tools.scenarious.scenario import Scenario
 
@@ -13,25 +11,22 @@ class TData(NamedTuple):
     rel: Optional[float]
 
 
-def make_test_data() -> List[TData]:
+ALL_FREQ = [50, 100, 1_000, 10_000, 20_000, 40_000, 80_000]
+ALL_VOLT = [0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]
+
+
+def make_test_data(freq, volt) -> List[TData]:
     data = []
-    for f in [50, 100, 1_000, 10_000, 20_000, 40_000, 80_000]:
-        for v in [0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]:
+    for f in freq:
+        for v in volt:
             abs_err = 0.01 if v <= 0.1 else None
             rel_err = 0.04 if v > 0.1 else None
             data.append(TData(f=f, v=v, abs=abs_err, rel=rel_err))
     return data
 
 
-test_data = make_test_data()
-
-
-def to_amp(v: float) -> float:
-    return v * 2.0 * math.sqrt(2)
-
-
-def from_amp(amp: float) -> float:
-    return amp / 2.0 / math.sqrt(2)
+test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
+# test_data = make_test_data(freq=[20_000], volt=[0.1])
 
 
 # noinspection PyMethodParameters
@@ -82,6 +77,14 @@ class MMTestVAC(Scenario):
 
         r.print_result()
         t.success &= r.success
+
+
+def to_amp(v: float) -> float:
+    return v * 2.0 * math.sqrt(2)
+
+
+def from_amp(amp: float) -> float:
+    return amp / 2.0 / math.sqrt(2)
 
 
 if __name__ == "__main__":

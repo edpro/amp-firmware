@@ -50,6 +50,7 @@ class Scenario:
         self.generator = OwonGenerator()
         self.generator.connect()
         self.generator.set_output_on()
+        self.generator.set_load_on(100)
 
     def fail(self, msg: str):
         self.logger.throw(msg)
