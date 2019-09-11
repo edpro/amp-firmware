@@ -44,9 +44,7 @@ class TestReporter:
         if e <= err:
             return
         self.success = False
-        self.add_err_line(f"Error: absolute error ({e:0.6f}) must be less then {err:0.6f}")
-        self.add_err_line(f"\texpect: {expect:0.6f}")
-        self.add_err_line(f"\tactual: {actual:0.6f}")
+        self.add_err_line(f"FAILED: Absolute error {round(e, 6)} > {err}")
 
     def expect_rel(self, actual: float, expect: float, err: Optional[float]):
         if (err is None):
@@ -55,15 +53,13 @@ class TestReporter:
         if e <= err:
             return
         self.success = False
-        self.add_err_line(f"Error: relative error ({e:0.6f}) must be less then {err:0.6f}")
-        self.add_err_line(f"\texpect: {expect:0.6f}")
-        self.add_err_line(f"\tactual: {actual:0.6f}")
+        self.add_err_line(f"FAILED: Relative error {round(e, 6)} > {err}")
 
     def expect_int(self, actual: int, expect: int, msg: str):
         if actual == expect:
             return
         self.success = False
-        self.add_err_line(f'Error: {msg}')
+        self.add_err_line(f'FAILED: {msg}')
         self.add_err_line(f"\texpect: {expect}")
         self.add_err_line(f"\tactual: {actual}")
 

@@ -25,8 +25,8 @@ def make_test_data(freq, volt) -> List[TData]:
     return data
 
 
-test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
-# test_data = make_test_data(freq=[20_000], volt=[0.1])
+# test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
+test_data = make_test_data(freq=[80_000], volt=ALL_VOLT)
 
 
 # noinspection PyMethodParameters
