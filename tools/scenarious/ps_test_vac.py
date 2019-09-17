@@ -34,7 +34,7 @@ test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
 
 
 # noinspection PyMethodParameters
-class MMTestVAC(Scenario):
+class PSTestVAC(Scenario):
     def __init__(self):
         super().__init__("test_vac")
 
@@ -78,4 +78,4 @@ class MMTestVAC(Scenario):
 
 
 if __name__ == "__main__":
-    MMTestVAC().run()
+    PSTestVAC().run()
