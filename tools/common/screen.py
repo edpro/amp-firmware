@@ -7,6 +7,7 @@ def clear():
     else:
         os.system('clear')
 
+
 class Colors:
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -29,10 +30,10 @@ class Colors:
 
     RESET = '\033[0m'
 
+
 def print_color(msg: str, color: str):
     print(f'{color}{msg}{Colors.RESET}')
 
 
 def prompt(msg: str):
     return input(f"\n{Colors.GREEN}>> {msg}{Colors.RESET}")
-
