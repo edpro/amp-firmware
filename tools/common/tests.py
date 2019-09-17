@@ -1,5 +1,15 @@
 from typing import List, Tuple, Optional
+from math import sqrt
+
 from tools.common.screen import print_color, Colors
+
+
+def to_amp(v: float) -> float:
+    return v * 2.0 * sqrt(2)
+
+
+def from_amp(amp: float) -> float:
+    return amp / 2.0 / sqrt(2)
 
 
 def eabs(expected: float, actual: float) -> float:

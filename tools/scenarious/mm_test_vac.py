@@ -1,6 +1,5 @@
-import math
 from typing import NamedTuple, List, Optional
-from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
+from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str, to_amp
 from tools.scenarious.scenario import Scenario
 
 
@@ -77,14 +76,6 @@ class MMTestVAC(Scenario):
 
         r.print_result()
         t.success &= r.success
-
-
-def to_amp(v: float) -> float:
-    return v * 2.0 * math.sqrt(2)
-
-
-def from_amp(amp: float) -> float:
-    return amp / 2.0 / math.sqrt(2)
 
 
 if __name__ == "__main__":

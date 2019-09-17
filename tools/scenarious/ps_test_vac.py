@@ -1,4 +1,3 @@
-import math
 from typing import NamedTuple, List, Optional
 from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
 from tools.devices.rigol_meter import RigolMode
@@ -12,7 +11,7 @@ class TData(NamedTuple):
     rel: Optional[float]
 
 
-ALL_VOLT = [0, 0.1, 0.2, 0.5, 1, 2, 3]
+ALL_VOLT = [0, 0.2, 0.4, 0.6, 1, 2, 3]
 ALL_FREQ = [50, 100, 1000, 10_000, 50_000, 100_000]
 
 
@@ -20,8 +19,12 @@ def make_data(freq: List[int], volt: List[float]) -> List[TData]:
     data = []
     for f in freq:
         for v in volt:
-            abs_err = 0.03 if v < 0.1 else None
-            rel_err = 0.03 if v > 0.1 else None
+            if f < 100:
+                abs_err = 0.03 if v < 0.1 else None
+                rel_err = 0.04 if v > 0.1 else None
+            else:
+                abs_err = 0.03 if v < 0.1 else None
+                rel_err = 0.03 if v > 0.1 else None
             data.append(TData(f=f, v=v, abs=abs_err, rel=rel_err))
     return data
 
@@ -56,10 +59,7 @@ class MMTestVAC(Scenario):
 
             t.meter.measure_vac()  # duty cycle
             real_v = t.meter.measure_vac()
-            if d.rel is not None:
-                t.check_rel(real_v, d.v, 0.1, f"Required voltage does not match")
-            else:
-                t.check_abs(real_v, d.v, 0.1, f"Required voltage does not match")
+            t.check_abs(real_v, d.v, 0.1, f"Required voltage does not match")
 
             result = t.edpro_ps.get_values()
             abs_err = eabs(real_v, result.U) if d.abs else None
@@ -75,14 +75,6 @@ class MMTestVAC(Scenario):
 
         r.print_result()
         t.success &= r.success
-
-
-def to_amp(v: float) -> float:
-    return v * 2.0 * math.sqrt(2)
-
-
-def from_amp(amp: float) -> float:
-    return amp / 2.0 / math.sqrt(2)
 
 
 if __name__ == "__main__":

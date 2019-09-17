@@ -1,22 +1,12 @@
 import time
 
-from math import sqrt
-
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import prompt
-from tools.common.tests import erel
+from tools.common.tests import erel, to_amp, from_amp
 from tools.devices.rigol_meter import RigolMode
 from tools.mm_context import MMContext
 
 logger = Logger("mm_cal")
-
-
-def to_amp(v: float) -> float:
-    return v * 2.0 * sqrt(2)
-
-
-def from_amp(amp: float) -> float:
-    return amp / 2.0 / sqrt(2)
 
 
 def check(val: bool, message: str):
