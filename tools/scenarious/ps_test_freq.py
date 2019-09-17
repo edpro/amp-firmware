@@ -1,6 +1,6 @@
 from typing import List, NamedTuple
 
-from tools.common.tests import TestReporter, erel, rel_str
+from tools.common.test import TestReporter, erel, rel_str
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 

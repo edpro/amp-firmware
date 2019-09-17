@@ -3,7 +3,7 @@ from typing import Optional
 
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
-from tools.common.tests import erel, rel_str, eabs
+from tools.common.test import erel, rel_str, eabs
 from tools.devices.edpro_mm import EdproMM
 from tools.devices.edpro_ps import EdproPS
 from tools.devices.owon_generator import OwonGenerator

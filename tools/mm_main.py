@@ -1,5 +1,5 @@
+from tools.common.esp import flash_espinit, flash_firmware
 from tools.common.screen import prompt, clear
-from tools.common.utils import flush_firmware, flush_esp_init
 from tools.devices.edpro_mm import EdproMM
 from tools.mm_cal import mm_run_calibration, mm_run_cal_vac, mm_run_cal_vdc
 from tools.scenarious.mm_test_vac import MMTestVAC
@@ -39,13 +39,13 @@ def process_menu():
 
     elif key == "i":
         print("init")
-        flush_esp_init()
-        flush_firmware("./images/multimeter")
+        flash_espinit()
+        flash_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
 
     elif key == "u":
         print("update")
-        flush_firmware("./images/multimeter")
+        flash_firmware("./images/multimeter")
         input("Press <ENTER> to continue...")
 
     elif key == "c":

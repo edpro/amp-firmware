@@ -1,5 +1,5 @@
+from tools.common.esp import flash_espinit, flash_firmware
 from tools.common.screen import prompt, clear
-from tools.common.utils import flush_firmware, flush_esp_init
 from tools.devices.edpro_ps import EdproPS
 
 
@@ -30,13 +30,13 @@ def process_menu():
 
     elif key == "i":
         print("init")
-        flush_esp_init()
-        flush_firmware("./images/powersource")
+        flash_espinit()
+        flash_firmware("./images/powersource")
         input("Press <ENTER> to continue...")
 
     elif key == "u":
         print("update")
-        flush_firmware("./images/powersource")
+        flash_firmware("./images/powersource")
         input("Press <ENTER> to continue...")
 
     elif key == "c":

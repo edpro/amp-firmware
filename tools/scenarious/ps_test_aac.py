@@ -1,6 +1,6 @@
 from itertools import chain
 from typing import NamedTuple, List, Optional
-from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
+from tools.common.test import eabs, erel, TestReporter, abs_str, rel_str
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 

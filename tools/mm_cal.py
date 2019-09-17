@@ -2,7 +2,7 @@ import time
 
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import prompt
-from tools.common.tests import erel, to_amp, from_amp
+from tools.common.test import erel, to_amp, from_amp
 from tools.devices.rigol_meter import RigolMode
 from tools.mm_context import MMContext
 

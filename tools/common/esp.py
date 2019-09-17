@@ -1,13 +1,12 @@
 import os
 import sys
-import subprocess
 from glob import glob
 from os import path
-from typing import List
 
 from serial.tools import list_ports
 
 from tools.common.logger import Logger, LoggedError
+from tools.common.system import run_shell, delete_files
 
 ESP_FLASH_BAUD = '921600'
 
@@ -57,26 +56,13 @@ def _find_elf_file(bin_dir: str):
     return path.normpath(found_files[0])
 
 
-def delete_files(pdir, mask):
-    for file in glob(path.join(pdir, mask)):
-        os.remove(file)
-
-
-def system(args: List[str], cwd: str = None):
-    logger.info(f"{' '.join(args)}")
-    sys.stdout.flush()
-    retcode = subprocess.call(args, cwd=cwd)
-    if retcode != 0:
-        logger.throw(f"Command execution failed, exit code: {retcode}")
-
-
 def esptool(*args):
     cmd = [sys.executable, '-m', 'esptool']
     cmd.extend(args)
-    system(cmd)
+    run_shell(cmd)
 
 
-def flush_firmware(bin_dir: str):
+def flash_firmware(bin_dir: str):
     try:
         port = detect_port()
         elf = _find_elf_file(bin_dir)
@@ -99,7 +85,7 @@ def flush_firmware(bin_dir: str):
         raise
 
 
-def flush_esp_init():
+def flash_espinit():
     try:
         port = detect_port()
         esptool('--port', port,
