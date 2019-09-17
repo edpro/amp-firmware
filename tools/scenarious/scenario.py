@@ -3,7 +3,7 @@ from typing import Optional
 
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
-from tools.common.tests import erel, rel_str
+from tools.common.tests import erel, rel_str, eabs
 from tools.devices.edpro_device import EdproMM, EdproPS
 from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
@@ -73,6 +73,15 @@ class Scenario:
             return
         err_msg = f'{msg}\n'
         err_msg += f'\texpected : {expected} +- {rel_str(err)}\n'
+        err_msg += f'\tactual   : {actual}'
+        self.logger.throw(err_msg)
+
+    def check_abs(self, actual: float, expected: float, err: float, msg: str):
+        e = eabs(actual, expected)
+        if e <= err:
+            return
+        err_msg = f'{msg}\n'
+        err_msg += f'\texpected : {expected} +- {err}\n'
         err_msg += f'\tactual   : {actual}'
         self.logger.throw(err_msg)
 

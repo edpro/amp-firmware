@@ -12,28 +12,21 @@ class TData(NamedTuple):
     rel: Optional[float]
 
 
-test_data = [
-    TData(f=1000, v=0, abs=0.03, rel=None),
-    TData(f=1000, v=0.1, abs=None, rel=0.03),
-    TData(f=1000, v=0.2, abs=None, rel=0.03),
-    TData(f=1000, v=0.5, abs=None, rel=0.03),
-    TData(f=1000, v=1.0, abs=None, rel=0.03),
-    TData(f=1000, v=2.0, abs=None, rel=0.03),
-    TData(f=1000, v=5.0, abs=None, rel=0.03),
-]
+ALL_VOLT = [0, 0.1, 0.2, 0.5, 1, 2, 3]
+ALL_FREQ = [50, 100, 1000, 10_000, 50_000, 100_000]
 
 
-def make_data(freq, volt) -> List[TData]:
+def make_data(freq: List[int], volt: List[float]) -> List[TData]:
     data = []
     for f in freq:
         for v in volt:
-            abs_err = 0.01 if v <= 0.1 else None
-            rel_err = 0.04 if v > 0.1 else None
+            abs_err = 0.03 if v < 0.1 else None
+            rel_err = 0.03 if v > 0.1 else None
             data.append(TData(f=f, v=v, abs=abs_err, rel=rel_err))
     return data
 
 
-# test_data = make_test_data(freq=ALL_FREQ, volt=ALL_VOLT)
+test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
 # test_data = make_data(freq=[80_000], volt=ALL_VOLT)
 
 
@@ -61,29 +54,24 @@ class MMTestVAC(Scenario):
             t.edpro_ps.set_freq(d.f)
             t.wait(0.5)
 
-            ################ //TODO
-            t.meter.set_vac_range(d.v)
-            t.generator.set_ac(to_amp(d.v), d.f)
-            t.wait(1)
-
             t.meter.measure_vac()  # duty cycle
             real_v = t.meter.measure_vac()
-            t.check_rel(real_v, d.v, 0.1, f"Required voltage does not match")
+            if d.rel is not None:
+                t.check_rel(real_v, d.v, 0.1, f"Required voltage does not match")
+            else:
+                t.check_abs(real_v, d.v, 0.1, f"Required voltage does not match")
 
-            result = t.edpro_mm.get_result()
-            t.check_str(result.mode, "VAC", "Multimeter mode is invalid")
-            t.check(result.finit, "Multimeter result is not finit")
+            result = t.edpro_ps.get_values()
+            abs_err = eabs(real_v, result.U) if d.abs else None
+            rel_err = erel(real_v, result.U) if d.rel else None
 
-            abs_err = eabs(real_v, result.value) if d.abs else None
-            rel_err = erel(real_v, result.value) if d.rel else None
-
-            row = f'f: {d.f}Hz | v: {d.v}V | expect: {real_v:0.6f} | result: {result.value:0.6f}'
+            row = f'f: {d.f}Hz | v: {d.v}V | expect: {real_v:0.6f} | result: {result.U:0.6f}'
             row += f' | abs: {abs_str(abs_err)}'
             row += f' | rel: {rel_str(rel_err)}'
 
             r.trace(row)
-            r.expect_abs(result.value, real_v, d.abs)
-            r.expect_rel(result.value, real_v, d.rel)
+            r.expect_abs(result.U, real_v, d.abs)
+            r.expect_rel(result.U, real_v, d.rel)
 
         r.print_result()
         t.success &= r.success

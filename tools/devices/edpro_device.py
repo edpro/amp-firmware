@@ -283,7 +283,7 @@ class EdproPS(EdproDevice):
         self.cmd(f"set f {f}")
 
 
-class MMResult(NamedTuple):
+class MMValues(NamedTuple):
     mode: str
     rdiv: int
     gain: int
@@ -299,9 +299,9 @@ class EdproMM(EdproDevice):
         response = self.request("mode")
         return response["mode"]
 
-    def get_result(self) -> MMResult:
+    def get_values(self) -> MMValues:
         r = self.request("v")
-        return MMResult(mode=r["mode"],
+        return MMValues(mode=r["mode"],
                         rdiv=int(r["rdiv"]),
                         gain=int(r["gain"]),
                         finit=r["finit"] == '1',

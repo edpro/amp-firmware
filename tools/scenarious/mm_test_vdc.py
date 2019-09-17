@@ -54,7 +54,7 @@ class MMTestVDC(Scenario):
             real_v = t.meter.measure_vdc()
             t.check_rel(real_v, d.v, 0.1, f"Required voltage does not match")
 
-            result = t.edpro_mm.get_result()
+            result = t.edpro_mm.get_values()
             t.check_str(result.mode, "VDC", "Multimeter mode is invalid")
             t.check(result.finit, "Multimeter result is not finit")
 
