@@ -61,83 +61,6 @@ def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolMeter]):
     if ri: ri.close()
 
 
-def test_v_dc(ps: EdproPS, ri: RigolMeter) -> bool:
-    rec = TestReporter("test_vds")
-    ri.set_mode(RigolMode.VDC_20)
-    ps.cmd("mode dc")
-    ps.cmd("set l 0")
-    wait_mode()
-
-    levels = [l for l in range(0, 50, 2)] + [0, 50, 0]
-
-    for level in levels:
-        step_u = 0.1 * level
-        ps.cmd(f"set l {level}")
-        time.sleep(0.05)
-        ps_val = ps.get_values().U
-        ri_val = ri.measure_vdc()
-        ea = eabs(ps_val, ri_val)
-        er = erel(ps_val, ri_val)
-        rec.trace(
-            f"step: {step_u:0.1f}V | ps: {ps_val:0.6f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
-        if level == 0:
-            rec.expect_abs(ri_val, ps_val, VDC_ZERO_ABS)
-        else:
-            rec.expect_abs(ps_val, step_u, VDC_STEP_ABS)
-            rec.expect_rel(ri_val, ps_val, 2 * VDC_REL)
-
-    rec.print_result()
-    return rec.success
-
-
-def test_freq(ps: EdproPS, ri: RigolMeter) -> bool:
-    level = 30
-    t = TestReporter("test_fr")
-    ri.set_mode(RigolMode.FREQ_20)
-    ps.cmd("mode ac")
-    ps.cmd(f"set l {level}")
-    wait_mode()
-
-    def max_rel_u(frequency: float):
-        if frequency < 50:
-            return 0.3
-        elif frequency < 100:
-            return 0.05
-        elif frequency < 10_000:
-            return 0.02
-        elif frequency < 100_000:
-            return 0.03
-        else:
-            return 5.0
-
-    fr = 10
-    while fr <= 1_000_000:
-        ps.cmd(f"set f {fr}")
-        time.sleep(0.2)
-        actual_u = ps.get_values().U
-        actual_fr = ri.measure_freq()
-        ea = eabs(fr, actual_fr)
-        er = erel(fr, actual_fr)
-        t.trace(f"U: {actual_u: 0.3f}V | f: {fr} | actual: {actual_fr:0f} | abs: {ea:0f} | rel: {er * 100:0.2f}%")
-        t.expect_rel(actual_fr, fr, FREQ_REL)
-        t.expect_rel(actual_u, 0.1 * level, max_rel_u(fr))
-        if fr < 100:
-            fr += 10
-        elif fr < 1_000:
-            fr += 100
-        elif fr < 10_000:
-            fr += 1_000
-        elif fr < 100_000:
-            fr += 10_000
-        else:
-            fr += 100_000
-
-    ps.cmd("set l 0")
-    ps.cmd("set f 1000")
-    t.print_result()
-    return t.success
-
-
 def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_adc")
     ri.set_mode(RigolMode.VDC_20)
@@ -208,8 +131,6 @@ def ps_run_test():
         if choise == "":
             while True:
                 try:
-                    check(test_v_dc(ps, ri), "Test failed!")
-                    check(test_freq(ps, ri), "Test failed!")
                     break
                 except LoggedError:
                     choise = prompt("<Enter> - continue, <r> - retry: ")

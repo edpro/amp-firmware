@@ -22,9 +22,12 @@ def make_data(freq: List[int], volt: List[float]) -> List[TData]:
             if f < 100:
                 abs_err = 0.03 if v < 0.1 else None
                 rel_err = 0.04 if v > 0.1 else None
-            else:
+            elif f < 20_000:
                 abs_err = 0.03 if v < 0.1 else None
                 rel_err = 0.03 if v > 0.1 else None
+            else:
+                abs_err = 0.03 if v < 0.1 else None
+                rel_err = 0.04 if v > 0.1 else None
             data.append(TData(f=f, v=v, abs=abs_err, rel=rel_err))
     return data
 
