@@ -1,7 +1,7 @@
 import time
 
 from tools.common.logger import Logger, LoggedError
-from tools.devices.edpro_device import EdproMM
+from tools.devices.edpro_mm import EdproMM
 from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
 from tools.devices.rigol_meter import RigolMeter

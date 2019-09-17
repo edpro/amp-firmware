@@ -4,7 +4,8 @@ from typing import Optional
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
 from tools.common.tests import erel, rel_str, eabs
-from tools.devices.edpro_device import EdproMM, EdproPS
+from tools.devices.edpro_mm import EdproMM
+from tools.devices.edpro_ps import EdproPS
 from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
 from tools.devices.rigol_meter import RigolMeter
@@ -26,7 +27,7 @@ class Scenario:
         self.edpro_mm = EdproMM()
         self.edpro_mm.connect()
         self.edpro_mm.wait_boot_complete()
-        self.edpro_mm.request("devmode")
+        self.edpro_mm.set_devmode()
         info = self.edpro_mm.get_info()
         self.check_str(info.name, "Multimeter", "Invalid device name!")
 
@@ -34,7 +35,7 @@ class Scenario:
         self.edpro_ps = EdproPS()
         self.edpro_ps.connect()
         self.edpro_ps.wait_boot_complete()
-        self.edpro_ps.request("devmode")
+        self.edpro_ps.set_devmode()
         info = self.edpro_ps.get_info()
         self.check_str(info.name, "Powersource", "Invalid device name!")
 

@@ -39,7 +39,7 @@ class EDeviceInfo(NamedTuple):
 class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
-    def __init__(self, tag):
+    def __init__(self, tag="edpro_device"):
         self.log_mode = False
         self.tag = tag
         self.logger = Logger(tag)
@@ -255,65 +255,16 @@ class EdproDevice:
         return EDeviceInfo(name=r["name"],
                            version=r["version"])
 
-
-class PSValues(NamedTuple):
-    U: float
-    I: float
-
-
-class EdproPS(EdproDevice):
-    def __init__(self):
-        super().__init__("ps")
-
-    def get_values(self) -> PSValues:
-        r = self.request("v")
-        if r.get("success") != "1":
-            self.logger.throw("Request not succeed!")
-        return PSValues(U=float(r["U"]),
-                        I=float(r["I"]))
-
-    def set_mode(self, mode: str):
-        self.cmd(f"mode {mode}")
-
-    def set_volt(self, v: float):
-        level = int(round(v * 10))
-        self.cmd(f"set l {level}")
-
-    def set_freq(self, f: int):
-        self.cmd(f"set f {f}")
-
-
-class MMValues(NamedTuple):
-    mode: str
-    rdiv: int
-    gain: int
-    finit: bool
-    value: float
-
-
-class EdproMM(EdproDevice):
-    def __init__(self):
-        super().__init__("mm")
-
-    def get_mode(self) -> str:
-        response = self.request("mode")
-        return response["mode"]
-
-    def get_values(self) -> MMValues:
-        r = self.request("v")
-        return MMValues(mode=r["mode"],
-                        rdiv=int(r["rdiv"]),
-                        gain=int(r["gain"]),
-                        finit=r["finit"] == '1',
-                        value=float(r["value"]))
+    def set_devmode(self):
+        self.request("devmode")
 
 
 def test():
-    device = EdproPS()
+    device = EdproDevice()
     device.connect()
     device.wait_boot_complete()
-    device.request("devmode")
-    device.request("i")
+    device.set_devmode()
+    device.get_info()
     device.close()
 
 

@@ -1,6 +1,6 @@
 from tools.common.screen import prompt, clear
 from tools.common.utils import flush_firmware, flush_esp_init
-from tools.devices.edpro_device import EdproMM
+from tools.devices.edpro_mm import EdproMM
 from tools.mm_cal import mm_run_calibration, mm_run_cal_vac, mm_run_cal_vdc
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
@@ -75,8 +75,7 @@ def process_menu():
 
     elif key == "l":
         print("log")
-        mm = EdproMM()
-        mm.show_log()
+        EdproMM().show_log()
 
 
 def main():
