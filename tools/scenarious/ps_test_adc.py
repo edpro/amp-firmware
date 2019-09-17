@@ -1,18 +1,20 @@
-from typing import NamedTuple, List, Optional
-from tools.common.tests import eabs, erel, TestReporter, abs_str, rel_str
+from typing import List, NamedTuple, Optional
+
+from tools.common.tests import TestReporter, abs_str, eabs, erel, rel_str
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
-##
-##       +--[V]--+
-##       |       |
-##  (+)--+--R1---+---+
-##                   | I = V / R1
-##  (-)-----R2-------+
-##
+
+#      +--[V]--+
+#      |       |
+# (+)--+--R1---+---+
+#                  | I = V / R1
+# (-)-----R2-------+
+#
 
 R1 = 1.0
 R2 = 5.6
+
 
 class TData(NamedTuple):
     c: float  # Current, A
@@ -38,6 +40,7 @@ class PSTestADC(Scenario):
         t.use_edpro_ps()
         t.use_meter()
         t.test_adc()
+        t.edpro_ps.set_volt(0)  # turn off due to high current
 
     def test_adc(t):
         t.edpro_ps.set_mode("dc")

@@ -276,7 +276,7 @@ class EdproPS(EdproDevice):
         self.cmd(f"mode {mode}")
 
     def set_volt(self, v: float):
-        level = int(round(v, 1) * 10)
+        level = int(round(v * 10))
         self.cmd(f"set l {level}")
 
     def set_freq(self, f: int):

@@ -6,7 +6,7 @@ from tools.devices.owon_generator import OwonGenerator
 from tools.devices.owon_power import OwonPower
 from tools.devices.rigol_meter import RigolMeter
 
-logger = Logger("ps_context")
+logger = Logger("mm_context")
 
 
 class MMContext:
