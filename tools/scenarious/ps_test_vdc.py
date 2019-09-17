@@ -24,6 +24,10 @@ test_data: List[TData] = [
     TData(v=3.0, abs=None, rel=0.02),
     TData(v=4.0, abs=None, rel=0.02),
     TData(v=5.0, abs=None, rel=0.02),
+    # test ability to change full range in a proper time
+    TData(v=0.0, abs=0.05, rel=None),
+    TData(v=5.0, abs=None, rel=0.02),
+    TData(v=0.0, abs=0.05, rel=None),
 ]
 
 

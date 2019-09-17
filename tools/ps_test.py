@@ -61,37 +61,6 @@ def _dispose_devices(ps: Optional[EdproPS], ri: Optional[RigolMeter]):
     if ri: ri.close()
 
 
-def test_a_dc(ps: EdproPS, ri: RigolMeter) -> bool:
-    t = TestReporter("tast_adc")
-    ri.set_mode(RigolMode.VDC_20)
-    ps.cmd("mode dc")
-    ps.cmd("set l 0")
-    wait_mode()
-
-    levels = [0, 2, 4, 6, 10, 20, 30, 40, 50, 0]
-
-    for level in levels:
-        step_u = 0.1 * level
-        ps.cmd(f"set l {level}")
-        time.sleep(0.1)
-        ps_val = ps.get_values()
-        ri_val = ri.measure_vdc()
-        ea = eabs(ps_val.I, ri_val)
-        er = erel(ps_val.I, ri_val)
-        t.trace(
-            f"step: {step_u:0.1f}V | U: {ps_val.U:0.3f} I: {ps_val.I:0.3f} | rigol: {ri_val:0.6f} | abs: {ea:0.6f} | rel: {er * 100:0.2f}%")
-        t.expect_abs(ps_val.U, step_u, VDC_STEP_ABS)
-        if level == 0:
-            t.expect_abs(ri_val, 0, 0.01)
-            t.expect_abs(ps_val.I, ri_val, ADC_ZERO_ABS)
-        else:
-            t.expect_rel(ri_val, ps_val.U / CIRCUIT_R, 0.05)
-            t.expect_rel(ps_val.I, ri_val, ADC_REL)
-
-    t.print_result()
-    return t.success
-
-
 def test_a_ac(ps: EdproPS, ri: RigolMeter) -> bool:
     t = TestReporter("tast_aac")
     ri.set_mode(RigolMode.VAC_20)
@@ -143,7 +112,6 @@ def ps_run_test():
         if choise == "":
             while True:
                 try:
-                    check(test_a_dc(ps, ri), "Test failed!")
                     check(test_a_ac(ps, ri), "Test failed!")
                     break
                 except LoggedError:
