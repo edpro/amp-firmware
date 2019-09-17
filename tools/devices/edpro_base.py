@@ -4,9 +4,9 @@ from typing import Optional, Dict, NamedTuple
 
 import serial
 
+from tools.common.esp import detect_port
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors, print_color
-from tools.common.utils import detect_port
 
 
 def decode_device_line(data: bytes) -> str:

@@ -1,7 +1,6 @@
 from tools.common.esp import flash_espinit, flash_firmware
 from tools.common.screen import prompt, clear
 from tools.devices.edpro_mm import EdproMM
-from tools.mm_cal import mm_run_calibration, mm_run_cal_vac, mm_run_cal_vdc
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
 
@@ -50,17 +49,17 @@ def process_menu():
 
     elif key == "c":
         print("calibration")
-        mm_run_calibration()
+        # mm_run_calibration()
         input("Press <ENTER> to continue...")
 
     elif key == "c1":
         print("calibration (VDC)")
-        mm_run_cal_vdc()
+        # mm_run_cal_vdc()
         input("Press <ENTER> to continue...")
 
     elif key == "c2":
         print("calibration (VAC)")
-        mm_run_cal_vac()
+        # mm_run_cal_vac()
         input("Press <ENTER> to continue...")
 
     elif key == "tvdc":
