@@ -1,6 +1,5 @@
-import sys
 import os
-
+import sys
 from glob import glob
 from typing import List
 

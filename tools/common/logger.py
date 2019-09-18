@@ -1,7 +1,4 @@
-import ctypes
-import os
-
-from tools.common.screen import Colors
+from tools.common.screen import Colors, init_win_console
 
 
 class LoggedError(Exception):
@@ -12,10 +9,7 @@ class Logger:
 
     def __init__(self, tag):
         self.tag = tag
-        # enable ANSI colors in Win10 console
-        if os.name == "nt":
-            kernel32 = ctypes.windll.kernel32
-            kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+        init_win_console()
 
     def print(self, color, msg):
         print(f"{color}[{self.tag}] {msg}{Colors.RESET}")

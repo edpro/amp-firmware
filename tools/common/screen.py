@@ -1,4 +1,17 @@
+import ctypes
 import os
+
+win_console_initialized = False
+
+def init_win_console():
+    global win_console_initialized
+    if win_console_initialized:
+        return
+    # enable ANSI colors in Win10 console
+    if os.name == "nt":
+        kernel32 = ctypes.windll.kernel32
+        kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+    win_console_initialized = True
 
 
 def clear():
