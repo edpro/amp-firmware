@@ -29,6 +29,9 @@ class MenuDef:
     def move_next(self):
         self.index = (self.index + 1) % len(self.items)
 
+    def current_item(self) -> 'MenuItem':
+        return self.items[self.index]
+
 
 class MenuItem:
     title: str
@@ -49,6 +52,8 @@ class MenuCol:
 class UI:
     title: str
     main_menu: MenuDef
+
+    _quit_requested: bool = False
 
     def init(self):
         curses.noecho()
@@ -90,15 +95,23 @@ class UI:
         self.draw_menu()
         scr.refresh()
 
+    def quit(self):
+        self._quit_requested = True
+
     def read(self) -> bool:
-        ch = scr.getkey()
-        if ch == 'KEY_LEFT':
+        ch = scr.getch()
+        if ch == curses.KEY_LEFT:
             self.main_menu.move_prev()
-        elif ch == 'KEY_RIGHT':
+        elif ch == curses.KEY_RIGHT:
             self.main_menu.move_next()
-        elif ch == 'q':
-            return False
-        return True
+        elif ch == curses.KEY_ENTER or ch == 10 or ch == 13:
+            it = self.main_menu.current_item()
+            if it.action:
+                it.action()
+        elif ch == ord('q'):
+            self._quit_requested = True
+
+        return not self._quit_requested
 
     def show_menu(self):
         self.draw()
@@ -112,10 +125,10 @@ def dev_run():
     ui.init()
     ui.title = "DEVICE_NAME:"
     ui.main_menu = MenuDef([
-        MenuItem("Flash"),
+        MenuItem("Firmware"),
         MenuItem("Test"),
         MenuItem("Calibration"),
-        MenuItem("Quit"),
+        MenuItem("Quit", action=ui.quit),
     ])
     ui.show_menu()
     ui.dispose()
