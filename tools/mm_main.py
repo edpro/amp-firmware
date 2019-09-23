@@ -1,88 +1,51 @@
 from tools.common.esp import flash_espinit, flash_firmware
-from tools.common.screen import scr_prompt, scr_clear
 from tools.devices.edpro_mm import EdproMM
+from tools.scenarious.mm_calibration import MMCalibration, MMCalFlags
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
+from tools.ui.menu import MenuDef, MenuItem, UI
 
 
-def draw_menu():
-    scr_clear()
-    print("---------------------")
-    print(" EdPro Multimeter")
-    print("---------------------")
-    print(" [i] - Firmware Init")
-    print(" [u] - Firmware Update")
-    print(" [l] - Device Log")
-    print("---------------------")
-    print(" [c]  - Calibrate Device")
-    print(" [c1] - Calibrate DC Voltage")
-    print(" [c2] - Calibrate AC Voltage")
-    print("---------------------")
-    print(" [tvdc] - Test DC Voltage")
-    print(" [tvac] - Test AC Voltage")
-    print("---------------------")
-    print(" [q] - Quit")
+def firmware_init():
+    flash_espinit()
+    flash_firmware("./images/multimeter")
 
 
-def process_menu():
-    draw_menu()
-
-    try:
-        key = scr_prompt("Enter your choise: ")
-    except KeyboardInterrupt:
-        key = "q"
-
-    if key == "q":
-        print("quit")
-        exit(0)
-
-    elif key == "i":
-        print("init")
-        flash_espinit()
-        flash_firmware("./images/multimeter")
-        input("Press <ENTER> to continue...")
-
-    elif key == "u":
-        print("update")
-        flash_firmware("./images/multimeter")
-        input("Press <ENTER> to continue...")
-
-    elif key == "c":
-        print("calibration")
-        # mm_run_calibration()
-        input("Press <ENTER> to continue...")
-
-    elif key == "c1":
-        print("calibration (VDC)")
-        # mm_run_cal_vdc()
-        input("Press <ENTER> to continue...")
-
-    elif key == "c2":
-        print("calibration (VAC)")
-        # mm_run_cal_vac()
-        input("Press <ENTER> to continue...")
-
-    elif key == "tvdc":
-        print("test VDC")
-        MMTestVDC().run()
-        input("Press <ENTER> to continue...")
-
-    elif key == "tvac":
-        print("test VAC")
-        MMTestVAC().run()
-        input("Press <ENTER> to continue...")
-
-    elif key == "l":
-        print("log")
-        EdproMM().show_log()
+def firmware_update():
+    flash_firmware("./images/multimeter")
 
 
-def main():
-    while True:
-        try:
-            process_menu()
-        except KeyboardInterrupt:
-            pass
+def test_all():
+    pass
 
 
-main()
+ps_menu = MenuDef([
+    MenuItem("Device", submenu=MenuDef([
+        MenuItem("Firmware Init", lambda: firmware_init()),
+        MenuItem("Firmware Update", lambda: firmware_update()),
+        MenuItem("Connect", EdproMM().show_log, is_pause=False),
+    ])),
+    MenuItem("Calibration", submenu=MenuDef([
+        MenuItem("Calibrate ALL", MMCalibration(MMCalFlags.ALL).run),
+        MenuItem("--------"),
+        MenuItem("Calibrate VDC", MMCalibration(MMCalFlags.VDC).run),
+        MenuItem("Calibrate VAC", MMCalibration(MMCalFlags.VAC).run),
+        MenuItem("--------"),
+        MenuItem("Calibrate ADC", MMCalibration(MMCalFlags.ADC).run),
+        MenuItem("Calibrate AAC", MMCalibration(MMCalFlags.AAC).run),
+        MenuItem("--------"),
+        MenuItem("Calibrate R", MMCalibration(MMCalFlags.R).run),
+    ])),
+    MenuItem("Test", submenu=MenuDef([
+        MenuItem("Test ALL", test_all),
+        MenuItem("--------"),
+        MenuItem("Test VDC", MMTestVDC().run),
+        MenuItem("Test VAC", MMTestVAC().run),
+    ])),
+    MenuItem("Quit", is_quit=True),
+])
+
+ui = UI()
+ui.title = "EdPro Multimeter"
+ui.main_menu = ps_menu
+ui.run()

@@ -10,11 +10,13 @@ from tools.devices.edpro_base import EdproDevice
 
 PAIR_DEFAULT = 1
 PAIR_SELECTED = 2
+PAIR_HIGHLIGHT = 3
 
 scr = curses.initscr()
 curses.start_color()
 curses.init_pair(PAIR_DEFAULT, curses.COLOR_WHITE, curses.COLOR_BLACK)
 curses.init_pair(PAIR_SELECTED, curses.COLOR_BLACK, curses.COLOR_WHITE)
+curses.init_pair(PAIR_HIGHLIGHT, curses.COLOR_YELLOW, curses.COLOR_BLACK)
 
 
 def enable_curses():
@@ -106,18 +108,14 @@ class UI:
         self.draw_submenu()
 
     def draw_title(self):
-        attr = curses.color_pair(PAIR_DEFAULT)
-        x = 1
+        attr = curses.color_pair(PAIR_HIGHLIGHT)
+        x = 4
         y = 1
-        scr.addstr(y, x, self.title, attr)
-        y += 1
-        scr.addstr(y, x, '=' * len(self.title), attr)
+        scr.addstr(y, x, f'::: {self.title} :::', attr | curses.A_UNDERLINE)
 
     def draw_menu(self):
-        x = 1
-        y = 4
-        # scr.addstr(y, x, '|')
-        # x += 1
+        x = 4
+        y = 3
         for i, it in enumerate(self.main_menu.items):
             title = f'{self.main_menu.items[i].title}'
             color_num = PAIR_SELECTED \
