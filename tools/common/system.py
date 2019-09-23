@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 from glob import glob
 from typing import List
@@ -16,6 +17,6 @@ def delete_files(pdir, mask):
 def run_shell(args: List[str], cwd: str = None):
     logger.info(f"{' '.join(args)}")
     sys.stdout.flush()
-    retcode = os.subprocess.call(args, cwd=cwd)
+    retcode = subprocess.call(args, cwd=cwd)
     if retcode != 0:
         logger.throw(f"Command execution failed, exit code: {retcode}")

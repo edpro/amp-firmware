@@ -10,7 +10,7 @@ from tools.common.system import run_shell, delete_files
 
 ESP_FLASH_BAUD = '921600'
 
-logger = Logger("utils")
+logger = Logger("esp")
 
 
 def _detect_port_osx():
