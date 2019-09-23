@@ -5,6 +5,7 @@ import curses
 #  typings for curses in /stub are taken from:
 #  https://github.com/python/typeshed/blob/master/stdlib/2and3/_curses.pyi
 from tools.common.screen import init_win_console
+from tools.devices.edpro_base import EdproDevice
 
 PAIR_DEFAULT = 1
 PAIR_SELECTED = 2
@@ -13,6 +14,23 @@ scr = curses.initscr()
 curses.start_color()
 curses.init_pair(PAIR_DEFAULT, curses.COLOR_WHITE, curses.COLOR_BLACK)
 curses.init_pair(PAIR_SELECTED, curses.COLOR_BLACK, curses.COLOR_WHITE)
+
+
+def enable_curses():
+    scr.refresh()
+    curses.noecho()
+    curses.cbreak()
+    curses.curs_set(0)
+    scr.keypad(True)
+
+
+def disable_curses():
+    scr.clear()
+    curses.echo()
+    curses.nocbreak()
+    curses.curs_set(1)
+    scr.keypad(False)
+    curses.endwin()
 
 
 class MenuDef:
@@ -59,19 +77,6 @@ class UI:
 
     _quit_requested: bool = False
 
-    def init(self):
-        curses.noecho()
-        curses.cbreak()
-        curses.curs_set(0)
-        scr.keypad(True)
-
-    def dispose(self):
-        curses.nocbreak()
-        curses.curs_set(1)
-        scr.keypad(False)
-        curses.echo()
-        curses.endwin()
-
     def draw(self):
         scr.clear()
         self.draw_title()
@@ -92,7 +97,9 @@ class UI:
         x += 1
         for i, it in enumerate(self.main_menu.items):
             title = f' {self.main_menu.items[i].title} '
-            color_num = PAIR_SELECTED if i == self.main_menu.index else PAIR_DEFAULT
+            color_num = PAIR_SELECTED \
+                if i == self.main_menu.index and self.submenu is None \
+                else PAIR_DEFAULT
             it.x = x
             it.y = y
             scr.addstr(y, x, title, curses.color_pair(color_num))
@@ -120,7 +127,7 @@ class UI:
         ch = scr.getch()
         if ch == 27:
             if self.submenu is None:
-                self.quit()
+                self.request_quit()
             else:
                 self.submenu = None
                 self.submenu_shown = False
@@ -151,7 +158,11 @@ class UI:
                 self.submenu_shown = True
                 self.submenu = self.main_menu.current_item().submenu
             elif self.submenu:
-                self.submenu.current_item().action()
+                action = self.submenu.current_item().action
+                if action:
+                    disable_curses()
+                    action()
+                    enable_curses()
 
         elif ch == ord('q'):
             self._quit_requested = True
@@ -159,21 +170,23 @@ class UI:
         return not self._quit_requested
 
     def show_menu(self):
+        enable_curses()
         self.draw()
         while self.read():
             self.draw()
+        disable_curses()
 
-    def quit(self):
+    def request_quit(self):
         self._quit_requested = True
 
 
 def dev_run():
     init_win_console()
     ui = UI()
-    ui.init()
     ui.title = "DEVICE_NAME"
     ui.main_menu = MenuDef([
-        MenuItem("Firmware", submenu=MenuDef([
+        MenuItem("Device", submenu=MenuDef([
+            MenuItem("Connect", lambda: EdproDevice().show_log()),
             MenuItem("Flash Firmware"),
         ])),
         MenuItem("Calibration", submenu=MenuDef([
@@ -190,10 +203,9 @@ def dev_run():
             MenuItem("Test ADC"),
             MenuItem("Test AAC"),
         ])),
-        MenuItem("Quit", action=ui.quit),
+        MenuItem("Quit", action=lambda: ui.request_quit()),
     ])
     ui.show_menu()
-    ui.dispose()
 
 
 if __name__ == "__main__":
