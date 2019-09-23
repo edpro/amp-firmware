@@ -3,7 +3,8 @@ import os
 
 win_console_initialized = False
 
-def init_win_console():
+
+def scr_init():
     global win_console_initialized
     if win_console_initialized:
         return
@@ -12,13 +13,6 @@ def init_win_console():
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
     win_console_initialized = True
-
-
-def clear():
-    if os.name == 'nt':
-        os.system('cls')
-    else:
-        os.system('clear')
 
 
 class Colors:
@@ -44,9 +38,20 @@ class Colors:
     RESET = '\033[0m'
 
 
-def print_color(msg: str, color: str):
+def scr_print(msg: str, color: str):
     print(f'{color}{msg}{Colors.RESET}')
 
 
-def prompt(msg: str):
+def scr_prompt(msg: str):
     return input(f"\n{Colors.GREEN}>> {msg}{Colors.RESET}")
+
+
+def scr_clear():
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
+
+def scr_pause():
+    input("Press <ENTER> to continue...")

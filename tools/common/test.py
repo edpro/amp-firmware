@@ -1,7 +1,7 @@
 from typing import List, Tuple, Optional
 from math import sqrt
 
-from tools.common.screen import print_color, Colors
+from tools.common.screen import scr_print, Colors
 
 
 def to_amp(v: float) -> float:
@@ -41,11 +41,11 @@ class TestReporter:
         self.tag = tag
         self.records: List[Tuple[int, str]] = []
         self.success: bool = True
-        print_color(f'[{self.tag}] begin test', Colors.LIGHT_BLUE)
+        scr_print(f'[{self.tag}] begin test', Colors.LIGHT_BLUE)
 
     def add_err_line(self, text: str):
         self.records.append((1, text))
-        print_color(f'[{self.tag}] {text}', Colors.LIGHT_RED)
+        scr_print(f'[{self.tag}] {text}', Colors.LIGHT_RED)
 
     def expect_abs(self, actual: float, expect: float, err: Optional[float]):
         if (err is None):
@@ -75,12 +75,12 @@ class TestReporter:
 
     def trace(self, text: str):
         self.records.append((0, text))
-        print_color(f'[{self.tag}] {text}', Colors.GREEN)
+        scr_print(f'[{self.tag}] {text}', Colors.GREEN)
 
     def print_result(self):
-        print_color(f'[{self.tag}] result:', Colors.LIGHT_BLUE)
+        scr_print(f'[{self.tag}] result:', Colors.LIGHT_BLUE)
         for t, text in self.records:
             if t == 0:
-                print_color(f'| {text}', Colors.GRAY)
+                scr_print(f'| {text}', Colors.GRAY)
             elif t == 1:
-                print_color(f'| {text}', Colors.LIGHT_RED)
+                scr_print(f'| {text}', Colors.LIGHT_RED)

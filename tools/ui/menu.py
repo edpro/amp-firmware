@@ -1,10 +1,11 @@
+import traceback
 from typing import List, Callable, Optional
 
 import curses
 
 #  typings for curses in /stub are taken from:
 #  https://github.com/python/typeshed/blob/master/stdlib/2and3/_curses.pyi
-from tools.common.screen import init_win_console
+from tools.common.screen import scr_init, scr_pause, scr_clear
 from tools.devices.edpro_base import EdproDevice
 
 PAIR_DEFAULT = 1
@@ -41,11 +42,18 @@ class MenuDef:
         self.items = items
         self.index = 0
 
+    def _move_index(self, step: int):
+        self.index = (self.index + step) % len(self.items)
+
     def move_prev(self):
-        self.index = (self.index - 1) % len(self.items)
+        self._move_index(-1)
+        if self.current_item().is_sep():
+            self._move_index(-1)
 
     def move_next(self):
-        self.index = (self.index + 1) % len(self.items)
+        self._move_index(1)
+        if self.current_item().is_sep():
+            self._move_index(1)
 
     def current_item(self) -> 'MenuItem':
         return self.items[self.index]
@@ -55,13 +63,27 @@ class MenuItem:
     title: str
     action: Callable
     submenu: MenuDef
+    is_shell: bool
+    is_pause: bool
+    is_quit: bool
     x: int = 0
     y: int = 0
 
-    def __init__(self, title: str, action: Callable = None, submenu: MenuDef = None):
+    def __init__(self, title: str,
+                 action: Callable = None,
+                 submenu: MenuDef = None,
+                 is_shell=True,
+                 is_pause=True,
+                 is_quit=False):
         self.title = title
         self.action = action
         self.submenu = submenu
+        self.is_shell = is_shell
+        self.is_pause = is_pause
+        self.is_quit = is_quit
+
+    def is_sep(self) -> bool:
+        return self.title.startswith("--")
 
 
 class MenuCol:
@@ -70,7 +92,7 @@ class MenuCol:
 
 
 class UI:
-    title: str = ""
+    title: str = "TITLE_NOT_SET"
     main_menu: MenuDef = None
     submenu: Optional[MenuDef] = None
     submenu_shown: bool = False
@@ -84,19 +106,20 @@ class UI:
         self.draw_submenu()
 
     def draw_title(self):
+        attr = curses.color_pair(PAIR_DEFAULT)
         x = 1
         y = 1
-        scr.addstr(y, x, self.title, curses.color_pair(PAIR_DEFAULT))
+        scr.addstr(y, x, self.title, attr)
         y += 1
-        scr.addstr(y, x, '=' * len(self.title), curses.color_pair(PAIR_DEFAULT))
+        scr.addstr(y, x, '=' * len(self.title), attr)
 
     def draw_menu(self):
         x = 1
         y = 4
-        scr.addstr(y, x, '|')
-        x += 1
+        # scr.addstr(y, x, '|')
+        # x += 1
         for i, it in enumerate(self.main_menu.items):
-            title = f' {self.main_menu.items[i].title} '
+            title = f'{self.main_menu.items[i].title}'
             color_num = PAIR_SELECTED \
                 if i == self.main_menu.index and self.submenu is None \
                 else PAIR_DEFAULT
@@ -104,22 +127,23 @@ class UI:
             it.y = y
             scr.addstr(y, x, title, curses.color_pair(color_num))
             x += len(title)
-            scr.addstr(y, x, '|')
-            x += 1
+            scr.addstr(y, x, ' | ')
+            x += 3
 
     def draw_submenu(self):
         if self.submenu is None:
             return
         main_item = self.main_menu.current_item()
         x = main_item.x
-        y = main_item.y + 1
-        scr.addstr(y, x + 1, '---')
+        y = main_item.y
+        y += 1
+        scr.addstr(y, x, '-' * len(main_item.title))
         y += 1
         for i, it in enumerate(self.submenu.items):
             text_pair = PAIR_SELECTED if i == self.submenu.index else PAIR_DEFAULT
             it.x = x
             it.y = y
-            title = f' {self.submenu.items[i].title} '
+            title = f'{self.submenu.items[i].title}'
             scr.addstr(y, x, title, curses.color_pair(text_pair))
             y += 1
 
@@ -127,7 +151,7 @@ class UI:
         ch = scr.getch()
         if ch == 27:
             if self.submenu is None:
-                self.request_quit()
+                self._quit_requested = True
             else:
                 self.submenu = None
                 self.submenu_shown = False
@@ -151,39 +175,49 @@ class UI:
                 self.submenu.move_next()
 
         elif ch == curses.KEY_ENTER or ch == 10 or ch == 13:
-            it = self.main_menu.current_item()
-            if it.action:
-                it.action()
+            main_item = self.main_menu.current_item()
+            if main_item.is_quit:
+                self._quit_requested = True
             elif not self.submenu_shown:
                 self.submenu_shown = True
                 self.submenu = self.main_menu.current_item().submenu
             elif self.submenu:
-                action = self.submenu.current_item().action
-                if action:
-                    disable_curses()
-                    action()
-                    enable_curses()
+                self.run_action(self.submenu.current_item())
 
         elif ch == ord('q'):
             self._quit_requested = True
 
         return not self._quit_requested
 
-    def show_menu(self):
+    def run_action(self, item: MenuItem):
+        if item.action is None:
+            return
+
+        if item.is_shell:
+            disable_curses()
+            scr_clear()
+
+        try:
+            item.action()
+        except Exception:
+            traceback.print_exc()
+
+        if item.is_shell:
+            if item.is_pause:
+                scr_pause()
+            enable_curses()
+
+    def run(self):
         enable_curses()
         self.draw()
         while self.read():
             self.draw()
         disable_curses()
 
-    def request_quit(self):
-        self._quit_requested = True
-
 
 def dev_run():
-    init_win_console()
+    scr_init()
     ui = UI()
-    ui.title = "DEVICE_NAME"
     ui.main_menu = MenuDef([
         MenuItem("Device", submenu=MenuDef([
             MenuItem("Connect", lambda: EdproDevice().show_log()),
@@ -203,9 +237,9 @@ def dev_run():
             MenuItem("Test ADC"),
             MenuItem("Test AAC"),
         ])),
-        MenuItem("Quit", action=lambda: ui.request_quit()),
+        MenuItem("Quit", is_quit=True),
     ])
-    ui.show_menu()
+    ui.run()
 
 
 if __name__ == "__main__":

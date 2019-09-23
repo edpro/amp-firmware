@@ -6,7 +6,7 @@ import serial
 
 from tools.common.esp import detect_port
 from tools.common.logger import Logger, LoggedError
-from tools.common.screen import Colors, print_color
+from tools.common.screen import Colors, scr_print
 
 
 def decode_device_line(data: bytes) -> str:
@@ -229,7 +229,7 @@ class EdproDevice:
         try:
             self.log_mode = True
             self.connect(reboot=False)
-            print_color("\n<?> - help, <q> - exit", Colors.GREEN)
+            scr_print("\n<?> - help, <q> - exit", Colors.GREEN)
             while True:
                 cmd = input("")
                 if cmd == "q":

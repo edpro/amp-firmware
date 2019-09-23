@@ -1,12 +1,12 @@
 from tools.common.esp import flash_espinit, flash_firmware
-from tools.common.screen import prompt, clear
+from tools.common.screen import scr_prompt, scr_clear
 from tools.devices.edpro_mm import EdproMM
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
 
 
 def draw_menu():
-    clear()
+    scr_clear()
     print("---------------------")
     print(" EdPro Multimeter")
     print("---------------------")
@@ -28,7 +28,7 @@ def process_menu():
     draw_menu()
 
     try:
-        key = prompt("Enter your choise: ")
+        key = scr_prompt("Enter your choise: ")
     except KeyboardInterrupt:
         key = "q"
 

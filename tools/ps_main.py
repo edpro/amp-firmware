@@ -1,65 +1,49 @@
 from tools.common.esp import flash_espinit, flash_firmware
-from tools.common.screen import prompt, clear
 from tools.devices.edpro_ps import EdproPS
+from tools.scenarious.ps_calibration import PSCalibration
+from tools.scenarious.ps_test_adc import PSTestADC
+from tools.scenarious.ps_test_freq import PSTestFreq
+from tools.scenarious.ps_test_vac import PSTestVAC
+from tools.scenarious.ps_test_vdc import PSTestVDC
+from tools.ui.menu import MenuDef, MenuItem, UI
 
 
-def draw_menu():
-    clear()
-    print("---------------------")
-    print(" EdPro Powersource")
-    print("---------------------")
-    print(" (i) Firmware Init")
-    print(" (u) Firmware Update")
-    print(" (c) Calibrate Device")
-    print(" (t) Test Device")
-    print(" (l) Log")
-    print(" (q) Quit")
+def firmware_init():
+    flash_espinit()
+    flash_firmware("./images/powersource")
 
 
-def process_menu():
-    draw_menu()
-
-    try:
-        key = prompt("Enter your choise: ")
-    except KeyboardInterrupt:
-        key = "q"
-
-    if key == "q":
-        print("quit")
-        exit(0)
-
-    elif key == "i":
-        print("init")
-        flash_espinit()
-        flash_firmware("./images/powersource")
-        input("Press <ENTER> to continue...")
-
-    elif key == "u":
-        print("update")
-        flash_firmware("./images/powersource")
-        input("Press <ENTER> to continue...")
-
-    elif key == "c":
-        print("calibration")
-        # ps_run_calibration()
-        input("Press <ENTER> to continue...")
-
-    elif key == "t":
-        # ps_run_test()
-        print("test")
-        input("Press <ENTER> to continue...")
-
-    elif key == "l":
-        print("log")
-        EdproPS().show_log()
+def firmware_update():
+    flash_firmware("./images/powersource")
 
 
-def main():
-    while True:
-        try:
-            process_menu()
-        except KeyboardInterrupt:
-            pass
+def test_all():
+    pass
 
 
-main()
+ps_menu = MenuDef([
+    MenuItem("Device", submenu=MenuDef([
+        MenuItem("Firmware Init", lambda: firmware_init()),
+        MenuItem("Firmware Update", lambda: firmware_update()),
+        MenuItem("Connect", EdproPS().show_log, is_pause=False),
+    ])),
+    MenuItem("Calibration", submenu=MenuDef([
+        MenuItem("Calibrate ALL", lambda: PSCalibration().run()),
+    ])),
+    MenuItem("Test", submenu=MenuDef([
+        MenuItem("Test ALL", test_all),
+        MenuItem("--------"),
+        MenuItem("Test VDC", PSTestVDC().run),
+        MenuItem("Test VAC", PSTestVAC().run),
+        MenuItem("Test ADC", PSTestADC().run),
+        MenuItem("Test AAC", PSTestVAC().run),
+        MenuItem("--------"),
+        MenuItem("Test FREQ", PSTestFreq().run),
+    ])),
+    MenuItem("Quit", is_quit=True),
+])
+
+ui = UI()
+ui.title = "EdPro PowerSource"
+ui.main_menu = ps_menu
+ui.run()

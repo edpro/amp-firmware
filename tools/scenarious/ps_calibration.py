@@ -1,5 +1,5 @@
 from tools.common.logger import LoggedError
-from tools.common.screen import prompt
+from tools.common.screen import scr_prompt
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
@@ -13,7 +13,7 @@ class PSCalibration(Scenario):
         c.use_edpro_ps()
         c.use_meter()
 
-        choise = prompt("Connect Rigol to Powersource output. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Connect Rigol to Powersource output. <Enter> - continue, <s> - skip: ")
         if choise == "":
             while True:
                 try:
@@ -24,13 +24,13 @@ class PSCalibration(Scenario):
                     c.edpro_ps.save_conf()
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:
                     raise
 
-        choise = prompt("Connect Rigol to 1Ω resistor. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Connect Rigol to 1Ω resistor. <Enter> - continue, <s> - skip: ")
 
         if choise == "":
             while True:
@@ -40,7 +40,7 @@ class PSCalibration(Scenario):
                     c.edpro_ps.save_conf()
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:

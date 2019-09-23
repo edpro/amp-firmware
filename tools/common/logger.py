@@ -1,4 +1,4 @@
-from tools.common.screen import Colors, init_win_console
+from tools.common.screen import Colors, scr_init
 
 
 class LoggedError(Exception):
@@ -9,7 +9,7 @@ class Logger:
 
     def __init__(self, tag):
         self.tag = tag
-        init_win_console()
+        scr_init()
 
     def print(self, color, msg):
         print(f"{color}[{self.tag}] {msg}{Colors.RESET}")

@@ -2,7 +2,7 @@
 from enum import Flag, auto
 
 from tools.common.logger import LoggedError
-from tools.common.screen import prompt
+from tools.common.screen import scr_prompt
 from tools.common.test import from_amp, to_amp, erel
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
@@ -38,7 +38,7 @@ class MMCalibration(Scenario):
     def _cal_vdc(c):
         is_done: bool = False
 
-        choise = prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
         if choise == "":
             is_done = False
             while True:
@@ -47,13 +47,13 @@ class MMCalibration(Scenario):
                     is_done = True
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:
                     raise
 
-        choise = prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
         if choise == "":
             is_done = False
             while True:
@@ -62,7 +62,7 @@ class MMCalibration(Scenario):
                     is_done = True
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:
@@ -74,7 +74,7 @@ class MMCalibration(Scenario):
     def _cal_vac(c):
         is_done: bool = False
 
-        choise = prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
         if choise == "":
             is_done = False
             while True:
@@ -83,13 +83,13 @@ class MMCalibration(Scenario):
                     is_done = True
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:
                     raise
 
-        choise = prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
+        choise = scr_prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
         if choise == "":
             is_done = False
             while True:
@@ -98,7 +98,7 @@ class MMCalibration(Scenario):
                     is_done = True
                     break
                 except LoggedError:
-                    choise = prompt("<Enter> - continue, <r> - retry: ")
+                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
                 except Exception:
