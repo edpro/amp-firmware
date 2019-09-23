@@ -72,14 +72,22 @@ class UI:
         curses.echo()
         curses.endwin()
 
+    def draw(self):
+        scr.clear()
+        self.draw_title()
+        self.draw_menu()
+        self.draw_submenu()
+
     def draw_title(self):
         x = 1
         y = 1
         scr.addstr(y, x, self.title, curses.color_pair(PAIR_DEFAULT))
+        y += 1
+        scr.addstr(y, x, '=' * len(self.title), curses.color_pair(PAIR_DEFAULT))
 
     def draw_menu(self):
         x = 1
-        y = 3
+        y = 4
         scr.addstr(y, x, '|')
         x += 1
         for i, it in enumerate(self.main_menu.items):
@@ -98,6 +106,8 @@ class UI:
         main_item = self.main_menu.current_item()
         x = main_item.x
         y = main_item.y + 1
+        scr.addstr(y, x + 1, '---')
+        y += 1
         for i, it in enumerate(self.submenu.items):
             text_pair = PAIR_SELECTED if i == self.submenu.index else PAIR_DEFAULT
             it.x = x
@@ -105,21 +115,6 @@ class UI:
             title = f' {self.submenu.items[i].title} '
             scr.addstr(y, x, title, curses.color_pair(text_pair))
             y += 1
-
-
-    def draw(self):
-        scr.clear()
-        self.draw_title()
-        self.draw_menu()
-        self.draw_submenu()
-        scr.refresh()
-
-
-    def get_submenu(self) -> Optional[MenuDef]:
-        return self.main_menu.current_item().submenu
-
-    def quit(self):
-        self._quit_requested = True
 
     def read(self) -> bool:
         ch = scr.getch()
@@ -129,14 +124,25 @@ class UI:
             else:
                 self.submenu = None
                 self.submenu_shown = False
+
         if ch == curses.KEY_LEFT:
             self.main_menu.move_prev()
             if self.submenu_shown:
                 self.submenu = self.main_menu.current_item().submenu
+
         elif ch == curses.KEY_RIGHT:
             self.main_menu.move_next()
             if self.submenu_shown:
                 self.submenu = self.main_menu.current_item().submenu
+
+        elif ch == curses.KEY_UP:
+            if self.submenu:
+                self.submenu.move_prev()
+
+        elif ch == curses.KEY_DOWN:
+            if self.submenu:
+                self.submenu.move_next()
+
         elif ch == curses.KEY_ENTER or ch == 10 or ch == 13:
             it = self.main_menu.current_item()
             if it.action:
@@ -157,12 +163,15 @@ class UI:
         while self.read():
             self.draw()
 
+    def quit(self):
+        self._quit_requested = True
+
 
 def dev_run():
     init_win_console()
     ui = UI()
     ui.init()
-    ui.title = "DEVICE_NAME:"
+    ui.title = "DEVICE_NAME"
     ui.main_menu = MenuDef([
         MenuItem("Firmware", submenu=MenuDef([
             MenuItem("Flash Firmware"),
