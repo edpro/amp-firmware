@@ -5,8 +5,4 @@ source ./env.sh
 
 ./update.sh
 
-python tools/ps_main.py
-
-if [[ "$?" != "0" ]]; then
-  read -p "Error has occured..."
-fi
+python tools/ps_main.py || read -rp "Error has occured..."
