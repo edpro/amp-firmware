@@ -43,7 +43,7 @@ def scr_print(msg: str, color: str):
 
 
 def scr_prompt(msg: str):
-    return input(f"\n{Colors.GREEN}>> {msg}{Colors.RESET}")
+    return input(f"\n{Colors.CYAN}>> {msg}{Colors.RESET}")
 
 
 def scr_clear():
