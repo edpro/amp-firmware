@@ -25,7 +25,7 @@ class RigolMeter:
     """
     handles communication with RIGOL multimeter
     USB lib: https://github.com/python-ivi/python-usbtmc
-    Windows driver: https://zadig.akeo.ie/
+    Windows driver: https://zadig.akeo.ie/ (set libusb-win32 driver)
     RIGOL Docs: https://www.batronix.com/pdf/Rigol/ProgrammingGuide/DM3058_ProgrammingGuide_EN.pdf
     """
 
