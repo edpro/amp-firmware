@@ -13,10 +13,10 @@ logger = Logger("accum_test")
 
 
 def test_internal_r():
-    logger.info("Testing internal resiatance...")
+    logger.info("Testing internal resistance")
 
     load.set_input(0)
-    time.sleep(0.5)
+    time.sleep(0.25)
     v_unload = load.measure_voltage()
     if (v_unload < MIN_V):
         logger.throw(f"Voltage too low: V < {MIN_V}")
@@ -34,12 +34,22 @@ def test_internal_r():
         logger.throw(f"Intenal resistance it too high: R > {MAX_R}")
 
 
-def test_current_1():
-    pass
+def test_current_pulse(amperes: float, milliseconds: float):
+    logger.info(f"Testing ipulse: {amperes}A, {milliseconds}ms")
 
+    load.set_input(0)
+    time.sleep(0.25)
+    v1 = load.measure_voltage()
+    if (v1 < MIN_V):
+        logger.throw(f"Voltage too low: V < {MIN_V}")
 
-def test_current_2():
-    pass
+    load.set_pulse_current(value=amperes, width_ms=milliseconds)
+    load.trigger()
+    time.sleep(0.25)
+    v2 = load.measure_voltage()
+    load.set_input(0)
+    if (abs(v2 - v1) > 0.1):
+        logger.throw(f"Voltage is not recovered")
 
 
 def run_loop():
@@ -49,8 +59,9 @@ def run_loop():
             break
         try:
             test_internal_r()
-            test_current_1()
-            test_current_2()
+            test_current_pulse(1, 5)
+            test_current_pulse(5, 0.03)
+            logger.success("OK!")
         except LoggedError:
             pass
         except Exception:
