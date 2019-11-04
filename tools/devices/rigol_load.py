@@ -78,9 +78,9 @@ class RigolLoad:
         self._write(f":SOURce:CURRent:TRANsient:BLEVel {0.0}")
         self._write(f":SOURce:CURRent:TRANsient:AWIDth {width_ms}")
         self._write(f":SOURce:CURRent:TRANsient:BWIDth {width_ms}")
-        self._write(f":SOURce:CURRent:SLEW {1.0}")
+        self._write(f":SOURce:CURRent:SLEW:POS {1.0}")
+        self._write(f":SOURce:CURRent:SLEW:NEG {1.0}")
         self._write(":TRIGger:SOURce BUS")
-        self.wait()
 
     def trigger(self):
         self._write(":TRIGger")
@@ -96,6 +96,9 @@ class RigolLoad:
     def set_input(self, isOn: int):
         self._write(f":SOURce:INPut {isOn}")
         self.wait()
+
+    def check_error(self):
+        self._ask(":SYSTem:ERRor?")
 
 
 def test():
@@ -115,11 +118,12 @@ def test():
         # device.measure_current()
         # device.set_input(0)
 
-        # device.set_pulse_current(value=5, width_ms=0.03)
-        device.set_pulse_current(value=1, width_ms=5)
+        device.set_pulse_current(value=5, width_ms=0.03)
+        # device.set_pulse_current(value=3, width_ms=5)
         device.trigger()
         time.sleep(0.1)
-        device.set_input(isOn=0)
+        device.measure_current_max()
+        # device.set_input(isOn=0)
 
     except LoggedError:
         pass
