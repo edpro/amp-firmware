@@ -1,11 +1,13 @@
 import time
-from typing import Optional
 
-import usbtmc
+import pyvisa
+from pyvisa.resources import USBInstrument
 
 from tools.common.logger import LoggedError, Logger
 
 logger = Logger("ri_load")
+
+rm = pyvisa.ResourceManager()
 
 
 # noinspection PyPep8Naming
@@ -13,19 +15,21 @@ class RigolLoad:
     """
     handles communication with RIGOL DC load
     Python USB lib: https://github.com/python-ivi/python-usbtmc
-    Windows driver installation:
-     1. install Ultra Sigma from www.rigol.eu
-     3. use Zadig (https://zadig.akeo.ie) to repalce driver with libusb-win32
+    Windows driver: install Ultra Sigma from www.rigol.eu
     Manual: https://www.batronix.com/files/Rigol/Elektronische-Lasten/DL3000/DL3000_ProgrammingManual_EN.pdf
     """
 
+    _device: USBInstrument
+
     def __init__(self):
-        self._device: Optional[usbtmc.Instrument] = None
+        pass
 
     def connect(self):
         logger.info("connect")
         try:
-            self._device = usbtmc.Instrument(0x1AB1, 0x0E11)
+            # self._device = usbtmc.Instrument(0x1AB1, 0x0E11)
+            # noinspection PyTypeChecker
+            self._device = rm.open_resource('USB0::0x1AB1::0x0E11::DL3B203700184::INSTR')
         except Exception as e:
             logger.throw(str(e))
         self._ask("*IDN?")
@@ -53,7 +57,7 @@ class RigolLoad:
         logger.trace(f"<- {cmd}")
         response = ""
         try:
-            response = self._device.ask(cmd)
+            response = self._device.query(cmd)
             logger.trace(f"-> {response}")
         except Exception as e:
             logger.throw(e)
@@ -123,7 +127,7 @@ def test():
         device.trigger()
         time.sleep(0.1)
         device.measure_current_max()
-        # device.set_input(isOn=0)
+        device.set_input(isOn=0)
 
     except LoggedError:
         pass
