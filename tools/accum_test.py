@@ -64,8 +64,6 @@ def run_loop():
             logger.success("OK!")
         except LoggedError:
             pass
-        except Exception:
-            raise
 
 
 if __name__ == "__main__":
@@ -75,7 +73,5 @@ if __name__ == "__main__":
         run_loop()
     except LoggedError:
         exit(1)
-    except Exception:
-        raise
     finally:
         load.close()
