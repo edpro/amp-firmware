@@ -19,7 +19,7 @@ class RigolLoad:
     Manual: https://www.batronix.com/files/Rigol/Elektronische-Lasten/DL3000/DL3000_ProgrammingManual_EN.pdf
     """
 
-    _device: USBInstrument
+    _device: USBInstrument = None
 
     def __init__(self):
         pass
