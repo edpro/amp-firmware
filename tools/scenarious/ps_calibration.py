@@ -27,8 +27,6 @@ class PSCalibration(Scenario):
                     choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
-                except Exception:
-                    raise
 
         choise = scr_prompt("Connect Rigol to 1Ω resistor. <Enter> - continue, <s> - skip: ")
 
@@ -43,8 +41,6 @@ class PSCalibration(Scenario):
                     choise = scr_prompt("<Enter> - continue, <r> - retry: ")
                     if choise == "":
                         break
-                except Exception:
-                    raise
 
     def _cal_vdc(c):
         c.logger.info("calibrate VDC:")
