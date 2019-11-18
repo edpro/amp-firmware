@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 set -e
 
-CHECK_UPDATE_EACH_LAUNCH=0
+CHECK_UPDATE_EACH_LAUNCH=1
 
 C_WARN='\033[33m'
 C_END='\033[0m'
