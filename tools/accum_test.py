@@ -2,7 +2,7 @@
 import time
 
 from tools.common.logger import LoggedError, Logger
-from tools.common.screen import scr_prompt
+from tools.common.screen import scr_prompt, Colors
 from tools.devices.rigol_load import RigolLoad
 
 MIN_V = 3.5
@@ -29,7 +29,7 @@ def test_internal_r():
     load.set_input(0)
 
     r = (v_unload - v_load) / i_load
-    logger.info(f"Internal_R: {r:0.3}")
+    logger.trace(f"Internal_R: {r:0.3}")
     if (r > MAX_R):
         logger.throw(f"Intenal resistance it too high: R > {MAX_R}")
 
@@ -57,15 +57,33 @@ def test_current_pulse(amperes: float, milliseconds: float, expected: bool):
             logger.throw(f"Voltage must not be recovered")
 
 
+def wait_for_restore():
+    wait_count = 30
+    while True:
+        logger.print(Colors.CYAN, "Accumulator is off, please reconnect to continue")
+        time.sleep(2)
+        v = load.measure_voltage()
+        if (v > 3):
+            break
+        wait_count -= 1
+        if (wait_count == 0):
+            logger.throw("Timeout: accumulator voltage is not restored")
+
+
 def run_loop():
     while True:
+        print()
+        print("============")
+        print(" BEGIN TEST ")
+        print("============")
         choise = scr_prompt("Connect accumulator. <Enter> - continue, <q> - quit: ")
+
         if choise == "q":
             break
         try:
             test_internal_r()
             test_current_pulse(10, 20, False)
-            scr_prompt("Reconnect accumulator. <Enter> - continue")
+            wait_for_restore()
             test_current_pulse(5.5, 1000, True)
             test_current_pulse(10, 0.05, True)
             logger.success("OK!")
