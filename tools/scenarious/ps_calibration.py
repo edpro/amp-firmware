@@ -55,7 +55,7 @@ class PSCalibration(Scenario):
         c.wait(0.5)
 
         v = c.meter.measure_vdc()
-        c.check(4 < v < 6, "Measured value must be about 5V")
+        c.check(2.5 < v < 6, "Measured value must be about 5V")
         c.edpro_ps.cmd(f"cal vdc {v:0.6f}")
         c.edpro_ps.cmd("set l 0")
         c.edpro_ps.cmd("cal vdcp")
@@ -70,7 +70,7 @@ class PSCalibration(Scenario):
         c.wait(0.5)
 
         v = c.meter.measure_vac()
-        c.check(2 < v < 4, "Measured value must be about 3V")
+        c.check(1.5 < v < 4, "Measured value must be about 3V")
         c.edpro_ps.cmd(f"cal vac {v:0.6f}")
         c.edpro_ps.cmd("set l 0")
         c.edpro_ps.cmd("cal vacp")
