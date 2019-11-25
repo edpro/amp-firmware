@@ -62,7 +62,19 @@ def esptool(*args):
     run_shell(cmd)
 
 
+def print_esp_info():
+    try:
+        port = detect_port()
+        esptool('--port', port,
+                '--chip', 'esp8266',
+                '--no-stub',
+                'chip_id')
+    except LoggedError:
+        pass
+
+
 def flash_firmware(bin_dir: str):
+    success = False
     try:
         port = detect_port()
         elf = _find_elf_file(bin_dir)
@@ -78,14 +90,15 @@ def flash_firmware(bin_dir: str):
                 '--flash_size', '4MB',
                 '0x00000', elf + '-0x00000.bin',
                 '0x20000', elf + '-0x20000.bin')
+        success = True
         logger.success()
     except LoggedError:
         pass
-    except Exception:
-        raise
+    return success
 
 
-def flash_espinit():
+def flash_espinit() -> bool:
+    success = False
     try:
         port = detect_port()
         esptool('--port', port,
@@ -97,8 +110,8 @@ def flash_espinit():
                 '--flash_size', '4MB',
                 '0x3fc000', './images/esp/esp_init_data_default.bin',
                 '0x7E000', './images/esp/blank.bin')
+        success = True
         logger.success()
     except LoggedError:
         pass
-    except Exception:
-        raise
+    return success

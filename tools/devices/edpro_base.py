@@ -6,7 +6,7 @@ import serial
 
 from tools.common.esp import detect_port
 from tools.common.logger import Logger, LoggedError
-from tools.common.screen import Colors, scr_print
+from tools.common.screen import Colors, scr_print, scr_pause
 
 
 def decode_device_line(data: bytes) -> str:
@@ -144,9 +144,9 @@ class EdproDevice:
             self._rx_thread.join()
 
     def close(self):
-        self.logger.info("disconnect")
         if self._serial is None:
             return
+        self.logger.info("disconnect")
         self._stop_reader()
 
         # to prevent device being in reset state after serial.Close()
@@ -241,6 +241,7 @@ class EdproDevice:
             self.close()
         except LoggedError:
             self.close()
+            scr_pause()
         except KeyboardInterrupt:
             self.close()
         except Exception:

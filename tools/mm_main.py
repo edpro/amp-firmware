@@ -1,4 +1,4 @@
-from tools.common.esp import flash_espinit, flash_firmware
+from tools.common.esp import flash_espinit, flash_firmware, print_esp_info
 from tools.devices.edpro_mm import EdproMM
 from tools.scenarious.mm_calibration import MMCalibration, MMCalFlags
 from tools.scenarious.mm_test_vac import MMTestVAC
@@ -7,12 +7,20 @@ from tools.ui.menu import MenuDef, MenuItem, UI
 
 
 def firmware_init():
-    flash_espinit()
-    flash_firmware("./images/multimeter")
+    success = flash_espinit()
+    if not success:
+        return
+    success = flash_firmware("./images/multimeter")
+    if not success:
+        return
+    print_esp_info()
 
 
 def firmware_update():
-    flash_firmware("./images/multimeter")
+    success = flash_firmware("./images/multimeter")
+    if not success:
+        return
+    print_esp_info()
 
 
 def test_all():
@@ -24,6 +32,8 @@ ps_menu = MenuDef([
         MenuItem("Firmware Init", lambda: firmware_init()),
         MenuItem("Firmware Update", lambda: firmware_update()),
         MenuItem("Connect", EdproMM().show_log, is_pause=False),
+        MenuItem("Info", lambda: print_esp_info()),
+
     ])),
     MenuItem("Calibration", submenu=MenuDef([
         MenuItem("Calibrate ALL", MMCalibration(MMCalFlags.ALL).run),
