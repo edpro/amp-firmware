@@ -10,17 +10,11 @@ def firmware_init():
     success = flash_espinit()
     if not success:
         return
-    success = flash_firmware("./images/multimeter")
-    if not success:
-        return
-    print_esp_info()
+    flash_firmware("./images/multimeter")
 
 
 def firmware_update():
-    success = flash_firmware("./images/multimeter")
-    if not success:
-        return
-    print_esp_info()
+    flash_firmware("./images/multimeter")
 
 
 def test_all():

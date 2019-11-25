@@ -12,17 +12,11 @@ def firmware_init():
     success = flash_espinit()
     if not success:
         return
-    success = flash_firmware("./images/powersource")
-    if not success:
-        return
-    print_esp_info()
+    flash_firmware("./images/powersource")
 
 
 def firmware_update():
-    success = flash_firmware("./images/powersource")
-    if not success:
-        return
-    print_esp_info()
+    flash_firmware("./images/powersource")
 
 
 def test_all():
