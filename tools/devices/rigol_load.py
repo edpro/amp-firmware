@@ -131,8 +131,6 @@ def test():
 
     except LoggedError:
         pass
-    except Exception:
-        raise
     finally:
         device.close()
 

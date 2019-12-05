@@ -22,22 +22,22 @@ class TData(NamedTuple):
     rel: Optional[float]
 
 
-def make_data(f: int, abs: float, rel: float) -> List[TData]:
+def make_data(f: int, e_abs: float, e_rel: float) -> List[TData]:
     return [
-        TData(f=f, c=0.00, abs=abs, rel=None),
-        TData(f=f, c=0.05, abs=abs, rel=None),
-        TData(f=f, c=0.10, abs=abs, rel=None),
-        TData(f=f, c=0.15, abs=None, rel=rel),
-        TData(f=f, c=0.20, abs=None, rel=rel),
+        TData(f=f, c=0.00, abs=e_abs, rel=None),
+        TData(f=f, c=0.05, abs=e_abs, rel=None),
+        TData(f=f, c=0.10, abs=e_abs, rel=None),
+        TData(f=f, c=0.15, abs=None, rel=e_rel),
+        TData(f=f, c=0.20, abs=None, rel=e_rel),
     ]
 
 
 test_data = list(chain(
-    make_data(f=50, abs=0.03, rel=0.2),
-    make_data(f=100, abs=0.03, rel=0.2),
-    make_data(f=1_000, abs=0.02, rel=0.05),
-    make_data(f=10_000, abs=0.02, rel=0.05),
-    make_data(f=100_000, abs=0.02, rel=0.05),
+    make_data(f=50, e_abs=0.03, e_rel=0.2),
+    make_data(f=100, e_abs=0.03, e_rel=0.2),
+    make_data(f=1_000, e_abs=0.02, e_rel=0.05),
+    make_data(f=10_000, e_abs=0.02, e_rel=0.05),
+    make_data(f=100_000, e_abs=0.02, e_rel=0.05),
 ))
 
 

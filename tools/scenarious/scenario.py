@@ -4,6 +4,7 @@ from typing import Optional
 from tools.common.logger import LoggedError, Logger
 from tools.common.screen import Colors
 from tools.common.test import erel, rel_str, eabs
+from tools.devices.edpro_ca import EdproCA
 from tools.devices.edpro_mm import EdproMM
 from tools.devices.edpro_ps import EdproPS
 from tools.devices.owon_generator import OwonGenerator
@@ -14,6 +15,7 @@ from tools.devices.rigol_meter import RigolMeter
 class Scenario:
     edpro_mm: Optional[EdproMM] = None
     edpro_ps: Optional[EdproPS] = None
+    edpro_ca: Optional[EdproCA] = None
     meter: Optional[RigolMeter] = None
     generator: Optional[OwonGenerator] = None
     power: Optional[OwonPower] = None
@@ -22,6 +24,13 @@ class Scenario:
         self.tag: str = tag
         self.logger: Logger = Logger(tag)
         self.success: bool = True
+
+    def use_edpro_ca(self):
+        self.edpro_ca = EdproCA()
+        self.edpro_ca.connect()
+        self.edpro_ca.wait_boot_complete()
+        info = self.edpro_ca.get_info()
+        self.check_str(info.name, "Calibrator", "Invalid device name!")
 
     def use_edpro_mm(self):
         self.edpro_mm = EdproMM()
@@ -59,6 +68,11 @@ class Scenario:
     def check(self, condition: bool, msg: str):
         if not condition:
             self.fail(msg)
+
+    def print_task(self, text: str):
+        self.logger.print(Colors.GREEN, "#" )
+        self.logger.print(Colors.GREEN, "# " + text)
+        self.logger.print(Colors.GREEN, "#")
 
     def check_str(self, actual: str, expected: str, msg: str):
         if expected == actual:
@@ -98,6 +112,8 @@ class Scenario:
             self.edpro_mm.close()
         if (self.edpro_ps):
             self.edpro_ps.close()
+        if (self.edpro_ca):
+            self.edpro_ca.close()
         if (self.meter):
             self.meter.close()
         if (self.power):

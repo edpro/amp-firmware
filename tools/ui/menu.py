@@ -195,6 +195,7 @@ class UI:
             disable_curses()
             scr_clear()
 
+        # noinspection PyBroadException
         try:
             item.action()
         except Exception:

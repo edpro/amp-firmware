@@ -18,6 +18,13 @@ class RigolMode(Enum):
     VAC_20 = ":MEASure:VOLTage:AC 2"
     VAC_200 = ":MEASure:VOLTage:AC 3"
     FREQ_20 = ":MEASure:FREQuency 2"
+    R_200 = ":MEASure:RESistance 0"
+    R_2K = ":MEASure:RESistance 1"
+    R_20K = ":MEASure:RESistance 2"
+    R_200K = ":MEASure:RESistance 3"
+    R_2M = ":MEASure:RESistance 4"
+    R_10M = ":MEASure:RESistance 5"
+    R_100M = ":MEASure:RESistance 6"
 
 
 # noinspection PyPep8Naming
@@ -106,6 +113,10 @@ class RigolMeter:
         response = self._ask(":MEASure:FREQuency?")
         return float(response)
 
+    def measure_r(self) -> float:
+        response = self._ask(":MEASure:RESistance?")
+        return float(response)
+
 
 def test():
     device = RigolMeter()
@@ -119,5 +130,3 @@ if __name__ == "__main__":
         test()
     except LoggedError:
         pass
-    except Exception:
-        raise

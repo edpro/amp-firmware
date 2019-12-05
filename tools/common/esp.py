@@ -1,5 +1,6 @@
 import os
 import sys
+from enum import Enum
 from glob import glob
 from os import path
 
@@ -10,20 +11,22 @@ from tools.common.system import run_shell, delete_files
 
 ESP_FLASH_BAUD = '921600'
 
+
+class UartStr(Enum):
+    CP210 = 'CP210x'
+    CH340 = 'CH340'
+
+
 logger = Logger("esp")
 
 
-def _detect_port_osx():
-    return '/dev/tty.SLAB_USBtoUART'
-
-
-def _detect_port_win():
+def _detect_port_win(uart_str: UartStr):
     info_list = list_ports.comports()
     info_list = sorted(info_list, key=lambda i: i.device)
     port = ''
     port_count = 0
     for info in info_list:
-        if 'CP210x' in info.description:
+        if uart_str.value in info.description:
             logger.trace(info.description)
             port = info.device
             port_count += 1
@@ -37,11 +40,11 @@ def _detect_port_win():
     return port
 
 
-def detect_port():
+def detect_port(uart_str: UartStr):
     if os.name == "nt":
-        return _detect_port_win()
+        return _detect_port_win(uart_str)
     else:
-        return _detect_port_osx()
+        raise LoggedError("Not supported")
 
 
 def _find_elf_file(bin_dir: str):
@@ -62,9 +65,9 @@ def esptool(*args):
     run_shell(cmd)
 
 
-def print_esp_info():
+def print_esp_info(uart_str: UartStr):
     try:
-        port = detect_port()
+        port = detect_port(uart_str)
         esptool('--port', port,
                 '--chip', 'esp8266',
                 '--no-stub',
@@ -73,10 +76,10 @@ def print_esp_info():
         pass
 
 
-def flash_firmware(bin_dir: str):
+def flash_firmware(bin_dir: str, uart_str: UartStr):
     success = False
     try:
-        port = detect_port()
+        port = detect_port(uart_str)
         elf = _find_elf_file(bin_dir)
         delete_files(bin_dir, '*.bin')
         esptool('elf2image', elf)
@@ -97,10 +100,10 @@ def flash_firmware(bin_dir: str):
     return success
 
 
-def flash_espinit() -> bool:
+def flash_espinit(uart_str: UartStr) -> bool:
     success = False
     try:
-        port = detect_port()
+        port = detect_port(uart_str)
         esptool('--port', port,
                 '--baud', ESP_FLASH_BAUD,
                 '--chip', 'esp8266',

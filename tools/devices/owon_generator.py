@@ -139,5 +139,3 @@ if __name__ == '__main__':
         _run()
     except LoggedError:
         pass
-    except Exception:
-        raise

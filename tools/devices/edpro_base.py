@@ -4,7 +4,7 @@ from typing import Optional, Dict, NamedTuple
 
 import serial
 
-from tools.common.esp import detect_port
+from tools.common.esp import detect_port, UartStr
 from tools.common.logger import Logger, LoggedError
 from tools.common.screen import Colors, scr_print, scr_pause
 
@@ -44,6 +44,8 @@ class EdproDevice:
         self.tag = tag
         self.logger = Logger(tag)
         self.trace_commands = True
+        self.trace_commands = True
+        self.uart_str: UartStr = UartStr.CP210
         self._port: Optional[str] = None
         self._serial: Optional[serial.Serial] = None
         self._rx_thread: Optional[threading.Thread] = None
@@ -97,7 +99,7 @@ class EdproDevice:
     def connect(self, reboot: bool = True):
         self.logger.info("connect")
         self._rx_alive = True
-        self._port = detect_port()
+        self._port = detect_port(self.uart_str)
 
         self._serial = serial.serial_for_url(self._port, 74880,
                                              parity="N",

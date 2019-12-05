@@ -90,6 +90,7 @@ class OwonPower:
 
     def set_vdc(self, value: float):
         self.write(f':VOLT:OUT:IND1 {value:0.3f}')
+        self.write(f':PROTect:VOLT:IND1:SWITch ON')
 
     def get_volt(self):
         self.write(f':MEAS:VOLT:CHAN1')
@@ -112,5 +113,3 @@ if __name__ == '__main__':
         main()
     except LoggedError:
         pass
-    except Exception:
-        raise

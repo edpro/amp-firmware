@@ -1,4 +1,4 @@
-from tools.common.esp import flash_espinit, flash_firmware, print_esp_info
+from tools.common.esp import flash_espinit, flash_firmware, print_esp_info, UartStr
 from tools.devices.edpro_ps import EdproPS
 from tools.scenarious.ps_calibration import PSCalibration
 from tools.scenarious.ps_test_adc import PSTestADC
@@ -9,14 +9,14 @@ from tools.ui.menu import MenuDef, MenuItem, UI
 
 
 def firmware_init():
-    success = flash_espinit()
+    success = flash_espinit(UartStr.CP210)
     if not success:
         return
-    flash_firmware("./images/powersource")
+    flash_firmware("./images/powersource", UartStr.CP210)
 
 
 def firmware_update():
-    flash_firmware("./images/powersource")
+    flash_firmware("./images/powersource", UartStr.CP210)
 
 
 def test_all():
@@ -28,7 +28,7 @@ ps_menu = MenuDef([
         MenuItem("Firmware Init", lambda: firmware_init()),
         MenuItem("Firmware Update", lambda: firmware_update()),
         MenuItem("Connect", EdproPS().show_log, is_pause=False),
-        MenuItem("Info", lambda: print_esp_info()),
+        MenuItem("Info", lambda: print_esp_info(UartStr.CP210)),
     ])),
     MenuItem("Calibration", submenu=MenuDef([
         MenuItem("Calibrate ALL", lambda: PSCalibration().run()),

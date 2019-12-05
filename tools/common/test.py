@@ -19,7 +19,7 @@ def eabs(expected: float, actual: float) -> float:
 def erel(expected: float, actual: float) -> float:
     if expected == 0 and actual == 0:
         return 0
-    return abs(expected - actual) / max(abs(expected), abs(actual))
+    return abs(expected - actual) / abs(expected)
 
 
 def abs_str(v: Optional[float]):

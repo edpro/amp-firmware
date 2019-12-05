@@ -46,5 +46,3 @@ if __name__ == "__main__":
         test()
     except LoggedError:
         pass
-    except Exception:
-        raise
