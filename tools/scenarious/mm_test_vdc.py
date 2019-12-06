@@ -41,14 +41,14 @@ class MMTestVDC(Scenario):
         t.check_str(mm_mode, "VDC", "Invalid device mode!")
 
         t.meter.set_vdc_range(0)
-        t.power.set_vdc(0)
+        t.power.set_volt(0)
         t.wait(1)
 
         r = TestReporter(t.tag)
 
         for d in test_data:
             t.meter.set_vdc_range(d.v)
-            t.power.set_vdc(d.v)
+            t.power.set_volt(d.v)
             t.wait(1)
             t.meter.measure_vdc()  # duty cycle
             real_v = t.meter.measure_vdc()
@@ -75,7 +75,7 @@ class MMTestVDC(Scenario):
             r.expect_abs(result.value, real_v, d.abs)
             r.expect_rel(result.value, real_v, d.rel)
 
-        t.power.set_vdc(0)
+        t.power.set_volt(0)
         r.print_result()
         t.success &= r.success
 

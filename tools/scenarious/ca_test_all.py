@@ -14,10 +14,14 @@ class CATestAll(Scenario):
         t.use_power()
         t.use_generator()
 
-        t.test_rsel()
-        # t.test_vpow()
+        # t.edpro_ca.set_off()
+
+        # t.test_rsel()
+        t.test_vpow()
         # t.test_vpow_rev()
         # t.test_vgen()
+
+        t.edpro_ca.set_off()
 
     def test_rsel(t):
         t.print_task("Testing 1..10 resistor values")
@@ -49,17 +53,19 @@ class CATestAll(Scenario):
     def test_vpow(t):
         t.print_task("Testing VDC Power")
         t.edpro_ca.set_off()
+        t.power.set_volt(3.0)
         t.meter.set_mode(RigolMode.VDC_20)
-        t.power.set_vdc(2)
         t.edpro_ca.set_mm_vpow(meas_v=True)
+        t.wait(0.25)
         actual = t.meter.measure_vdc()
-        t.check_rel(actual, expected=2, err=0.01, msg="Voltage does not match")
+        t.check_rel(actual, expected=3.0, err=0.01, msg="Voltage does not match")
+        t.power.set_volt(0)
 
     def test_vpow_rev(t):
         t.print_task("Testing VDC Power (reverse)")
         t.edpro_ca.set_off()
         t.meter.set_mode(RigolMode.VDC_20)
-        t.power.set_vdc(2)
+        t.power.set_volt(2)
         t.edpro_ca.set_mm_vpow(meas_v=True)
         actual = t.meter.measure_vdc()
         t.check_rel(actual, expected=-2, err=0.01, msg="Voltage does not match")

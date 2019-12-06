@@ -118,7 +118,7 @@ class MMCalibration(Scenario):
     def _cal_vdc_values(c):
         c.edpro_mm.cmd("mode dc")
         c.meter.set_mode(RigolMode.VDC_2)
-        c.power.set_vdc(1.0)
+        c.power.set_volt(1.0)
         c.wait(1)
         real_v = c.meter.measure_vdc()
         c.check_rel(real_v, 1.0, 0.1, "Cannot set DC volatge 1V")
