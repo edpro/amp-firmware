@@ -26,6 +26,11 @@ class RigolMode(Enum):
     ADC_2A = ":MEASure:CURRent:DC 4"
     ADC_10A = ":MEASure:CURRent:DC 5"
 
+    AAC_20mA = ":MEASure:CURRent:AC 0"
+    AAC_200mA = ":MEASure:CURRent:AC 1"
+    AAC_2A = ":MEASure:CURRent:AC 2"
+    AAC_10A = ":MEASure:CURRent:AC 3"
+
     FREQ_20 = ":MEASure:FREQuency 2"
 
     R_200 = ":MEASure:RESistance 0"
