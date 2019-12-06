@@ -41,7 +41,7 @@ class EdproCA(EdproDevice):
         if (meas_i): cmd += " meas_i"
         self.cmd(cmd)
 
-    def mm_ipow_rev(self, meas_i: bool = False):
+    def set_mm_ipow_rev(self, meas_i: bool = False):
         cmd = "set mm_ipow_rev"
         if (meas_i): cmd += " meas_i"
         self.cmd(cmd)
