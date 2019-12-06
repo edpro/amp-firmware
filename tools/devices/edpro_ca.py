@@ -34,17 +34,17 @@ class EdproCA(EdproDevice):
     def set_mm_igen(self, meas_i: bool = False):
         cmd = "set mm_igen"
         if (meas_i): cmd += " meas_i"
-        self.cmd("cmd")
+        self.cmd(cmd)
 
     def set_mm_ipow(self, meas_i: bool = False):
         cmd = "set mm_ipow"
         if (meas_i): cmd += " meas_i"
-        self.cmd("cmd")
+        self.cmd(cmd)
 
     def mm_ipow_rev(self, meas_i: bool = False):
         cmd = "set mm_ipow_rev"
         if (meas_i): cmd += " meas_i"
-        self.cmd("cmd")
+        self.cmd(cmd)
 
     def set_mm_rgnd(self):
         self.cmd("set mm_rgnd")

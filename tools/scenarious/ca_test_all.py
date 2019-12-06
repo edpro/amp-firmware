@@ -16,12 +16,19 @@ class CATestAll(Scenario):
 
         # t.edpro_ca.set_off()
 
-        # t.test_rsel()
+        t.test_rsel()
         t.test_vpow()
+        t.test_vgnd()
+
+        """
+        multimeter I-COM must be shortet
+        """
+        # t.test_ipow()
+
         # t.test_vpow_rev()
         # t.test_vgen()
 
-        t.edpro_ca.set_off()
+        # t.edpro_ca.set_off()
 
     def test_rsel(t):
         t.print_task("Testing 1..10 resistor values")
@@ -50,6 +57,26 @@ class CATestAll(Scenario):
         r.print_result()
         t.success &= r.success
 
+    def test_ipow(t):
+        t.print_task("Testing mm_ipow")
+        t.edpro_ca.set_off()
+        expected = 0.15
+        t.power.set_current(expected)
+        t.meter.set_mode(RigolMode.ADC_2A)
+        t.edpro_ca.set_mm_ipow(meas_i=True)
+        t.wait(0.25)
+        actual = t.meter.measure_adc()
+        t.check_rel(actual, expected, err=0.05, msg="Voltage does not match")
+
+    def test_vgnd(t):
+        t.print_task("Testing mm_vgnd")
+        t.edpro_ca.set_off()
+        t.meter.set_mode(RigolMode.VDC_2)
+        t.edpro_ca.set_mm_vgnd(meas_v=True)
+        t.wait(0.25)
+        actual = t.meter.measure_vdc()
+        t.check_abs(actual, expected=0.0, err=0.0001, msg="Voltage does not match")
+
     def test_vpow(t):
         t.print_task("Testing VDC Power")
         t.edpro_ca.set_off()
@@ -59,7 +86,7 @@ class CATestAll(Scenario):
         t.wait(0.25)
         actual = t.meter.measure_vdc()
         t.check_rel(actual, expected=3.0, err=0.01, msg="Voltage does not match")
-        t.power.set_volt(0)
+        # t.power.set_volt(0)
 
     def test_vpow_rev(t):
         t.print_task("Testing VDC Power (reverse)")

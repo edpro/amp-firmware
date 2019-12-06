@@ -13,11 +13,21 @@ class RigolMode(Enum):
     VDC_2 = ":MEASure:VOLTage:DC 1"
     VDC_20 = ":MEASure:VOLTage:DC 2"
     VDC_200 = ":MEASure:VOLTage:DC 3"
+
     VAC_200m = ":MEASure:VOLTage:AC 0"
     VAC_2 = ":MEASure:VOLTage:AC 1"
     VAC_20 = ":MEASure:VOLTage:AC 2"
     VAC_200 = ":MEASure:VOLTage:AC 3"
+
+    ADC_200mkA = ":MEASure:CURRent:DC 0"
+    ADC_2mA = ":MEASure:CURRent:DC 1"
+    ADC_20mA = ":MEASure:CURRent:DC 2"
+    ADC_200mA = ":MEASure:CURRent:DC 3"
+    ADC_2A = ":MEASure:CURRent:DC 4"
+    ADC_10A = ":MEASure:CURRent:DC 5"
+
     FREQ_20 = ":MEASure:FREQuency 2"
+
     R_200 = ":MEASure:RESistance 0"
     R_2K = ":MEASure:RESistance 1"
     R_20K = ":MEASure:RESistance 2"
@@ -107,6 +117,14 @@ class RigolMeter:
 
     def measure_vac(self) -> float:
         response = self._ask(":MEASure:VOLTage:AC?")
+        return float(response)
+
+    def measure_adc(self) -> float:
+        response = self._ask(":MEASure:CURRent:DC?")
+        return float(response)
+
+    def measure_aac(self) -> float:
+        response = self._ask(":MEASure:CURRent:AC?")
         return float(response)
 
     def measure_freq(self) -> float:
