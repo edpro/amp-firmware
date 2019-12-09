@@ -59,7 +59,7 @@ class EdproCA(EdproDevice):
         cmd = f"set pp_load {n}"
         if (meas_i): cmd += " meas_i"
         if (meas_v): cmd += " meas_v"
-        self.cmd("set pp_load")
+        self.cmd(cmd)
 
     def set_meas_v(self):
         self.cmd("set meas_v")

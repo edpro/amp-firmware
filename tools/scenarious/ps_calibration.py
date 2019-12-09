@@ -1,5 +1,3 @@
-from tools.common.logger import LoggedError
-from tools.common.screen import scr_prompt
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
@@ -10,40 +8,29 @@ class PSCalibration(Scenario):
         super().__init__("ps_cal")
 
     def on_run(c):
+        c.use_edpro_ca()
         c.use_edpro_ps()
         c.use_meter()
 
-        choise = scr_prompt("Connect Rigol to Powersource output. <Enter> - continue, <s> - skip: ")
-        if choise == "":
-            while True:
-                try:
-                    c._cal_vdc()
-                    c._cal_adc0()
-                    c._cal_vac()
-                    c._cal_aac0()
-                    c.edpro_ps.save_conf()
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
+        # VOLTAGE
+        # c.edpro_ps.cmd("mode dc")
+        # c.edpro_ps.cmd("set l 0")
+        # c.edpro_ca.set_meas_v()
+        # c._cal_vdc()
+        # c._cal_adc0()
+        # c._cal_vac()
+        # c._cal_aac0()
+        # c.edpro_ps.save_conf()
 
-        choise = scr_prompt("Connect Rigol to 1Ω resistor. <Enter> - continue, <s> - skip: ")
+        # CURRENT
+        # c._cal_adc()
+        c._cal_aac()
+        # c.edpro_ps.save_conf()
 
-        if choise == "":
-            while True:
-                try:
-                    c._cal_adc()
-                    c._cal_aac()
-                    c.edpro_ps.save_conf()
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
+        # c.edpro_ca.set_off()
 
     def _cal_vdc(c):
-        c.logger.info("calibrate VDC:")
+        c.print_task("calibrate VDC:")
 
         c.meter.set_mode(RigolMode.VDC_20)
         c.edpro_ps.cmd("mode dc")
@@ -57,7 +44,7 @@ class PSCalibration(Scenario):
         c.edpro_ps.cmd("cal vdcp")
 
     def _cal_vac(c):
-        c.logger.info("calibrate VAC:")
+        c.print_task("calibrate VAC:")
 
         c.meter.set_mode(RigolMode.VAC_20)
         c.edpro_ps.cmd("mode ac")
@@ -72,26 +59,28 @@ class PSCalibration(Scenario):
         c.edpro_ps.cmd("cal vacp")
 
     def _cal_adc0(c):
-        c.logger.info("calibrate ADC zero:")
+        c.print_task("calibrate ADC zero:")
         c.edpro_ps.cmd("mode dc")
         c.edpro_ps.cmd("set l 0")
         c.wait(0.5)
         c.edpro_ps.cmd("cal adc0")
 
     def _cal_adc(c):
-        c.logger.info("calibrate ADC:")
+        c.print_task("calibrate ADC:")
+        c.edpro_ca.set_off()
 
-        c.meter.set_mode(RigolMode.VDC_2)
+        c.meter.set_mode(RigolMode.ADC_2A)
         c.edpro_ps.cmd("mode dc")
-        c.edpro_ps.cmd("set l 10")
-        c.wait(0.5)
+        c.edpro_ps.cmd("set l 15")
+        c.edpro_ca.set_pp_load(1, meas_i=True)
 
-        v = c.meter.measure_vdc()
-        c.check(0.1 < v < 0.2, "Measured value must be about 0.15A")
-        c.edpro_ps.cmd(f"cal adc {v:0.6f}")
+        c.wait(0.5)
+        actual = -c.meter.measure_adc()
+        c.check(0.1 < actual < 0.2, "Measured value must be in range 0.1...0.2A")
+        c.edpro_ps.cmd(f"cal adc {actual:0.6f}")
 
     def _cal_aac0(c):
-        c.logger.info("calibrate AAC zero:")
+        c.print_task("calibrate AAC zero:")
         c.edpro_ps.cmd("mode ac")
         c.edpro_ps.cmd("set f 1000")
         c.edpro_ps.cmd("set l 0")
@@ -99,17 +88,19 @@ class PSCalibration(Scenario):
         c.edpro_ps.cmd("cal aac0")
 
     def _cal_aac(c):
-        c.logger.info("calibrate AAC:")
+        c.print_task("calibrate AAC:")
+        c.edpro_ca.set_off()
 
-        c.meter.set_mode(RigolMode.VAC_2)
+        c.meter.set_mode(RigolMode.AAC_2A)
         c.edpro_ps.cmd("mode ac")
         c.edpro_ps.cmd("set f 1000")
         c.edpro_ps.cmd("set l 10")
+        c.edpro_ca.set_pp_load(2, meas_i=True)
 
         c.wait(1)
-        v = c.meter.measure_vac()
-        c.check(0.1 < v < 0.2, "Measured value must be about 0.15A")
-        c.edpro_ps.cmd(f"cal aac {v:0.6f}")
+        actual = c.meter.measure_vac()
+        c.check(0.1 < actual < 0.2, "Measured value must be about 0.15A")
+        c.edpro_ps.cmd(f"cal aac {actual:0.6f}")
 
 
 if __name__ == "__main__":
