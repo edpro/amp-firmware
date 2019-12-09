@@ -13,21 +13,21 @@ class PSCalibration(Scenario):
         c.use_meter()
 
         # VOLTAGE
-        # c.edpro_ps.cmd("mode dc")
-        # c.edpro_ps.cmd("set l 0")
-        # c.edpro_ca.set_meas_v()
-        # c._cal_vdc()
-        # c._cal_adc0()
-        # c._cal_vac()
-        # c._cal_aac0()
-        # c.edpro_ps.save_conf()
+        c.edpro_ps.cmd("mode dc")
+        c.edpro_ps.cmd("set l 0")
+        c.edpro_ca.set_meas_v()
+        c._cal_vdc()
+        c._cal_vac()
+        c._cal_adc0()
+        c._cal_aac0()
+        c.edpro_ps.save_conf()
 
         # CURRENT
-        # c._cal_adc()
+        c._cal_adc()
         c._cal_aac()
-        # c.edpro_ps.save_conf()
+        c.edpro_ps.save_conf()
 
-        # c.edpro_ca.set_off()
+        c.edpro_ca.set_off()
 
     def _cal_vdc(c):
         c.print_task("calibrate VDC:")
@@ -76,7 +76,7 @@ class PSCalibration(Scenario):
 
         c.wait(0.5)
         actual = -c.meter.measure_adc()
-        c.check(0.1 < actual < 0.2, "Measured value must be in range 0.1...0.2A")
+        c.check(0.1 < actual < 0.3, "Measured value must be in range 0.1...0.3A")
         c.edpro_ps.cmd(f"cal adc {actual:0.6f}")
 
     def _cal_aac0(c):
@@ -94,11 +94,11 @@ class PSCalibration(Scenario):
         c.meter.set_mode(RigolMode.AAC_2A)
         c.edpro_ps.cmd("mode ac")
         c.edpro_ps.cmd("set f 1000")
-        c.edpro_ps.cmd("set l 10")
-        c.edpro_ca.set_pp_load(2, meas_i=True)
+        c.edpro_ps.cmd("set l 15")
+        c.edpro_ca.set_pp_load(1, meas_i=True)
 
         c.wait(1)
-        actual = c.meter.measure_vac()
+        actual = c.meter.measure_aac()
         c.check(0.1 < actual < 0.2, "Measured value must be about 0.15A")
         c.edpro_ps.cmd(f"cal aac {actual:0.6f}")
 
