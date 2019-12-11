@@ -42,7 +42,7 @@ class RigolLoad:
         self._write("*WAI")
 
     def close(self):
-        logger.info("disconnect")
+        logger.trace("disconnect")
         if self._device:
             self._device.close()
 

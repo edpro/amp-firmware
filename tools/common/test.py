@@ -17,23 +17,64 @@ def eabs(expected: float, actual: float) -> float:
 
 
 def erel(expected: float, actual: float) -> float:
-    if expected == 0 and actual == 0:
+    if expected == 0:
         return 0
     return abs(expected - actual) / abs(expected)
 
 
-def abs_str(v: Optional[float]):
-    if (v is None):
-        return "None"
-    else:
-        return f'{v:0.6f}'
+def emax(expected: float, abs_err: float, rel_err: float):
+    return abs_err + rel_err * abs(expected)
 
 
-def rel_str(v: Optional[float]):
-    if (v is None):
-        return "None"
-    else:
-        return f'{v * 100:0.2f}%'
+def abs_str(v: float):
+    return f'{v:0.6f}'
+
+
+def rel_str(v: float):
+    return f'{v * 100:0.2f}%'
+
+
+class TResult:
+    actual: float
+    expect: float
+    abs_err: float
+    rel_err: float
+    max_diff: float
+
+    def __init__(self, actual: float, expect: float, abs_err: float, rel_err: float):
+        self.actual = actual
+        self.expect = expect
+        self.abs_err = eabs(actual, expect)
+        self.rel_err = erel(actual, expect)
+        self.max_diff = abs_err + rel_err * abs(expect)
+
+    def abs_str(self):
+        return f'{self.abs_err:0.6f}'
+
+    def rel_str(self):
+        if (self.rel_err == 0):
+            return "-"
+        else:
+            return f'{self.rel_err * 100:0.2f}%'
+
+    def expect_str(self):
+        return f'{self.expect:0.6f}'
+
+    def actual_str(self):
+        return f'{self.actual:0.6f}'
+
+    def rate_str(self):
+        health_value = self.abs_err / self.max_diff
+        return f'{round(health_value * 100)}%'
+
+    def row_str(self, prefix: str):
+        row = prefix
+        row += f' | expect: {self.expect_str().rjust(9)}'
+        row += f' | actual: {self.actual_str().rjust(9)}'
+        row += f' | abs: {self.abs_str().rjust(8)}'
+        row += f' | rel: {self.rel_str().rjust(5)}'
+        row += f' | err: {self.rate_str().rjust(3)}'
+        return row
 
 
 class TestReporter:
@@ -46,6 +87,12 @@ class TestReporter:
     def add_err_line(self, text: str):
         self.records.append((1, text))
         scr_print(f'[{self.tag}] {text}', Colors.LIGHT_RED)
+
+    def expect(self, r: TResult):
+        if r.abs_err < r.max_diff:
+            return
+        self.success = False
+        self.add_err_line(f"FAILED: Value is not in range: {round(r.expect, 6)} ± {r.max_diff}")
 
     def expect_abs(self, actual: float, expect: float, err: Optional[float]):
         if (err is None):

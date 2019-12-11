@@ -42,7 +42,7 @@ class PSTestVAC(Scenario):
         super().__init__("test_vac")
 
     def on_run(t):
-        t.use_edpro_ca()
+        t.use_devboard()
         t.use_edpro_ps()
         t.use_meter()
         t.test_vac()

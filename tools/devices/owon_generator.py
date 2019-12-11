@@ -81,7 +81,7 @@ class OwonGenerator:
         return text
 
     def close(self):
-        logger.info("disconnect")
+        logger.trace("disconnect")
         if self._device is not None:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 

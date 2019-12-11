@@ -25,7 +25,7 @@ class Scenario:
         self.logger: Logger = Logger(tag)
         self.success: bool = True
 
-    def use_edpro_ca(self):
+    def use_devboard(self):
         self.devboard = EdproDevBoard()
         self.devboard.connect()
         self.devboard.wait_boot_complete()

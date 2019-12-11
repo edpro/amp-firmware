@@ -8,7 +8,7 @@ class PSCalibration(Scenario):
         super().__init__("ps_cal")
 
     def on_run(c):
-        c.use_edpro_ca()
+        c.use_devboard()
         c.use_edpro_ps()
         c.use_meter()
 

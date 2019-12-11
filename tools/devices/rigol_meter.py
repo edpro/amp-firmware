@@ -64,7 +64,7 @@ class RigolMeter:
         self._ask("*IDN?")
 
     def close(self):
-        logger.info("disconnect")
+        logger.trace("disconnect")
         if self._device:
             self._device.close()
 

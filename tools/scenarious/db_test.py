@@ -4,7 +4,7 @@ from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
 
-def devboard_run_test():
+def db_run_test():
     scr_prompt("Disconnect multimeter and powersource from the board!")
     DBTest().run()
 
@@ -15,7 +15,7 @@ class DBTest(Scenario):
         super().__init__("test_ca")
 
     def on_run(t):
-        t.use_edpro_ca()
+        t.use_devboard()
         t.use_meter()
         t.use_power()
         t.use_generator()
