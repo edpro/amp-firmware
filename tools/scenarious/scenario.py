@@ -70,7 +70,7 @@ class Scenario:
             self.fail(msg)
 
     def print_task(self, text: str):
-        self.logger.print(Colors.GREEN, "#" )
+        self.logger.print(Colors.GREEN, "#")
         self.logger.print(Colors.GREEN, "# " + text)
         self.logger.print(Colors.GREEN, "#")
 
