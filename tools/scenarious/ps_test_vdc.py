@@ -37,21 +37,24 @@ class PSTestVDC(Scenario):
         super().__init__("test_vdc")
 
     def on_run(t):
+        t.use_edpro_ca()
         t.use_edpro_ps()
         t.use_meter()
         t.test_vdc()
 
     def test_vdc(t):
+        t.edpro_ca.set_off()
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(0)
         t.meter.set_mode(RigolMode.VDC_20)
+        t.edpro_ca.set_meas_v()
         t.wait(1)
 
         r = TestReporter(t.tag)
 
         for d in test_data:
             t.edpro_ps.set_volt(d.v)
-            t.wait(0.25)
+            t.wait(0.5)
 
             real_v = t.meter.measure_vdc()
             t.check_abs(real_v, d.v, VDC_STEP_ERR, f"Required voltage does not match")

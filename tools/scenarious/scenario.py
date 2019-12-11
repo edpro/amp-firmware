@@ -136,9 +136,13 @@ class Scenario:
             self._dispose()
 
         if self.success:
-            self.logger.print(Colors.GREEN, "OK")
+            self.logger.print(Colors.GREEN, "===")
+            self.logger.print(Colors.GREEN, "OK!")
+            self.logger.print(Colors.GREEN, "===")
         else:
-            self.logger.print(Colors.LIGHT_RED, "Test FAILED!")
+            self.logger.print(Colors.LIGHT_RED, "======")
+            self.logger.print(Colors.LIGHT_RED, "FAILED")
+            self.logger.print(Colors.LIGHT_RED, "======")
 
 
 class TestScenario(Scenario):

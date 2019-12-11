@@ -42,15 +42,18 @@ class PSTestVAC(Scenario):
         super().__init__("test_vac")
 
     def on_run(t):
+        t.use_edpro_ca()
         t.use_edpro_ps()
         t.use_meter()
         t.test_vac()
 
     def test_vac(t):
+        t.edpro_ca.set_off()
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(0)
         t.edpro_ps.set_freq(1000)
         t.meter.set_mode(RigolMode.VAC_20)
+        t.edpro_ca.set_meas_v()
         t.wait(1)
 
         r = TestReporter(t.tag)

@@ -1,6 +1,6 @@
 from tools.common.esp import flash_espinit, flash_firmware, print_esp_info, UartStr
 from tools.devices.edpro_ps import EdproPS
-from tools.scenarious.ca_test import CATest
+from tools.scenarious.ca_test import devboard_run_test
 from tools.scenarious.ps_calibration import PSCalibration
 from tools.scenarious.ps_test_adc import PSTestADC
 from tools.scenarious.ps_test_freq import PSTestFreq
@@ -35,16 +35,15 @@ ps_menu = MenuDef([
         MenuItem("Calibrate ALL", lambda: PSCalibration().run()),
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Test ALL", test_all),
-        MenuItem("--------"),
+        MenuItem("Run all tests", test_all),
+        MenuItem("-------------"),
         MenuItem("Test VDC", PSTestVDC().run),
         MenuItem("Test VAC", PSTestVAC().run),
         MenuItem("Test ADC", PSTestADC().run),
         MenuItem("Test AAC", PSTestVAC().run),
-        MenuItem("--------"),
-        MenuItem("Test FREQ", PSTestFreq().run),
-        MenuItem("--------"),
-        MenuItem("Test Board", CATest().run),
+        MenuItem("Test Freq.", PSTestFreq().run),
+        MenuItem("-------------"),
+        MenuItem("Test devboard", lambda: devboard_run_test()),
     ])),
     MenuItem("Quit", is_quit=True),
 ])

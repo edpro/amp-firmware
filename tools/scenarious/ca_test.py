@@ -1,6 +1,12 @@
+from tools.common.screen import scr_prompt
 from tools.common.test import TestReporter, to_amp
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
+
+
+def devboard_run_test():
+    scr_prompt("Disconnect multimeter and powersource from the board!")
+    CATest().run()
 
 
 # noinspection PyMethodParameters
