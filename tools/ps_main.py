@@ -1,6 +1,6 @@
 from tools.common.esp import flash_espinit, flash_firmware, print_esp_info, UartStr
 from tools.devices.edpro_ps import EdproPS
-from tools.scenarious.ca_test import devboard_run_test
+from tools.scenarious.db_test import devboard_run_test
 from tools.scenarious.ps_calibration import PSCalibration
 from tools.scenarious.ps_test_adc import PSTestADC
 from tools.scenarious.ps_test_freq import PSTestFreq

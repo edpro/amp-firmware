@@ -3,9 +3,9 @@ from tools.common.logger import LoggedError
 from tools.devices.edpro_base import EdproDevice
 
 
-class EdproCA(EdproDevice):
+class EdproDevBoard(EdproDevice):
     def __init__(self):
-        super().__init__("ca")
+        super().__init__("db")
         self.uart_str = UartStr.CH340
 
     def set_off(self):
@@ -75,7 +75,7 @@ class EdproCA(EdproDevice):
 
 
 def test():
-    device = EdproCA()
+    device = EdproDevBoard()
     device.connect()
     device.wait_boot_complete()
 

@@ -15,7 +15,7 @@ class PSCalibration(Scenario):
         # VOLTAGE
         c.edpro_ps.cmd("mode dc")
         c.edpro_ps.cmd("set l 0")
-        c.edpro_ca.set_meas_v()
+        c.devboard.set_meas_v()
         c._cal_vdc()
         c._cal_vac()
         c._cal_adc0()
@@ -27,7 +27,7 @@ class PSCalibration(Scenario):
         c._cal_aac()
         c.edpro_ps.save_conf()
 
-        c.edpro_ca.set_off()
+        c.devboard.set_off()
 
     def _cal_vdc(c):
         c.print_task("calibrate VDC:")
@@ -67,12 +67,12 @@ class PSCalibration(Scenario):
 
     def _cal_adc(c):
         c.print_task("calibrate ADC:")
-        c.edpro_ca.set_off()
+        c.devboard.set_off()
 
         c.meter.set_mode(RigolMode.ADC_2A)
         c.edpro_ps.cmd("mode dc")
         c.edpro_ps.cmd("set l 15")
-        c.edpro_ca.set_pp_load(1, meas_i=True)
+        c.devboard.set_pp_load(1, meas_i=True)
 
         c.wait(0.5)
         actual = -c.meter.measure_adc()
@@ -89,13 +89,13 @@ class PSCalibration(Scenario):
 
     def _cal_aac(c):
         c.print_task("calibrate AAC:")
-        c.edpro_ca.set_off()
+        c.devboard.set_off()
 
         c.meter.set_mode(RigolMode.AAC_2A)
         c.edpro_ps.cmd("mode ac")
         c.edpro_ps.cmd("set f 1000")
         c.edpro_ps.cmd("set l 15")
-        c.edpro_ca.set_pp_load(1, meas_i=True)
+        c.devboard.set_pp_load(1, meas_i=True)
 
         c.wait(1)
         actual = c.meter.measure_aac()

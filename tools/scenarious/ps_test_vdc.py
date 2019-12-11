@@ -43,11 +43,11 @@ class PSTestVDC(Scenario):
         t.test_vdc()
 
     def test_vdc(t):
-        t.edpro_ca.set_off()
+        t.devboard.set_off()
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(0)
         t.meter.set_mode(RigolMode.VDC_20)
-        t.edpro_ca.set_meas_v()
+        t.devboard.set_meas_v()
         t.wait(1)
 
         r = TestReporter(t.tag)
