@@ -1,4 +1,4 @@
-from typing import NamedTuple, List, Optional
+from typing import NamedTuple, List
 
 from tools.common.test import TestReporter, TResult
 from tools.devices.rigol_meter import RigolMode
@@ -10,27 +10,27 @@ VDC_REL = 0.02
 
 
 class TData(NamedTuple):
-    v: float
-    abs: Optional[float]
-    rel: Optional[float]
+    volt: float
+    abs: float
+    rel: float
 
 
 test_data: List[TData] = [
-    TData(v=0.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.1, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.2, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.4, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.6, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.8, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=1.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=2.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=3.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=4.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=5.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.1, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.2, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.4, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.6, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.8, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=1.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=2.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=3.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=4.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=5.0, abs=VDC_ABS, rel=VDC_REL),
     # test ability to change full range in a proper time
-    TData(v=0.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=5.0, abs=VDC_ABS, rel=VDC_REL),
-    TData(v=0.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=5.0, abs=VDC_ABS, rel=VDC_REL),
+    TData(volt=0.0, abs=VDC_ABS, rel=VDC_REL),
 ]
 
 
@@ -56,15 +56,15 @@ class PSTestVDC(Scenario):
         reporter = TestReporter(t.tag)
 
         for d in test_data:
-            t.edpro_ps.set_volt(d.v)
+            t.edpro_ps.set_volt(d.volt)
             t.wait(0.5)
 
             expected = t.meter.measure_vdc()
-            t.check_abs(expected, d.v, VDC_STEP_ABS, f"Required voltage does not match")
+            t.check_abs(expected, d.volt, VDC_STEP_ABS, f"Required voltage does not match")
 
             actual = t.edpro_ps.get_values().U
             result = TResult(actual, expected, d.abs, d.rel)
-            reporter.trace(result.row_str(f'volt: {d.v}V'))
+            reporter.trace(result.row_str(f'volt: {d.volt}V'))
             reporter.expect(result)
 
         reporter.print_result()

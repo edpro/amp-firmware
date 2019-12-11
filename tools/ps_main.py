@@ -20,7 +20,11 @@ def firmware_update():
 
 
 def test_all():
-    pass
+    PSTestVDC().run()
+    PSTestADC().run()
+    PSTestVAC().run()
+    PSTestVAC().run()
+    PSTestFreq().run()
 
 
 ps_menu = MenuDef([

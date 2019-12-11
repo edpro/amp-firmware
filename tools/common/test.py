@@ -55,7 +55,7 @@ class TResult:
         if (self.rel_err == 0):
             return "-"
         else:
-            return f'{self.rel_err * 100:0.2f}%'
+            return f'{self.rel_err * 100:0.1f}%'
 
     def expect_str(self):
         return f'{self.expect:0.6f}'
