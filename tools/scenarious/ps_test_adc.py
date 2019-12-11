@@ -34,7 +34,6 @@ class PSTestADC(Scenario):
         t.use_meter()
         t.test_adc()
         # turn off due to high current
-        t.devboard.set_off()
         t.edpro_ps.set_volt(0)
 
     def test_adc(t):
