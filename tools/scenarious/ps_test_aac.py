@@ -25,11 +25,11 @@ def make_data(freq: int, e_abs: float, e_rel: float) -> List[TData]:
 
 
 test_data = list(chain(
-    make_data(freq=50, e_abs=0.02, e_rel=0.04),
-    make_data(freq=100, e_abs=0.02, e_rel=0.03),
-    make_data(freq=1000, e_abs=0.02, e_rel=0.03),
-    make_data(freq=10_000, e_abs=0.04, e_rel=0.03),
-    make_data(freq=10_000, e_abs=0.04, e_rel=0.03),
+    make_data(freq=50, e_abs=0.04, e_rel=0.04),
+    make_data(freq=100, e_abs=0.04, e_rel=0.04),
+    make_data(freq=1000, e_abs=0.04, e_rel=0.04),
+    make_data(freq=10_000, e_abs=0.04, e_rel=0.04),
+    make_data(freq=10_000, e_abs=0.04, e_rel=0.04),
     make_data(freq=20_000, e_abs=0.05, e_rel=0.50),
 ))
 

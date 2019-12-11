@@ -5,7 +5,7 @@ from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
 VDC_STEP_ABS = 0.06
-VDC_ABS = 0.02
+VDC_ABS = 0.04
 VDC_REL = 0.02
 
 
