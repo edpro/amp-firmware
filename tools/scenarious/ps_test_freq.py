@@ -1,23 +1,24 @@
 from typing import List, NamedTuple
 
-from tools.common.test import TestReporter, erel, rel_str
+from tools.common.test import TestReporter, TResult
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
 FREQ_REL = 0.01
+FREQ_ABS = 1
 
 
 class TData(NamedTuple):
-    f: int
+    freq: int
 
 
 test_data: List[TData] = [
-    TData(f=10),
-    TData(f=100),
-    TData(f=1_000),
-    TData(f=10_000),
-    TData(f=100_000),
-    TData(f=1_000_000),
+    TData(freq=10),
+    TData(freq=100),
+    TData(freq=1_000),
+    TData(freq=10_000),
+    TData(freq=100_000),
+    TData(freq=1_000_000),
 ]
 
 
@@ -27,33 +28,38 @@ class PSTestFreq(Scenario):
         super().__init__("test_freq")
 
     def on_run(t):
+        t.use_devboard()
         t.use_edpro_ps()
         t.use_meter()
         t.test_freq()
 
     def test_freq(t):
+        t.devboard.set_off()
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(3.0)
         t.meter.set_mode(RigolMode.FREQ_20)
+        t.devboard.set_meas_v()
         t.wait(1)
 
-        r = TestReporter(t.tag)
+        reporter = TestReporter(t.tag)
 
         for d in test_data:
-            t.edpro_ps.set_freq(d.f)
-            t.wait(0.25)
+            t.edpro_ps.set_freq(d.freq)
+            t.wait(0.5)
 
-            real_f = t.meter.measure_freq()
-            rel_err = erel(real_f, d.f)
+            expected = d.freq
+            actual = t.meter.measure_freq()
+            result = TResult(actual, expected, FREQ_ABS, FREQ_REL)
 
-            row = f'f: {d.f}Hz | result: {real_f}'
-            row += f' | rel: {rel_str(rel_err)}'
+            row = f'freq: {d.freq:8}Hz' \
+                  f' | actual: {result.actual:8.0f}' \
+                  f' | abs: {result.abs_err:4.0f}' \
+                  f' | rel: {result.rel_str()}'
+            reporter.trace(row)
+            reporter.expect(result)
 
-            r.trace(row)
-            r.expect_rel(real_f, d.f, FREQ_REL)
-
-        r.print_result()
-        t.success &= r.success
+        reporter.print_result()
+        t.success &= reporter.success
 
 
 if __name__ == "__main__":
