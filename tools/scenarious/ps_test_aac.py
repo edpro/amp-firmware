@@ -5,8 +5,6 @@ from tools.common.test import TestReporter, TResult
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
-AAC_ABS = 0.02
-AAC_REL = 0.03
 LOAD_R = 10
 
 
@@ -27,11 +25,11 @@ def make_data(freq: int, e_abs: float, e_rel: float) -> List[TData]:
 
 
 test_data = list(chain(
-    make_data(freq=50, e_abs=AAC_ABS, e_rel=AAC_REL),
-    make_data(freq=100, e_abs=AAC_ABS, e_rel=AAC_REL),
-    make_data(freq=1_000, e_abs=AAC_ABS, e_rel=AAC_REL),
-    make_data(freq=10_000, e_abs=AAC_ABS, e_rel=AAC_REL),
-    make_data(freq=100_000, e_abs=AAC_ABS, e_rel=AAC_REL + 0.01),
+    make_data(freq=50, e_abs=0.02, e_rel=0.04),
+    make_data(freq=100, e_abs=0.02, e_rel=0.03),
+    make_data(freq=1_000, e_abs=0.02, e_rel=0.03),
+    make_data(freq=10_000, e_abs=0.04, e_rel=0.03),
+    make_data(freq=100_000, e_abs=0.04, e_rel=0.04),
 ))
 
 
@@ -50,8 +48,8 @@ class PSTestAAC(Scenario):
         t.devboard.set_off()
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(0)
-        t.meter.set_mode(RigolMode.VAC_2)
-        t.devboard.set_off()
+        t.meter.set_mode(RigolMode.AAC_2A)
+        t.devboard.set_pp_load(1, meas_i=True)
         t.wait(1)
 
         reporter = TestReporter(t.tag)
@@ -64,12 +62,13 @@ class PSTestAAC(Scenario):
 
             t.meter.measure_aac()  # duty cycle
             expected = t.meter.measure_aac()
-            t.check_abs(expected, d.curr, 0.05, f"Required current does not match")
+            expected_diff = 0.02 if d.curr < 0.1 else 0.05
+            t.check_abs(expected, d.curr, expected_diff, f"Required current does not match")
 
             actual = t.edpro_ps.get_values().I
             result = TResult(actual, expected, d.abs, d.rel)
 
-            row = result.row_str(f'f: {d.freq}Hz | c: {d.curr:0.1f}A')
+            row = result.row_str(f'freq: {d.freq}Hz | curr: {d.curr:0.2f}A')
             reporter.trace(row)
             reporter.expect(result)
 

@@ -23,7 +23,7 @@ def make_data(freq: List[int], volt: List[float]) -> List[TData]:
     data = []
     for f in freq:
         for v in volt:
-            if f <= 50_000:
+            if 100 < f <= 50_000:
                 data.append(TData(freq=f, volt=v, abs=VAC_ABS, rel=VAC_REL))
             else:
                 data.append(TData(freq=f, volt=v, abs=VAC_ABS, rel=VAC_REL + 0.01))
@@ -65,7 +65,8 @@ class PSTestVAC(Scenario):
 
             t.meter.measure_vac()  # duty cycle
             expected = t.meter.measure_vac()
-            t.check_abs(expected, d.volt, 0.1, f"Required voltage does not match")
+            expected_diff = 0.05 if d.volt < 0.15 else 0.1
+            t.check_abs(expected, d.volt, expected_diff, f"Required voltage does not match")
 
             actual = t.edpro_ps.get_values().U
             result = TResult(actual, expected, d.abs, d.rel)

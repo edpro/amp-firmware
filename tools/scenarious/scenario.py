@@ -121,7 +121,7 @@ class Scenario:
         if (self.generator):
             self.generator.close()
 
-    def run(self):
+    def run(self) -> bool:
         self.logger.print(Colors.GREEN, "begin")
 
         try:
@@ -143,6 +143,8 @@ class Scenario:
             self.logger.print(Colors.LIGHT_RED, "======")
             self.logger.print(Colors.LIGHT_RED, "FAILED")
             self.logger.print(Colors.LIGHT_RED, "======")
+
+        return self.success
 
 
 class TestScenario(Scenario):

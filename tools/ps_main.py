@@ -1,6 +1,7 @@
 from tools.common.esp import flash_espinit, flash_firmware, print_esp_info, UartStr
 from tools.devices.edpro_ps import EdproPS
 from tools.scenarious.ps_calibration import PSCalibration
+from tools.scenarious.ps_test_aac import PSTestAAC
 from tools.scenarious.ps_test_adc import PSTestADC
 from tools.scenarious.ps_test_freq import PSTestFreq
 from tools.scenarious.ps_test_vac import PSTestVAC
@@ -20,11 +21,11 @@ def firmware_update():
 
 
 def test_all():
-    PSTestVDC().run()
-    PSTestADC().run()
-    PSTestVAC().run()
-    PSTestVAC().run()
-    PSTestFreq().run()
+    if not PSTestVDC().run(): return
+    if not PSTestADC().run(): return
+    if not PSTestVAC().run(): return
+    if not PSTestAAC().run(): return
+    if not PSTestFreq().run(): return
 
 
 ps_menu = MenuDef([
@@ -43,7 +44,7 @@ ps_menu = MenuDef([
         MenuItem("Test DC Voltage", PSTestVDC().run),
         MenuItem("Test DC Current", PSTestADC().run),
         MenuItem("Test AC Voltage", PSTestVAC().run),
-        MenuItem("Test AC Current", PSTestVAC().run),
+        MenuItem("Test AC Current", PSTestAAC().run),
         MenuItem("Test AC Frequency", PSTestFreq().run),
     ])),
     MenuItem("Quit", is_quit=True),
