@@ -30,47 +30,32 @@ class MMCalibration(Scenario):
         c.use_power()
         c.use_generator()
 
-        # if bool(c.flags & MMCalFlags.VDC):
-        #     c._cal_vdc()
+        if bool(c.flags & MMCalFlags.VDC):
+            c._cal_vdc()
+
         #
         # if bool(c.flags & MMCalFlags.VAC):
         #     c._cal_vac()
 
+        c.edpro_mm.save_conf()
+
     def _cal_vdc(c):
-        is_done: bool = False
+        c.devboard.set_off()
+        c.meter.set_mode(RigolMode.VDC_2)
 
-        choise = scr_prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
-        if choise == "":
-            is_done = False
-            while True:
-                try:
-                    c._cal_dc0()
-                    is_done = True
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
-                except Exception:
-                    raise
+        """ cal dc0  """
+        c.devboard.set_mm_vgnd()
+        c.edpro_mm.cmd("mode vdc")
+        c.edpro_mm.cmd("cal dc0")
 
-        choise = scr_prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
-        if choise == "":
-            is_done = False
-            while True:
-                try:
-                    c._cal_vdc_values()
-                    is_done = True
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
-                except Exception:
-                    raise
-
-        if is_done:
-            c.edpro_mm.save_conf()
+        """ cal vdc  """
+        c.devboard.set_off()
+        c.power.set_volt(1.0)
+        c.devboard.set_mm_vpow(meas_v=True)
+        c.wait(1)
+        volt = c.meter.measure_vdc()
+        c.check_abs(volt, 1.0, 0.1, "Cannot set DC voltage")
+        c.edpro_mm.cmd(f"cal vdc {volt:0.6f}")
 
     def _cal_vac(c):
         is_done: bool = False
@@ -108,22 +93,9 @@ class MMCalibration(Scenario):
         if is_done:
             c.edpro_mm.save_conf()
 
-    def _cal_dc0(c):
-        c.edpro_mm.cmd("mode dc")
-        c.edpro_mm.cmd("cal dc0")
-
     def _cal_ac0(c):
         c.edpro_mm.cmd("mode ac")
         c.edpro_mm.cmd("cal ac0")
-
-    def _cal_vdc_values(c):
-        c.edpro_mm.cmd("mode dc")
-        c.meter.set_mode(RigolMode.VDC_2)
-        c.power.set_volt(1.0)
-        c.wait(1)
-        real_v = c.meter.measure_vdc()
-        c.check_rel(real_v, 1.0, 0.1, "Cannot set DC volatge 1V")
-        c.edpro_mm.cmd(f"cal vdc {real_v:0.6f}")
 
     def _cal_vac_values(c):
         freq = 1000
@@ -156,5 +128,5 @@ class MMCalibration(Scenario):
 
 
 if __name__ == "__main__":
-    # MMCalibration(MMCalFlags.VDC).run()
-    MMCalibration(MMCalFlags.VAC).run()
+    MMCalibration(MMCalFlags.VDC).run()
+    # MMCalibration(MMCalFlags.VAC).run()
