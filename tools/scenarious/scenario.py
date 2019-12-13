@@ -29,24 +29,21 @@ class Scenario:
         self.devboard = EdproDevBoard()
         self.devboard.connect()
         self.devboard.wait_boot_complete()
-        info = self.devboard.get_info()
-        self.check_str(info.name, "Calibrator", "Invalid device name!")
+        self.devboard.validate_firmware()
 
     def use_edpro_mm(self):
         self.edpro_mm = EdproMM()
         self.edpro_mm.connect()
         self.edpro_mm.wait_boot_complete()
+        self.edpro_mm.validate_firmware()
         self.edpro_mm.set_devmode()
-        info = self.edpro_mm.get_info()
-        self.check_str(info.name, "Multimeter", "Invalid device name!")
 
     def use_edpro_ps(self):
         self.edpro_ps = EdproPS()
         self.edpro_ps.connect()
         self.edpro_ps.wait_boot_complete()
+        self.edpro_ps.validate_firmware()
         self.edpro_ps.set_devmode()
-        info = self.edpro_ps.get_info()
-        self.check_str(info.name, "Powersource", "Invalid device name!")
 
     def use_power(self):
         self.power = OwonPower()

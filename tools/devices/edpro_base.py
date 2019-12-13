@@ -40,6 +40,8 @@ class EdproDevice:
     """handles communication with amperia devices (multimeter & powersource)"""
 
     def __init__(self, tag="edpro_device"):
+        self.expect_name = "noname"
+        self.expect_version = "0.1"
         self.log_mode = False
         self.tag = tag
         self.logger = Logger(tag)
@@ -262,6 +264,24 @@ class EdproDevice:
         r = self.request("i")
         return EDeviceInfo(name=r["name"],
                            version=r["version"])
+
+    def validate_firmware(self):
+        info = self.get_info()
+        if (info.name != self.expect_name):
+            self.logger.throw(f"Device name do not match!"
+                              f"\n\texpect: {self.expect_name}"
+                              f"\n\tactual: {info.name}")
+
+        def num_ver(ver: str) -> int:
+            parts = ver.split(".")
+            return int(parts[0]) * 1000 + int(parts[1])
+
+        expect_v = num_ver(self.expect_version)
+        actual_v = num_ver(info.version)
+        if (actual_v < expect_v):
+            self.logger.throw(f"Device version do not match!"
+                              f"\n\texpect: {self.expect_version}"
+                              f"\n\tactual: {info.version}")
 
     def set_devmode(self):
         self.request("devmode")

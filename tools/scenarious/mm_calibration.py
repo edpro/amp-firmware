@@ -24,16 +24,17 @@ class MMCalibration(Scenario):
         super().__init__("mm_cal")
 
     def on_run(c):
+        c.use_devboard()
         c.use_edpro_mm()
         c.use_meter()
         c.use_power()
         c.use_generator()
 
-        if bool(c.flags & MMCalFlags.VDC):
-            c._cal_vdc()
-
-        if bool(c.flags & MMCalFlags.VAC):
-            c._cal_vac()
+        # if bool(c.flags & MMCalFlags.VDC):
+        #     c._cal_vdc()
+        #
+        # if bool(c.flags & MMCalFlags.VAC):
+        #     c._cal_vac()
 
     def _cal_vdc(c):
         is_done: bool = False
