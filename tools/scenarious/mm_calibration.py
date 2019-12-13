@@ -33,19 +33,24 @@ class MMCalibration(Scenario):
         if bool(c.flags & MMCalFlags.VDC):
             c._cal_vdc()
 
+        if bool(c.flags & MMCalFlags.ADC):
+            c._cal_adc()
+
         #
         # if bool(c.flags & MMCalFlags.VAC):
         #     c._cal_vac()
 
-        c.edpro_mm.save_conf()
+        # c.edpro_mm.save_conf()
 
     def _cal_vdc(c):
+        c.print_task("calibrate VDC:")
         c.devboard.set_off()
-        c.meter.set_mode(RigolMode.VDC_2)
 
         """ cal dc0  """
-        c.devboard.set_mm_vgnd()
+        c.meter.set_mode(RigolMode.VDC_2)
         c.edpro_mm.cmd("mode vdc")
+        c.wait(1)
+        c.devboard.set_mm_vgnd()
         c.edpro_mm.cmd("cal dc0")
 
         """ cal vdc  """
@@ -56,6 +61,22 @@ class MMCalibration(Scenario):
         volt = c.meter.measure_vdc()
         c.check_abs(volt, 1.0, 0.1, "Cannot set DC voltage")
         c.edpro_mm.cmd(f"cal vdc {volt:0.6f}")
+
+    def _cal_adc(c):
+        c.print_task("calibrate ADC:")
+        c.devboard.set_off()
+        c.power.set_volt(4)
+        c.wait(1)
+
+        c.meter.set_mode(RigolMode.ADC_2A)
+        c.power.set_current(0.16)
+        c.edpro_mm.cmd("mode adc")
+        c.devboard.set_mm_ipow(meas_i=True)
+
+        c.wait(1)
+        curr = c.meter.measure_adc()
+        c.check_abs(curr, 0.16, 0.02, "Cannot set DC current")
+        # c.edpro_mm.cmd(f"cal adc {curr:0.6f}")
 
     def _cal_vac(c):
         is_done: bool = False
@@ -128,5 +149,6 @@ class MMCalibration(Scenario):
 
 
 if __name__ == "__main__":
-    MMCalibration(MMCalFlags.VDC).run()
+    # MMCalibration(MMCalFlags.VDC).run()
+    MMCalibration(MMCalFlags.ADC).run()
     # MMCalibration(MMCalFlags.VAC).run()
