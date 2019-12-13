@@ -40,7 +40,7 @@ class MMCalibration(Scenario):
         # if bool(c.flags & MMCalFlags.VAC):
         #     c._cal_vac()
 
-        # c.edpro_mm.save_conf()
+        c.edpro_mm.save_conf()
 
     def _cal_vdc(c):
         c.print_task("calibrate VDC:")
@@ -72,11 +72,14 @@ class MMCalibration(Scenario):
         c.power.set_current(0.16)
         c.edpro_mm.cmd("mode adc")
         c.devboard.set_mm_ipow(meas_i=True)
+        # c.devboard.set_mm_ipow()
+        # c.devboard.set_mm_ipow2(meas_i=True)
+        # c.devboard.set_mm_ipow2()
 
         c.wait(1)
         curr = c.meter.measure_adc()
         c.check_abs(curr, 0.16, 0.02, "Cannot set DC current")
-        # c.edpro_mm.cmd(f"cal adc {curr:0.6f}")
+        c.edpro_mm.cmd(f"cal adc {curr:0.6f}")
 
     def _cal_vac(c):
         is_done: bool = False

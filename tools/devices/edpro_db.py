@@ -43,6 +43,11 @@ class EdproDevBoard(EdproDevice):
         if (meas_i): cmd += " meas_i"
         self.cmd(cmd)
 
+    def set_mm_ipow2(self, meas_i: bool = False):
+        cmd = "set mm_ipow2"
+        if (meas_i): cmd += " meas_i"
+        self.cmd(cmd)
+
     def set_mm_ipow_rev(self, meas_i: bool = False):
         cmd = "set mm_ipow_rev"
         if (meas_i): cmd += " meas_i"
