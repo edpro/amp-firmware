@@ -36,6 +36,7 @@ ps_menu = MenuDef([
         MenuItem("Calibrate VDC", lambda: MMCalibration(MMCalFlags.VDC).run()),
         MenuItem("Calibrate ADC", lambda: MMCalibration(MMCalFlags.ADC).run()),
         MenuItem("--------"),
+        MenuItem("Calibrate AC0", lambda: MMCalibration(MMCalFlags.AC0).run()),
         MenuItem("Calibrate VAC", lambda: MMCalibration(MMCalFlags.VAC).run()),
         MenuItem("Calibrate AAC", lambda: MMCalibration(MMCalFlags.AAC).run()),
         MenuItem("--------"),
