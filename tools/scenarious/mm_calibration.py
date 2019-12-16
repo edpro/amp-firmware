@@ -42,8 +42,10 @@ class MMCalibration(Scenario):
         if bool(c.flags & MMCalFlags.AC0): c._cal_ac0()
         if bool(c.flags & MMCalFlags.VAC): c._cal_vac()
         if bool(c.flags & MMCalFlags.AAC): c._cal_aac()
+        if bool(c.flags & MMCalFlags.ANY_AC):
+            c.generator.set_output_off()
 
-        c.generator.set_output_off()
+        if bool(c.flags & MMCalFlags.R): c._cal_r()
 
         if c.save_conf:
             c.edpro_mm.save_conf()
@@ -168,6 +170,66 @@ class MMCalibration(Scenario):
         c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal aac 3 {actual_i:0.6f}")
 
+    def _cal_r(c):
+        c.print_task("calibrate R:")
+        c.devboard.set_off()
+        c.edpro_mm.cmd("mode r")
+
+        # cal rd
+        c.logger.info("calibrate R devider")
+        c.wait(0.5)
+        c.edpro_mm.cmd("cal rd")
+
+        # cal r0
+        c.logger.info("calibrate R offset")
+        c.devboard.set_mm_rgnd()
+        c.wait(0.5)
+        c.edpro_mm.cmd("cal r0")
+
+        # cal range 1
+        c.logger.info("calibrate range 1")
+        c.devboard.set_meas_r(2)
+        c.meter.set_mode(RigolMode.R_20K)
+        c.wait(1)
+        expected = c.meter.measure_r()
+        c.check_rel(expected, 2_000, 0.1, "Cannot set required resistance")
+        c.devboard.set_mm_rsel(2)
+        c.wait(0.5)
+        c.edpro_mm.cmd(f"cal r 1 {expected:0.6f}")
+
+        # cal range 2
+        c.logger.info("calibrate range 1")
+        c.devboard.set_meas_r(3)
+        c.meter.set_mode(RigolMode.R_200K)
+        c.wait(1)
+        expected = c.meter.measure_r()
+        c.check_rel(expected, 20_000, 0.1, "Cannot set required resistance")
+        c.devboard.set_mm_rsel(3)
+        c.wait(0.5)
+        c.edpro_mm.cmd(f"cal r 2 {expected:0.6f}")
+
+        # cal range 3
+        c.logger.info("calibrate range 3")
+        c.devboard.set_meas_r(4)
+        c.meter.set_mode(RigolMode.R_2M)
+        c.wait(1)
+        expected = c.meter.measure_r()
+        c.check_rel(expected, 200_000, 0.1, "Cannot set required resistance")
+        c.devboard.set_mm_rsel(4)
+        c.wait(0.5)
+        c.edpro_mm.cmd(f"cal r 3 {expected:0.6f}")
+
+        # cal range 4
+        c.logger.info("calibrate range 4")
+        c.devboard.set_meas_r(5)
+        c.meter.set_mode(RigolMode.R_10M)
+        c.wait(1)
+        expected = c.meter.measure_r()
+        c.check_rel(expected, 1_800_000, 0.1, "Cannot set required resistance")
+        c.devboard.set_mm_rsel(5)
+        c.wait(0.5)
+        c.edpro_mm.cmd(f"cal r 4 {expected:0.6f}")
+
 
 if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.DC0)
@@ -176,7 +238,9 @@ if __name__ == "__main__":
 
     # test = MMCalibration(MMCalFlags.AC0)
     # test = MMCalibration(MMCalFlags.VAC)
-    test = MMCalibration(MMCalFlags.AAC)
+    # test = MMCalibration(MMCalFlags.AAC)
+
+    test = MMCalibration(MMCalFlags.R)
 
     test.save_conf = False
     test.run()
