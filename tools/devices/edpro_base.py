@@ -252,11 +252,6 @@ class EdproDevice:
             self.close()
             raise
 
-    def reset_conf(self):
-        self.cmd("conf r")
-        self.cmd("conf s")
-        self.cmd("r")
-
     def save_conf(self):
         self.cmd("conf s")
 

@@ -9,6 +9,7 @@ from tools.scenarious.scenario import Scenario
 
 
 class MMCalFlags(Flag):
+    DC0 = auto()
     VDC = auto()
     VAC = auto()
     ADC = auto()
@@ -19,6 +20,8 @@ class MMCalFlags(Flag):
 
 # noinspection PyMethodParameters
 class MMCalibration(Scenario):
+    save_conf: bool = True
+
     def __init__(self, flags: MMCalFlags):
         self.flags = flags
         super().__init__("mm_cal")
@@ -30,6 +33,9 @@ class MMCalibration(Scenario):
         c.use_power()
         c.use_generator()
 
+        if bool(c.flags & MMCalFlags.DC0):
+            c._cal_dc0()
+
         if bool(c.flags & MMCalFlags.VDC):
             c._cal_vdc()
 
@@ -40,21 +46,22 @@ class MMCalibration(Scenario):
         # if bool(c.flags & MMCalFlags.VAC):
         #     c._cal_vac()
 
-        c.edpro_mm.save_conf()
+        if c.save_conf:
+            c.edpro_mm.save_conf()
+
+    def _cal_dc0(c):
+        c.print_task("calibrate DC0:")
+        c.devboard.set_off()
+
+        c.edpro_mm.cmd("mode vdc")
+        c.devboard.set_mm_vgnd()
+        c.wait(0.5)
+        c.edpro_mm.cmd("cal dc0")
 
     def _cal_vdc(c):
         c.print_task("calibrate VDC:")
         c.devboard.set_off()
 
-        """ cal dc0  """
-        c.meter.set_mode(RigolMode.VDC_2)
-        c.edpro_mm.cmd("mode vdc")
-        c.wait(1)
-        c.devboard.set_mm_vgnd()
-        c.edpro_mm.cmd("cal dc0")
-
-        """ cal vdc  """
-        c.devboard.set_off()
         c.power.set_volt(1.0)
         c.devboard.set_mm_vpow(meas_v=True)
         c.wait(1)
@@ -72,14 +79,11 @@ class MMCalibration(Scenario):
         c.power.set_current(0.16)
         c.edpro_mm.cmd("mode adc")
         c.devboard.set_mm_ipow(meas_i=True)
-        # c.devboard.set_mm_ipow()
-        # c.devboard.set_mm_ipow2(meas_i=True)
-        # c.devboard.set_mm_ipow2()
 
         c.wait(1)
         curr = c.meter.measure_adc()
         c.check_abs(curr, 0.16, 0.02, "Cannot set DC current")
-        c.edpro_mm.cmd(f"cal adc {curr:0.6f}")
+        # c.edpro_mm.cmd(f"cal adc {curr:0.6f}")
 
     def _cal_vac(c):
         is_done: bool = False
@@ -152,6 +156,9 @@ class MMCalibration(Scenario):
 
 
 if __name__ == "__main__":
-    # MMCalibration(MMCalFlags.VDC).run()
-    MMCalibration(MMCalFlags.ADC).run()
-    # MMCalibration(MMCalFlags.VAC).run()
+    # test = MMCalibration(MMCalFlags.DC0)
+    # test = MMCalibration(MMCalFlags.VDC)
+    # test = MMCalibration(MMCalFlags.VAC)
+    test = MMCalibration(MMCalFlags.ADC)
+    test.save_conf = False
+    test.run()
