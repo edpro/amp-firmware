@@ -32,20 +32,20 @@ ps_menu = MenuDef([
     MenuItem("Device", submenu=MenuDef([
         MenuItem("Firmware Init", lambda: firmware_init()),
         MenuItem("Firmware Update", lambda: firmware_update()),
-        MenuItem("Console", EdproPS().show_log, is_pause=False),
+        MenuItem("Console", lambda: EdproPS().show_log(), is_pause=False),
         MenuItem("Info", lambda: print_esp_info(UartStr.CP210)),
     ])),
     MenuItem("Calibration", submenu=MenuDef([
         MenuItem("Run Calibration", lambda: PSCalibration().run()),
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Run all tests", test_all),
+        MenuItem("Run all tests", lambda: test_all()),
         MenuItem("---------------"),
-        MenuItem("Test DC Voltage", PSTestVDC().run),
-        MenuItem("Test DC Current", PSTestADC().run),
-        MenuItem("Test AC Voltage", PSTestVAC().run),
-        MenuItem("Test AC Current", PSTestAAC().run),
-        MenuItem("Test AC Frequency", PSTestFreq().run),
+        MenuItem("Test DC Voltage", lambda: PSTestVDC().run()),
+        MenuItem("Test DC Current", lambda: PSTestADC().run()),
+        MenuItem("Test AC Voltage", lambda: PSTestVAC().run()),
+        MenuItem("Test AC Current", lambda: PSTestAAC().run()),
+        MenuItem("Test AC Frequency", lambda: PSTestFreq().run()),
     ])),
     MenuItem("Quit", is_quit=True),
 ])
