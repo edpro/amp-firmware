@@ -102,7 +102,7 @@ class MMCalibration(Scenario):
         c.edpro_mm.cmd("mode vac")
         c.meter.set_mode(RigolMode.VAC_2)
         c.devboard.set_mm_vgen(meas_v=True)
-        c.generator.set_load_on(100)
+        # c.generator.set_load_on(100)
         c.generator.set_output_on()
 
         # point 1
@@ -134,6 +134,8 @@ class MMCalibration(Scenario):
         c.print_task("calibrate AAC:")
         c.devboard.set_off()
 
+        circuit_r = 60
+
         freq = 1000
         c.meter.set_mode(RigolMode.AAC_2A)
         c.edpro_mm.cmd("mode aac")
@@ -141,25 +143,26 @@ class MMCalibration(Scenario):
         c.generator.get_load()
         c.devboard.set_mm_igen(meas_i=True)
 
-        # point 1
+        c.logger.info("point 1")
         expected_i = 0.05
-        c.generator.set_ac(to_amp(1), freq)
+        c.generator.set_ac(to_amp(expected_i * circuit_r), freq)
         c.wait(1.0)
         actual_i = c.meter.measure_aac()
         c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal aac 1 {actual_i:0.6f}")
 
-        # point 2
+        c.logger.info("point 2")
         expected_i = 0.1
-        c.generator.set_ac(to_amp(1), freq)
+        c.generator.set_ac(to_amp(expected_i * circuit_r), freq)
         c.wait(1.0)
         actual_i = c.meter.measure_aac()
         c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal aac 2 {actual_i:0.6f}")
 
-        # point 3
-        expected_i = 0.25
-        c.generator.set_ac(to_amp(1), freq)
+        c.logger.info("point 3")
+        # expected_i = 0.25
+        expected_i = 0.14  # for max generator amplitude 25
+        c.generator.set_ac(25, freq)
         c.wait(1.0)
         actual_i = c.meter.measure_aac()
         c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")

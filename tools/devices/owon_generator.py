@@ -77,6 +77,8 @@ class OwonGenerator:
         text = bb.decode()
         if text.endswith("->\n"):
             text = text[0:-4]
+        elif text.endswith("\n"):
+            text = text[0:-1]
         logger.trace(f"-> {text}")
         return text
 
@@ -86,6 +88,7 @@ class OwonGenerator:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def set_load_on(self, load_resistance: int):
+        logger.throw("Function is not working properly on device")
         self.write(f":FUNCtion:SINE:LOAD {load_resistance}")
         self.read(BUF_SIZE)
 
@@ -94,17 +97,24 @@ class OwonGenerator:
         return self.read(BUF_SIZE)
 
     def set_load_off(self):
+        logger.throw("Function is not working properly on device")
         self.write(f":FUNCtion:SINE:LOAD OFF")
         self.read(BUF_SIZE)
 
     def set_ac(self, amp: float, freq: int):
+        if amp > 25:
+            logger.throw("Cannot set amplitude > 25V")
         self.write(f":FUNC:SINE:FREQ {freq}")
-        self.read(BUF_SIZE)
-        self.write(f":FUNC:SINE:AMPL {amp}")
-        self.read(BUF_SIZE)
+        result = self.read(BUF_SIZE)
+        if (result == "NULL"):
+            logger.throw("command failed")
+        self.write(f":FUNC:SINE:AMPL {amp:0.4f}")
+        result = self.read(BUF_SIZE)
+        if (result == "NULL"):
+            logger.throw("command failed")
 
     def set_dc(self, voltage: int):
-        # setting voltage is not working
+        logger.throw("Function is not working properly on device")
         self.write(f":FUNCtion:ARB:BUILtinwform 39")
         self.read(BUF_SIZE)
         self.write(f":FUNCtion:ARB:BUILtinwform?")  # DC,39
