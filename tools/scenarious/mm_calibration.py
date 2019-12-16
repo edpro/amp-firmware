@@ -102,7 +102,7 @@ class MMCalibration(Scenario):
         c.edpro_mm.cmd("mode vac")
         c.meter.set_mode(RigolMode.VAC_2)
         c.devboard.set_mm_vgen(meas_v=True)
-        # c.generator.set_load_on(100)
+        c.check(c.generator.get_load() == "OFF", "Generator load must be 'High Z'")
         c.generator.set_output_on()
 
         # point 1
@@ -139,8 +139,8 @@ class MMCalibration(Scenario):
         freq = 1000
         c.meter.set_mode(RigolMode.AAC_2A)
         c.edpro_mm.cmd("mode aac")
+        c.check(c.generator.get_load() == "OFF", "Generator load must be 'High Z'")
         c.generator.set_output_on()
-        c.generator.get_load()
         c.devboard.set_mm_igen(meas_i=True)
 
         c.logger.info("point 1")
