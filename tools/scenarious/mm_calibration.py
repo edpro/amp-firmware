@@ -14,7 +14,8 @@ class MMCalFlags(Flag):
     VAC = auto()
     AAC = auto()
     R = auto()
-    ALL = VDC | VAC | ADC | AAC | R
+    ANY_AC = AC0 | VAC | AAC
+    ANY_DC = DC0 | VDC | ADC
 
 
 # noinspection PyMethodParameters
@@ -40,6 +41,7 @@ class MMCalibration(Scenario):
 
         if bool(c.flags & MMCalFlags.AC0): c._cal_ac0()
         if bool(c.flags & MMCalFlags.VAC): c._cal_vac()
+        if bool(c.flags & MMCalFlags.AAC): c._cal_aac()
 
         c.generator.set_output_off()
 
@@ -128,6 +130,41 @@ class MMCalibration(Scenario):
         c.check_rel(actual_v, expected_v, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal vac 3 {actual_v:0.6f}")
 
+    def _cal_aac(c):
+        c.print_task("calibrate AAC:")
+        c.devboard.set_off()
+
+        freq = 1000
+        c.meter.set_mode(RigolMode.AAC_2A)
+        c.edpro_mm.cmd("mode aac")
+        c.generator.set_output_on()
+        c.generator.get_load()
+        c.devboard.set_mm_igen(meas_i=True)
+
+        # point 1
+        expected_i = 0.05
+        c.generator.set_ac(to_amp(1), freq)
+        c.wait(1.0)
+        actual_i = c.meter.measure_aac()
+        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
+        c.edpro_mm.cmd(f"cal aac 1 {actual_i:0.6f}")
+
+        # point 2
+        expected_i = 0.1
+        c.generator.set_ac(to_amp(1), freq)
+        c.wait(1.0)
+        actual_i = c.meter.measure_aac()
+        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
+        c.edpro_mm.cmd(f"cal aac 2 {actual_i:0.6f}")
+
+        # point 3
+        expected_i = 0.25
+        c.generator.set_ac(to_amp(1), freq)
+        c.wait(1.0)
+        actual_i = c.meter.measure_aac()
+        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
+        c.edpro_mm.cmd(f"cal aac 3 {actual_i:0.6f}")
+
 
 if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.DC0)
@@ -135,7 +172,8 @@ if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.ADC)
 
     # test = MMCalibration(MMCalFlags.AC0)
-    test = MMCalibration(MMCalFlags.VAC)
+    # test = MMCalibration(MMCalFlags.VAC)
+    test = MMCalibration(MMCalFlags.AAC)
 
     test.save_conf = False
     test.run()

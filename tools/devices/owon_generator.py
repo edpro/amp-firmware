@@ -86,10 +86,16 @@ class OwonGenerator:
             usb.util.release_interface(self._device, INTERFACE_NUM)
 
     def set_load_on(self, load_resistance: int):
-        self.write(f":FUNC:SINE:LOAD {load_resistance}")
+        self.write(f":FUNCtion:SINE:LOAD {load_resistance}")
+        self.read(BUF_SIZE)
+
+    def get_load(self):
+        self.write(f":FUNCtion:SINE:LOAD?")
+        return self.read(BUF_SIZE)
 
     def set_load_off(self):
-        self.write(f":FUNC:SINE:LOAD OFF")
+        self.write(f":FUNCtion:SINE:LOAD OFF")
+        self.read(BUF_SIZE)
 
     def set_ac(self, amp: float, freq: int):
         self.write(f":FUNC:SINE:FREQ {freq}")
