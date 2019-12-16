@@ -1,9 +1,7 @@
 # noinspection PyMethodParameters
 from enum import Flag, auto
 
-from tools.common.logger import LoggedError
-from tools.common.screen import scr_prompt
-from tools.common.test import from_amp, to_amp, erel
+from tools.common.test import from_amp, to_amp
 from tools.devices.rigol_meter import RigolMode
 from tools.scenarious.scenario import Scenario
 
@@ -34,10 +32,16 @@ class MMCalibration(Scenario):
         c.use_power()
         c.use_generator()
 
+        c.generator.set_output_off()
+
         if bool(c.flags & MMCalFlags.DC0): c._cal_dc0()
         if bool(c.flags & MMCalFlags.VDC): c._cal_vdc()
         if bool(c.flags & MMCalFlags.ADC): c._cal_adc()
+
         if bool(c.flags & MMCalFlags.AC0): c._cal_ac0()
+        if bool(c.flags & MMCalFlags.VAC): c._cal_vac()
+
+        c.generator.set_output_off()
 
         if c.save_conf:
             c.edpro_mm.save_conf()
@@ -89,60 +93,31 @@ class MMCalibration(Scenario):
         c.edpro_mm.cmd("cal ac0")
 
     def _cal_vac(c):
-        is_done: bool = False
+        c.print_task("calibrate VAC:")
+        c.devboard.set_off()
 
-        choise = scr_prompt("Short V<->CON wires on multimeter. <Enter> - continue, <s> - skip: ")
-        if choise == "":
-            is_done = False
-            while True:
-                try:
-                    c._cal_ac0()
-                    is_done = True
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
-                except Exception:
-                    raise
-
-        choise = scr_prompt("Connect GENERATOR & RIGOL. <Enter> - continue, <s> - skip: ")
-        if choise == "":
-            is_done = False
-            while True:
-                try:
-                    c._cal_vac_values()
-                    is_done = True
-                    break
-                except LoggedError:
-                    choise = scr_prompt("<Enter> - continue, <r> - retry: ")
-                    if choise == "":
-                        break
-                except Exception:
-                    raise
-
-        if is_done:
-            c.edpro_mm.save_conf()
-
-    def _cal_vac_values(c):
         freq = 1000
-        c.edpro_mm.cmd("mode ac")
-        c.meter.set_mode(RigolMode.VAC_20)
+        c.edpro_mm.cmd("mode vac")
+        c.meter.set_mode(RigolMode.VAC_2)
+        c.devboard.set_mm_vgen(meas_v=True)
+        c.generator.set_load_on(100)
+        c.generator.set_output_on()
 
         # point 1
         expected_v = 0.1
         c.generator.set_ac(to_amp(expected_v), freq)
         c.wait(1.0)
         actual_v = c.meter.measure_vac()
-        c.check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 0.1V")
+        c.check_rel(actual_v, expected_v, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal vac 1 {actual_v:0.6f}")
 
         # point 2
         expected_v = 1.0
+        c.meter.set_mode(RigolMode.VAC_20)
         c.generator.set_ac(to_amp(expected_v), freq)
         c.wait(1.0)
         actual_v = c.meter.measure_vac()
-        c.check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 1.0V")
+        c.check_rel(actual_v, expected_v, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal vac 2 {actual_v:0.6f}")
 
         # point 3
@@ -150,7 +125,7 @@ class MMCalibration(Scenario):
         c.generator.set_ac(to_amp(expected_v), freq)
         c.wait(1.0)
         actual_v = c.meter.measure_vac()
-        c.check(erel(expected_v, actual_v) < 0.1, "Expected AC input ~ 10V")
+        c.check_rel(actual_v, expected_v, 0.1, "Cannot set AC input")
         c.edpro_mm.cmd(f"cal vac 3 {actual_v:0.6f}")
 
 
@@ -159,7 +134,8 @@ if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.VDC)
     # test = MMCalibration(MMCalFlags.ADC)
 
-    test = MMCalibration(MMCalFlags.AC0)
+    # test = MMCalibration(MMCalFlags.AC0)
+    test = MMCalibration(MMCalFlags.VAC)
 
     test.save_conf = False
     test.run()

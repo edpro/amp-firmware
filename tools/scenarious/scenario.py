@@ -82,7 +82,7 @@ class Scenario:
         if e <= err:
             return
         err_msg = f'{msg}\n'
-        err_msg += f'\texpected : {expected} +- {rel_str(err)}\n'
+        err_msg += f'\texpected : {expected} ± {rel_str(err)}\n'
         err_msg += f'\tactual   : {actual}'
         self.logger.throw(err_msg)
 
@@ -91,7 +91,7 @@ class Scenario:
         if e <= err:
             return
         err_msg = f'{msg}\n'
-        err_msg += f'\texpected : {expected} +- {err}\n'
+        err_msg += f'\texpected : {expected} ± {err}\n'
         err_msg += f'\tactual   : {actual}'
         self.logger.throw(err_msg)
 
