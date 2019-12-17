@@ -186,49 +186,21 @@ class MMCalibration(Scenario):
         c.wait(0.5)
         c.edpro_mm.cmd("cal r0")
 
-        # cal range 1
-        c.logger.info("calibrate range 1")
-        c.devboard.set_meas_r(2)
-        c.meter.set_mode(RigolMode.R_20K)
-        c.wait(1)
-        expected = c.meter.measure_r()
-        c.check_rel(expected, 2_000, 0.1, "Cannot set required resistance")
-        c.devboard.set_mm_rsel(2)
-        c.wait(0.5)
-        c.edpro_mm.cmd(f"cal r 1 {expected:0.6f}")
+        def cal_range(num: int, rsel: int, r: int, rigol_mode: RigolMode):
+            c.logger.info(f"calibrate range {num}")
+            c.devboard.set_meas_r(rsel)
+            c.meter.set_mode(rigol_mode)
+            c.wait(1)
+            expected = c.meter.measure_r()
+            c.check_rel(expected, r, 0.1, "Cannot set required resistance")
+            c.devboard.set_mm_rsel(rsel)
+            c.wait(0.5)
+            c.edpro_mm.cmd(f"cal r {num} {expected:0.6f}")
 
-        # cal range 2
-        c.logger.info("calibrate range 1")
-        c.devboard.set_meas_r(3)
-        c.meter.set_mode(RigolMode.R_200K)
-        c.wait(1)
-        expected = c.meter.measure_r()
-        c.check_rel(expected, 20_000, 0.1, "Cannot set required resistance")
-        c.devboard.set_mm_rsel(3)
-        c.wait(0.5)
-        c.edpro_mm.cmd(f"cal r 2 {expected:0.6f}")
-
-        # cal range 3
-        c.logger.info("calibrate range 3")
-        c.devboard.set_meas_r(4)
-        c.meter.set_mode(RigolMode.R_2M)
-        c.wait(1)
-        expected = c.meter.measure_r()
-        c.check_rel(expected, 200_000, 0.1, "Cannot set required resistance")
-        c.devboard.set_mm_rsel(4)
-        c.wait(0.5)
-        c.edpro_mm.cmd(f"cal r 3 {expected:0.6f}")
-
-        # cal range 4
-        c.logger.info("calibrate range 4")
-        c.devboard.set_meas_r(5)
-        c.meter.set_mode(RigolMode.R_10M)
-        c.wait(1)
-        expected = c.meter.measure_r()
-        c.check_rel(expected, 1_800_000, 0.1, "Cannot set required resistance")
-        c.devboard.set_mm_rsel(5)
-        c.wait(0.5)
-        c.edpro_mm.cmd(f"cal r 4 {expected:0.6f}")
+        cal_range(1, rsel=2, r=2_000, rigol_mode=RigolMode.R_20K)
+        cal_range(2, rsel=3, r=20_000, rigol_mode=RigolMode.R_200K)
+        cal_range(3, rsel=4, r=200_000, rigol_mode=RigolMode.R_2M)
+        cal_range(4, rsel=5, r=1_800_000, rigol_mode=RigolMode.R_10M)
 
 
 if __name__ == "__main__":
