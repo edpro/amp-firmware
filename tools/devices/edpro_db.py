@@ -7,7 +7,7 @@ class EdproDevBoard(EdproDevice):
     def __init__(self):
         super().__init__("db")
         self.uart_str = UartStr.CH340
-        self.expect_name = "Calibrator"
+        self.expect_name = "Devboard"
         self.expect_version = "0.1"
 
     def set_off(self):

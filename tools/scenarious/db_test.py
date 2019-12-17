@@ -116,6 +116,7 @@ class DBTest(Scenario):
         expected = 2.0
         t.meter.set_mode(RigolMode.VAC_20)
         t.generator.set_ac(to_amp(expected), 50)
+        t.generator.set_output_on()
         t.devboard.set_mm_vgen(meas_v=True)
 
         t.wait(1.0)
