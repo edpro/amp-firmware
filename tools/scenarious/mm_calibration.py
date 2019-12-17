@@ -47,6 +47,8 @@ class MMCalibration(Scenario):
 
         if bool(c.flags & MMCalFlags.R): c._cal_r()
 
+        c.generator.set_output_off()
+
         if c.save_conf:
             c.edpro_mm.save_conf()
 
