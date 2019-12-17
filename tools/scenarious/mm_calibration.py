@@ -138,7 +138,9 @@ class MMCalibration(Scenario):
         c.print_task("calibrate AAC:")
         c.devboard.set_off()
 
-        circuit_r = 60
+        owon_max_amplitude = 25
+        circuit_max_current = 0.165
+        effective_r = owon_max_amplitude / circuit_max_current
 
         freq = 1000
         c.meter.set_mode(RigolMode.AAC_2A)
@@ -147,30 +149,19 @@ class MMCalibration(Scenario):
         c.generator.set_output_on()
         c.devboard.set_mm_igen(meas_i=True)
 
-        c.logger.info("point 1")
-        expected_i = 0.05
-        c.generator.set_ac(to_amp(expected_i * circuit_r), freq)
-        c.wait(1.0)
-        actual_i = c.meter.measure_aac()
-        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
-        c.edpro_mm.cmd(f"cal aac 1 {actual_i:0.6f}")
+        def cal_point(num: int, value: float):
+            c.logger.info(f"point {num}")
+            expected_i = value
+            c.generator.set_ac(expected_i * effective_r, freq)
+            c.wait(1.0)
+            actual_i = c.meter.measure_aac()
+            c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
+            c.edpro_mm.cmd(f"cal aac {num} {actual_i:0.6f}")
 
-        c.logger.info("point 2")
-        expected_i = 0.1
-        c.generator.set_ac(to_amp(expected_i * circuit_r), freq)
-        c.wait(1.0)
-        actual_i = c.meter.measure_aac()
-        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
-        c.edpro_mm.cmd(f"cal aac 2 {actual_i:0.6f}")
-
-        c.logger.info("point 3")
-        # expected_i = 0.25
-        expected_i = 0.14  # for max generator amplitude 25
-        c.generator.set_ac(25, freq)
-        c.wait(1.0)
-        actual_i = c.meter.measure_aac()
-        c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
-        c.edpro_mm.cmd(f"cal aac 3 {actual_i:0.6f}")
+        cal_point(1, 0.050)
+        cal_point(2, 0.100)
+        cal_point(3, 0.150)
+        # cal_point(4, 0.150)
 
     def _cal_r(c):
         c.print_task("calibrate R:")
@@ -210,11 +201,11 @@ if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.VDC)
     # test = MMCalibration(MMCalFlags.ADC)
 
-    test = MMCalibration(MMCalFlags.AC0)
+    # test = MMCalibration(MMCalFlags.AC0)
     # test = MMCalibration(MMCalFlags.VAC)
-    # test = MMCalibration(MMCalFlags.AAC)
+    test = MMCalibration(MMCalFlags.AAC)
 
     # test = MMCalibration(MMCalFlags.R)
 
-    test.save_conf = False
+    # test.save_conf = False
     test.run()
