@@ -30,22 +30,29 @@ ps_menu = MenuDef([
 
     ])),
     MenuItem("Calibration", submenu=MenuDef([
-        MenuItem("Calibrate ALL", lambda: MMCalibration(MMCalFlags.ALL).run()),
-        MenuItem("--------"),
-        MenuItem("Calibrate DC0", lambda: MMCalibration(MMCalFlags.DC0).run()),
-        MenuItem("Calibrate VDC", lambda: MMCalibration(MMCalFlags.VDC).run()),
-        MenuItem("Calibrate ADC", lambda: MMCalibration(MMCalFlags.ADC).run()),
-        MenuItem("--------"),
-        MenuItem("Calibrate AC0", lambda: MMCalibration(MMCalFlags.AC0).run()),
-        MenuItem("Calibrate VAC", lambda: MMCalibration(MMCalFlags.VAC).run()),
-        MenuItem("Calibrate AAC", lambda: MMCalibration(MMCalFlags.AAC).run()),
-        MenuItem("--------"),
-        MenuItem("Calibrate R", lambda: MMCalibration(MMCalFlags.R).run()),
+        MenuItem("AC/DC voltage & R", lambda: MMCalibration(MMCalFlags.DC0
+                                                            | MMCalFlags.VDC
+                                                            | MMCalFlags.AC0
+                                                            | MMCalFlags.VAC
+                                                            | MMCalFlags.R).run()),
+
+        MenuItem("AC/DC current", lambda: MMCalibration(MMCalFlags.ADC
+                                                        | MMCalFlags.AAC).run()),
+        MenuItem("-"),
+        MenuItem("DC zero", lambda: MMCalibration(MMCalFlags.DC0).run()),
+        MenuItem("DC voltage", lambda: MMCalibration(MMCalFlags.VDC).run()),
+        MenuItem("DC current", lambda: MMCalibration(MMCalFlags.ADC).run()),
+        MenuItem("-"),
+        MenuItem("AC min level", lambda: MMCalibration(MMCalFlags.AC0).run()),
+        MenuItem("AC voltage", lambda: MMCalibration(MMCalFlags.VAC).run()),
+        MenuItem("AC current", lambda: MMCalibration(MMCalFlags.AAC).run()),
+        MenuItem("-"),
+        MenuItem("Resistance", lambda: MMCalibration(MMCalFlags.R).run()),
 
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Test ALL", test_all),
-        MenuItem("--------"),
+        MenuItem("Test'em all", test_all),
+        MenuItem("-"),
         MenuItem("Test VDC", lambda: MMTestVDC().run()),
         MenuItem("Test VAC", lambda: MMTestVAC().run()),
     ])),

@@ -85,7 +85,7 @@ class MenuItem:
         self.is_quit = is_quit
 
     def is_sep(self) -> bool:
-        return self.title.startswith("--")
+        return self.title.startswith("-")
 
 
 class MenuCol:
