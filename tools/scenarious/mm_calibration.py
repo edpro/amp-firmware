@@ -210,11 +210,11 @@ if __name__ == "__main__":
     # test = MMCalibration(MMCalFlags.VDC)
     # test = MMCalibration(MMCalFlags.ADC)
 
-    # test = MMCalibration(MMCalFlags.AC0)
+    test = MMCalibration(MMCalFlags.AC0)
     # test = MMCalibration(MMCalFlags.VAC)
     # test = MMCalibration(MMCalFlags.AAC)
 
-    test = MMCalibration(MMCalFlags.R)
+    # test = MMCalibration(MMCalFlags.R)
 
     test.save_conf = False
     test.run()
