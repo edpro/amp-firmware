@@ -109,18 +109,19 @@ class MMCalibration(Scenario):
         c.check(c.generator.get_load() == "OFF", "Generator load must be 'High Z'")
         c.generator.set_output_on()
 
-        def cal_point(num: int, value: float):
+        def cal_point(num: int, value: float, mode: RigolMode):
             c.logger.info(f"point {num}")
             expected_v = value
+            c.meter.set_mode(mode)
             c.generator.set_ac(to_amp(expected_v), freq)
             c.wait(1.0)
             actual_v = c.meter.measure_vac()
             c.check_rel(actual_v, expected_v, 0.1, "Cannot set AC input")
             c.edpro_mm.cmd(f"cal vac {num} {actual_v:0.6f}")
 
-        cal_point(1, 0.1)
-        cal_point(2, 1.0)
-        cal_point(3, from_amp(25))  # maximum GENERATOR amplitude
+        cal_point(1, 0.1, RigolMode.VAC_2)
+        cal_point(2, 1.0, RigolMode.VAC_2)
+        cal_point(3, from_amp(25), RigolMode.VAC_20)  # maximum GENERATOR amplitude
 
     def _cal_aac(c):
         c.print_task("calibrate AAC:")
