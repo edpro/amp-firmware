@@ -4,6 +4,7 @@ from tools.scenarious.ps_calibration import PSCalibration
 from tools.scenarious.ps_test_aac import PSTestAAC
 from tools.scenarious.ps_test_adc import PSTestADC
 from tools.scenarious.ps_test_freq import PSTestFreq
+from tools.scenarious.ps_test_load_dc import PSTestLoadDC
 from tools.scenarious.ps_test_vac import PSTestVAC
 from tools.scenarious.ps_test_vdc import PSTestVDC
 from tools.ui.menu import MenuDef, MenuItem, UI
@@ -26,6 +27,7 @@ def test_all():
     if not PSTestVAC().run(): return
     if not PSTestAAC().run(): return
     if not PSTestFreq().run(): return
+    if not PSTestLoadDC().run(): return
 
 
 ps_menu = MenuDef([
@@ -46,6 +48,8 @@ ps_menu = MenuDef([
         MenuItem("Test AC Voltage", lambda: PSTestVAC().run()),
         MenuItem("Test AC Current", lambda: PSTestAAC().run()),
         MenuItem("Test AC Frequency", lambda: PSTestFreq().run()),
+        MenuItem("---------------"),
+        MenuItem("Test DC Load", lambda: PSTestLoadDC().run()),
     ])),
     MenuItem("Quit", is_quit=True),
 ])
