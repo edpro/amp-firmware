@@ -18,7 +18,8 @@ def firmware_update():
 
 
 def test_all():
-    pass
+    MMTestVDC().run()
+    MMTestVAC().run()
 
 
 ps_menu = MenuDef([
@@ -51,10 +52,11 @@ ps_menu = MenuDef([
 
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Test'em all", test_all),
+        MenuItem("Run all tests", test_all),
         MenuItem("-"),
-        MenuItem("Test VDC", lambda: MMTestVDC().run()),
-        MenuItem("Test VAC", lambda: MMTestVAC().run()),
+        MenuItem("Test DC Voltage", lambda: MMTestVDC().run()),
+        MenuItem("-"),
+        MenuItem("Test AC Voltage", lambda: MMTestVAC().run()),
     ])),
     MenuItem("Quit", is_quit=True),
 ])
