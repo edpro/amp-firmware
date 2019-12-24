@@ -1,6 +1,7 @@
 from typing import List, Tuple, Optional
 from math import sqrt
 
+from tools.common.logger import LoggedError
 from tools.common.screen import scr_print, Colors
 
 
@@ -80,8 +81,9 @@ class TResult:
 
 
 class TestReporter:
-    def __init__(self, tag: str):
+    def __init__(self, tag: str, fail_fast: bool = False):
         self.tag = tag
+        self.fail_fast = fail_fast
         self.records: List[Tuple[int, str]] = []
         self.success: bool = True
         scr_print(f'[{self.tag}] begin test', Colors.LIGHT_BLUE)
@@ -95,6 +97,8 @@ class TestReporter:
             return
         self.success = False
         self.add_err_line(f"FAILED: Value is not in range: {round(r.expect, 6)} ± {r.max_diff}")
+        if self.fail_fast:
+            raise LoggedError("Failed fast")
 
     def expect_abs(self, actual: float, expect: float, err: Optional[float]):
         if (err is None):

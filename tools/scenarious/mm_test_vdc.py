@@ -37,6 +37,8 @@ class MMTestVDC(Scenario):
         t.use_power()
         t.test_vdc()
 
+        t.devboard.set_off()
+
     def test_vdc(t):
         t.print_task("test_vdc")
         t.devboard.set_off()
