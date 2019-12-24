@@ -14,7 +14,7 @@ class TData(NamedTuple):
 ABS_ERROR = 0.01
 REL_ERROR = 0.04
 
-ALL_FREQ = [50, 100, 1_000, 10_000, 20_000, 40_000, 80_000]
+ALL_FREQ = [50, 100, 1_000, 10_000, 20_000]
 ALL_VOLT = [0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]
 
 
@@ -27,8 +27,6 @@ def make_data(freq, volt) -> List[TData]:
 
 
 test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
-# test_data = make_data(freq=[1_000], volt=ALL_VOLT)
-# test_data = make_data(freq=[80_000], volt=ALL_VOLT)
 
 
 # noinspection PyMethodParameters
@@ -88,5 +86,8 @@ class MMTestVAC(Scenario):
 
 
 if __name__ == "__main__":
-    # MMTestVAC().run()
-    MMTestVAC(fail_fast=True).run()
+    test_data = make_data(freq=[12_000, 14_000, 16_000, 18_000, 20_000],
+                          volt=[0.1, 0.2, 0.4, 1.0, 2.0, 4.0])
+
+    MMTestVAC().run()
+    # MMTestVAC(fail_fast=True).run()
