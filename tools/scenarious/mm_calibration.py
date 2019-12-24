@@ -121,7 +121,8 @@ class MMCalibration(Scenario):
 
         cal_point(1, 0.1, RigolMode.VAC_2)
         cal_point(2, 1.0, RigolMode.VAC_2)
-        cal_point(3, from_amp(25), RigolMode.VAC_20)  # maximum GENERATOR amplitude
+        cal_point(3, 4.0, RigolMode.VAC_20)
+        cal_point(4, from_amp(25), RigolMode.VAC_20)  # maximum GENERATOR amplitude
 
     def _cal_aac(c):
         c.print_task("calibrate AAC:")
@@ -147,10 +148,10 @@ class MMCalibration(Scenario):
             c.check_rel(actual_i, expected_i, 0.1, "Cannot set AC input")
             c.edpro_mm.cmd(f"cal aac {num} {actual_i:0.6f}")
 
-        cal_point(1, 0.050)
-        cal_point(2, 0.100)
-        cal_point(3, 0.150)
-        # cal_point(4, 0.150)
+        cal_point(1, 0.025)
+        cal_point(2, 0.050)
+        cal_point(3, 0.100)
+        cal_point(4, 0.150)
 
     def _cal_r(c):
         c.print_task("calibrate R:")
