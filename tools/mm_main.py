@@ -1,6 +1,7 @@
 from tools.common.esp import flash_espinit, flash_firmware, print_esp_info, UartStr
 from tools.devices.edpro_mm import EdproMM
 from tools.scenarious.mm_calibration import MMCalibration, MMCalFlags
+from tools.scenarious.mm_test_adc import MMTestADC
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
 from tools.ui.menu import MenuDef, MenuItem, UI
@@ -19,6 +20,7 @@ def firmware_update():
 
 def test_all():
     MMTestVDC().run()
+    MMTestADC().run()
     MMTestVAC().run()
 
 
@@ -55,6 +57,7 @@ ps_menu = MenuDef([
         MenuItem("Run all tests", test_all),
         MenuItem("-"),
         MenuItem("Test DC Voltage", lambda: MMTestVDC().run()),
+        MenuItem("Test DC Current", lambda: MMTestADC().run()),
         MenuItem("-"),
         MenuItem("Test AC Voltage", lambda: MMTestVAC().run()),
     ])),
