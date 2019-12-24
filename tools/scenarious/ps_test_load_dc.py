@@ -50,8 +50,8 @@ class PSTestLoadDC(Scenario):
             load_values = t.edpro_ps.get_values()
             t.devboard.set_off()
 
-            t.check_abs(load_values.I, volt / (LOAD_R + PS_R), 0.1, "Cannot set required current")
-            t.check_abs(initial_values.U, load_values.U, 0.01, "Voltage under the load changes too much")
+            t.check_abs(load_values.I, volt / (LOAD_R + PS_R), 0.2, "Cannot set required current")
+            t.check_abs(initial_values.U, load_values.U, 0.05, "Voltage under the load changes too much")
 
             reporter.trace(f"V: {volt}, actual: {initial_values.U}, load: {load_values.U}, I={load_values.I}")
 

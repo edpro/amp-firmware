@@ -24,9 +24,9 @@ def firmware_update():
 def test_all():
     if not PSTestVDC().run(): return
     if not PSTestADC().run(): return
+    if not PSTestFreq().run(): return
     if not PSTestVAC().run(): return
     if not PSTestAAC().run(): return
-    if not PSTestFreq().run(): return
     if not PSTestLoadDC().run(): return
 
 
@@ -45,9 +45,11 @@ ps_menu = MenuDef([
         MenuItem("---------------"),
         MenuItem("Test DC Voltage", lambda: PSTestVDC().run()),
         MenuItem("Test DC Current", lambda: PSTestADC().run()),
+        MenuItem("---------------"),
+        MenuItem("Test AC Frequency", lambda: PSTestFreq().run()),
+        MenuItem("---------------"),
         MenuItem("Test AC Voltage", lambda: PSTestVAC().run()),
         MenuItem("Test AC Current", lambda: PSTestAAC().run()),
-        MenuItem("Test AC Frequency", lambda: PSTestFreq().run()),
         MenuItem("---------------"),
         MenuItem("Test DC Load", lambda: PSTestLoadDC().run()),
     ])),
