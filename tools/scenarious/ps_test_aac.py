@@ -46,7 +46,9 @@ class PSTestAAC(Scenario):
         t.test_vac()
 
     def test_vac(t):
+        t.print_task("test_adc")
         t.devboard.set_off()
+
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(0)
         t.meter.set_mode(RigolMode.AAC_2A)

@@ -20,6 +20,7 @@ class PSTestLoadDC(Scenario):
         t.test_load_short()
 
     def test_load_short(t):
+        t.print_task("test_load_short")
         t.devboard.set_off()
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(5)
@@ -33,6 +34,7 @@ class PSTestLoadDC(Scenario):
         t.check_abs(after.U, initial.U, 0.01, "Voltage is not restored after shorting")
 
     def test_load_dc(t):
+        t.print_task("test_load_dc")
         t.devboard.set_off()
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(0)

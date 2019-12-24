@@ -48,7 +48,9 @@ class PSTestVAC(Scenario):
         t.test_vac()
 
     def test_vac(t):
+        t.print_task("test_vac")
         t.devboard.set_off()
+
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(0)
         t.edpro_ps.set_freq(1000)

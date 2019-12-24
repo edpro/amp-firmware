@@ -46,7 +46,9 @@ class PSTestVDC(Scenario):
         t.test_vdc()
 
     def test_vdc(t):
+        t.print_task("test_vac")
         t.devboard.set_off()
+
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(0)
         t.meter.set_mode(RigolMode.VDC_20)

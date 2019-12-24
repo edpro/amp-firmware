@@ -40,6 +40,7 @@ class MMTestVAC(Scenario):
         t.test_vac()
 
     def test_vac(t):
+        t.print_task("test_vac")
         t.edpro_mm.cmd("mode ac")
         mm_mode = t.edpro_mm.get_mode()
         t.check_str(mm_mode, "VAC", "Invalid device mode!")

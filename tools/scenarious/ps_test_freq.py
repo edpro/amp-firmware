@@ -34,7 +34,9 @@ class PSTestFreq(Scenario):
         t.test_freq()
 
     def test_freq(t):
+        t.print_task("test output frequency")
         t.devboard.set_off()
+
         t.edpro_ps.set_mode("ac")
         t.edpro_ps.set_volt(3.0)
         t.meter.set_mode(RigolMode.FREQ_20)

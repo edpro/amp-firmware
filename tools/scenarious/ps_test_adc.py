@@ -37,7 +37,9 @@ class PSTestADC(Scenario):
         t.edpro_ps.set_volt(0)
 
     def test_adc(t):
+        t.print_task("test_adc")
         t.devboard.set_off()
+
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(0)
         t.meter.set_mode(RigolMode.ADC_2A)

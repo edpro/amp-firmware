@@ -36,6 +36,7 @@ class MMTestVDC(Scenario):
         t.test_vdc()
 
     def test_vdc(t):
+        t.print_task("test_vdc")
         t.edpro_mm.cmd("mode dc")
         mm_mode = t.edpro_mm.get_mode()
         t.check_str(mm_mode, "VDC", "Invalid device mode!")
