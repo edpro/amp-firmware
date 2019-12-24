@@ -27,6 +27,7 @@ def make_data(freq, volt) -> List[TData]:
 
 
 test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
+# test_data = make_data(freq=[1_000], volt=ALL_VOLT)
 # test_data = make_data(freq=[80_000], volt=ALL_VOLT)
 
 
