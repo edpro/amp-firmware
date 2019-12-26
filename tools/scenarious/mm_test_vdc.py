@@ -9,19 +9,19 @@ REL_ERROR = 0.02
 
 class TData(NamedTuple):
     volt: float
-    range: int
 
 
 test_data: List[TData] = [
-    TData(volt=0.020, range=7),
-    TData(volt=0.100, range=7),
-    TData(volt=0.500, range=6),
-    TData(volt=1.000, range=5),
-    TData(volt=2.000, range=4),
-    TData(volt=4.000, range=3),
-    TData(volt=8.000, range=2),
-    TData(volt=16.000, range=1),
-    TData(volt=30.000, range=0),
+    TData(volt=0.020),
+    TData(volt=0.500),
+    TData(volt=1),
+    TData(volt=2),
+    TData(volt=4),
+    TData(volt=8),
+    TData(volt=16),
+    TData(volt=-10),
+    TData(volt=-2),
+    TData(volt=-0.2),
 ]
 
 
@@ -50,13 +50,19 @@ class MMTestVDC(Scenario):
         t.meter.set_vdc_range(0)
         t.power.set_volt(0)
         t.devboard.set_mm_vpow(meas_v=True)
+        is_neg = False
         t.wait(1)
 
         reporter = TestReporter(t.tag)
 
         for d in test_data:
-            t.meter.set_vdc_range(d.volt)
-            t.power.set_volt(d.volt)
+            t.meter.set_vdc_range(abs(d.volt))
+            t.power.set_volt(abs(d.volt))
+
+            if d.volt < 0 and not is_neg:
+                t.devboard.set_mm_vpow_rev(meas_v=True)
+                is_neg = True
+
             t.wait(1)
             t.meter.measure_vdc()  # duty cycle
             expected = t.meter.measure_vdc()
@@ -69,7 +75,7 @@ class MMTestVDC(Scenario):
 
             actual = values.value
             result = TResult(actual, expected, ABS_ERROR, REL_ERROR)
-            reporter.trace(result.row_str(f'volt: {d.volt}V'))
+            reporter.trace(result.row_str(f'volt: {d.volt}V gain: {values.gain} '))
             reporter.expect(result)
 
         t.power.set_volt(0)

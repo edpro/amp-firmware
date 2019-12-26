@@ -15,8 +15,10 @@ class TData(NamedTuple):
 test_data: List[TData] = [
     TData(curr=0.020),
     TData(curr=0.050),
-    TData(curr=0.100),
-    TData(curr=0.500),
+    TData(curr=0.200),
+    TData(curr=-0.020),
+    TData(curr=-0.050),
+    TData(curr=-0.200),
 ]
 
 
@@ -51,9 +53,13 @@ class MMTestADC(Scenario):
         reporter = TestReporter(t.tag)
 
         for d in test_data:
-            t.devboard.set_mm_ipow(meas_i=True)
-            t.power.set_current(d.curr)
-            t.wait(0.5)
+            if (d.curr > 0):
+                t.devboard.set_mm_ipow(meas_i=True)
+            else:
+                t.devboard.set_mm_ipow_rev(meas_i=True)
+
+            t.power.set_current(abs(d.curr))
+            t.wait(1)
 
             t.meter.measure_adc()  # duty cycle
             expected = t.meter.measure_adc()
