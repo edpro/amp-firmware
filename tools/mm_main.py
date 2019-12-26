@@ -19,10 +19,13 @@ def firmware_update():
     flash_firmware("./images/multimeter", UartStr.CP210)
 
 
-def test_all():
+def test_voltage():
     MMTestVDC().run()
-    MMTestADC().run()
     MMTestVAC().run()
+
+
+def test_current():
+    MMTestADC().run()
     MMTestAAC().run()
 
 
@@ -56,7 +59,8 @@ ps_menu = MenuDef([
 
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Run all tests", test_all),
+        MenuItem("Test AC/DC Voltage", lambda: test_voltage()),
+        MenuItem("Test AC/DC Current", lambda: test_current()),
         MenuItem("-"),
         MenuItem("Test DC Voltage", lambda: MMTestVDC().run()),
         MenuItem("Test DC Current", lambda: MMTestADC().run()),
