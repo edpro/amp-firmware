@@ -27,6 +27,7 @@ class MMCalibration(Scenario):
         super().__init__("mm_cal")
 
     def on_run(c):
+        c.success = False
         c.use_devboard()
         c.use_edpro_mm()
         c.use_meter()
@@ -51,6 +52,8 @@ class MMCalibration(Scenario):
 
         if c.save_conf:
             c.edpro_mm.save_conf()
+
+        c.success = True
 
     def _cal_dc0(c):
         c.print_task("calibrate DC0:")

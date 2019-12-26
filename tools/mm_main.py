@@ -20,38 +20,39 @@ def firmware_update():
     flash_firmware("./images/multimeter", UartStr.CP210)
 
 
-def cal_volt_r():
-    MMCalibration(MMCalFlags.DC0
-                  | MMCalFlags.VDC
-                  | MMCalFlags.AC0
-                  | MMCalFlags.VAC
-                  | MMCalFlags.R).run()
+def cal_volt_r() -> bool:
+    return MMCalibration(MMCalFlags.DC0 | MMCalFlags.VDC
+                         | MMCalFlags.AC0 | MMCalFlags.VAC
+                         | MMCalFlags.R).run()
 
 
-def test_volt_r():
-    MMTestVDC().run()
-    MMTestVAC(run_fast=True).run()
-    MMTestR().run()
+def test_volt_r() -> bool:
+    if not MMTestVDC().run(): return False
+    if not MMTestVAC(run_fast=True).run(): return False
+    if not MMTestR().run(): return False
+    return True
 
 
-def cal_test_vr():
-    if not cal_volt_r(): return
-    if not test_volt_r(): return
+def cal_test_vr() -> bool:
+    if not cal_volt_r(): return False
+    if not test_volt_r(): return False
+    return True
 
 
-def cal_current():
-    MMCalibration(MMCalFlags.ADC
-                  | MMCalFlags.AAC).run()
+def cal_current() -> bool:
+    return MMCalibration(MMCalFlags.ADC | MMCalFlags.AAC).run()
 
 
-def test_current():
-    MMTestADC().run()
-    MMTestAAC(run_fast=True).run()
+def test_current() -> bool:
+    if not MMTestADC().run(): return False
+    if not MMTestAAC(run_fast=True).run(): return False
+    return True
 
 
-def cal_test_c():
-    if not cal_current(): return
-    if not test_current(): return
+def cal_test_c() -> bool:
+    if not cal_current(): return False
+    if not test_current(): return False
+    return True
 
 
 ps_menu = MenuDef([
@@ -65,19 +66,6 @@ ps_menu = MenuDef([
         MenuItem("Connect", lambda: EdproMM().show_log(), is_pause=False),
         MenuItem("Info", lambda: print_esp_info(UartStr.CP210)),
 
-    ])),
-
-    MenuItem("Flows", submenu=MenuDef([
-        MenuItem("Test AC/DC Voltage & R", lambda: test_volt_r()),
-        MenuItem("Test AC/DC Current", lambda: test_current()),
-        MenuItem("-"),
-        MenuItem("Test DC Voltage", lambda: MMTestVDC().run()),
-        MenuItem("Test DC Current", lambda: MMTestADC().run()),
-        MenuItem("-"),
-        MenuItem("Test AC Voltage", lambda: MMTestVAC().run()),
-        MenuItem("Test AC Current", lambda: MMTestAAC().run()),
-        MenuItem("-"),
-        MenuItem("Test R", lambda: MMTestR().run()),
     ])),
 
     MenuItem("Calibration", submenu=MenuDef([
