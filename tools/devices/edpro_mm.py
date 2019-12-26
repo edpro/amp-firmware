@@ -17,7 +17,7 @@ class EdproMM(EdproDevice):
     def __init__(self):
         super().__init__("mm")
         self.expect_name = "Multimeter"
-        self.expect_version = "0.33"
+        self.expect_version = "0.34"
 
     def get_mode(self) -> str:
         response = self.request("mode")
