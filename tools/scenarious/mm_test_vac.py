@@ -14,9 +14,6 @@ class TData(NamedTuple):
 ABS_ERROR = 0.01
 REL_ERROR = 0.04
 
-ALL_FREQ = [50, 100, 1_000, 10_000]
-ALL_VOLT = [0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0]
-
 
 def make_data(freq, volt) -> List[TData]:
     data = []
@@ -26,13 +23,30 @@ def make_data(freq, volt) -> List[TData]:
     return data
 
 
-test_data = make_data(freq=ALL_FREQ, volt=ALL_VOLT)
+slow_data = make_data(
+    freq=[50, 100, 1_000, 10_000, 20_000],
+    volt=[0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0])
+
+fast_data = make_data(
+    freq=[100, 10_000, 20_000],
+    volt=[0.1, 1.0, 8.0])
+
+custom_data = None
 
 
 # noinspection PyMethodParameters
 class MMTestVAC(Scenario):
-    def __init__(self, fail_fast: bool = False):
+    def __init__(self, fail_fast: bool = False, run_fast: bool = False):
         self.fail_fast = fail_fast
+
+        if run_fast:
+            self.data = fast_data
+        elif custom_data is not None:
+            self.data = custom_data
+        else:
+            self.data = slow_data
+
+        self.run_fast = run_fast
         super().__init__("test_vac")
 
     def on_run(t):
@@ -61,7 +75,7 @@ class MMTestVAC(Scenario):
 
         reporter = TestReporter(t.tag, t.fail_fast)
 
-        for d in test_data:
+        for d in t.data:
             t.meter.set_vac_range(d.v)
             t.generator.set_ac(to_amp(d.v), d.f)
             t.wait(1)
@@ -86,8 +100,8 @@ class MMTestVAC(Scenario):
 
 
 if __name__ == "__main__":
-    test_data = make_data(freq=[10_000, 20_000, 30_000],
-                          volt=[0.1, 0.2, 0.4, 1.0, 2.0, 4.0])
+    custom_data = make_data(freq=[10_000, 20_000, 30_000],
+                            volt=[0.1, 0.2, 0.4, 1.0, 2.0, 4.0])
 
     MMTestVAC().run()
     # MMTestVAC(fail_fast=True).run()

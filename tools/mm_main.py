@@ -23,12 +23,12 @@ def firmware_update():
 def test_voltage_r():
     MMTestVDC().run()
     MMTestR().run()
-    MMTestVAC().run()
+    MMTestVAC(run_fast=True).run()
 
 
 def test_current():
     MMTestADC().run()
-    MMTestAAC().run()
+    MMTestAAC(run_fast=True).run()
 
 
 ps_menu = MenuDef([

@@ -27,13 +27,29 @@ def make_data(freq, curr) -> List[TData]:
     return data
 
 
-test_data = make_data(freq=ALL_FREQ, curr=ALL_CURR)
+slow_data = make_data(
+    freq=[50, 100, 1_000, 10_000, 20_000],
+    curr=[0.040, 0.080, 0.160])
+
+fast_data = make_data(
+    freq=[100, 10_000, 20_000],
+    curr=[0.040, 0.080, 0.160])
+
+custom_data = None
 
 
 # noinspection PyMethodParameters
 class MMTestAAC(Scenario):
-    def __init__(self, fail_fast: bool = False):
+    def __init__(self, fail_fast: bool = False, run_fast: bool = False):
         self.fail_fast = fail_fast
+
+        if run_fast:
+            self.data = fast_data
+        elif custom_data is not None:
+            self.data = custom_data
+        else:
+            self.data = slow_data
+
         super().__init__("test_vac")
 
     def on_run(t):
@@ -66,7 +82,7 @@ class MMTestAAC(Scenario):
         circuit_max_current = 0.165
         effective_r = owon_max_amplitude / circuit_max_current
 
-        for d in test_data:
+        for d in t.data:
             t.generator.set_ac(d.c * effective_r, d.f)
             t.wait(1)
 
