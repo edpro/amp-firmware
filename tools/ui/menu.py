@@ -172,7 +172,7 @@ class UI:
             if self.submenu:
                 self.submenu.move_next()
 
-        elif ch == curses.KEY_ENTER or ch == 10 or ch == 13:
+        elif ch == curses.KEY_ENTER or ch == curses.PADENTER or ch == 10 or ch == 13:
             main_item = self.main_menu.current_item()
             if main_item.is_quit:
                 self._quit_requested = True
