@@ -22,8 +22,8 @@ def firmware_update():
 
 def test_voltage_r():
     MMTestVDC().run()
-    MMTestR().run()
     MMTestVAC(run_fast=True).run()
+    MMTestR().run()
 
 
 def test_current():
