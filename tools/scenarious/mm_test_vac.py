@@ -24,11 +24,11 @@ def make_data(freq, volt) -> List[TData]:
 
 
 slow_data = make_data(
-    freq=[50, 100, 1_000, 10_000, 20_000],
+    freq=[50, 100, 1_000, 10_000],
     volt=[0.1, 0.2, 0.4, 0.8, 1.0, 2.0, 4.0, 8.0])
 
 fast_data = make_data(
-    freq=[100, 10_000, 20_000],
+    freq=[100, 10_000],
     volt=[0.1, 1.0, 8.0])
 
 custom_data = None
