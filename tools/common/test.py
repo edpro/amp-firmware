@@ -75,7 +75,7 @@ class TResult:
         row += f' | expect: {self.expect_str().rjust(9)}'
         row += f' | actual: {self.actual_str().rjust(9)}'
         row += f' | abs: {self.abs_str().rjust(8)}'
-        row += f' | rel: {self.rel_str().rjust(6) if self.actual > self.abs_err else "--.-%" }'
+        row += f' | rel: {self.rel_str().rjust(6) if abs(self.actual) > self.abs_err else "--.-%" }'
         row += f' | err: {self.rate_str().rjust(3)}'
         return row
 
