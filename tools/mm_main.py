@@ -50,8 +50,8 @@ def test_current():
 
 
 def cal_test_c():
-    if not cal_volt_r(): return
-    if not test_volt_r(): return
+    if not cal_current(): return
+    if not test_current(): return
 
 
 ps_menu = MenuDef([
