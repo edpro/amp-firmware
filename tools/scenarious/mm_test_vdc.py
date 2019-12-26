@@ -75,7 +75,7 @@ class MMTestVDC(Scenario):
 
             actual = values.value
             result = TResult(actual, expected, ABS_ERROR, REL_ERROR)
-            reporter.trace(result.row_str(f'volt: {d.volt}V gain: {values.gain} '))
+            reporter.trace(result.row_str(f'volt: {d.volt}V | gain: {values.gain} '))
             reporter.expect(result)
 
         t.power.set_volt(0)
