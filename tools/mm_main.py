@@ -3,6 +3,7 @@ from tools.devices.edpro_mm import EdproMM
 from tools.scenarious.mm_calibration import MMCalibration, MMCalFlags
 from tools.scenarious.mm_test_aac import MMTestAAC
 from tools.scenarious.mm_test_adc import MMTestADC
+from tools.scenarious.mm_test_r import MMTestR
 from tools.scenarious.mm_test_vac import MMTestVAC
 from tools.scenarious.mm_test_vdc import MMTestVDC
 from tools.ui.menu import MenuDef, MenuItem, UI
@@ -19,8 +20,9 @@ def firmware_update():
     flash_firmware("./images/multimeter", UartStr.CP210)
 
 
-def test_voltage():
+def test_voltage_r():
     MMTestVDC().run()
+    MMTestR().run()
     MMTestVAC().run()
 
 
@@ -59,7 +61,7 @@ ps_menu = MenuDef([
 
     ])),
     MenuItem("Test", submenu=MenuDef([
-        MenuItem("Test AC/DC Voltage", lambda: test_voltage()),
+        MenuItem("Test AC/DC Voltage & R", lambda: test_voltage_r()),
         MenuItem("Test AC/DC Current", lambda: test_current()),
         MenuItem("-"),
         MenuItem("Test DC Voltage", lambda: MMTestVDC().run()),
@@ -67,6 +69,8 @@ ps_menu = MenuDef([
         MenuItem("-"),
         MenuItem("Test AC Voltage", lambda: MMTestVAC().run()),
         MenuItem("Test AC Current", lambda: MMTestAAC().run()),
+        MenuItem("-"),
+        MenuItem("Test R", lambda: MMTestR().run()),
     ])),
     MenuItem("Quit", is_quit=True),
 ])
