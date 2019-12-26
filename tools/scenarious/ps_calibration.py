@@ -53,7 +53,7 @@ class PSCalibration(Scenario):
         c.wait(0.5)
 
         v = c.meter.measure_vac()
-        c.check(1.5 < v < 4, "Measured value must be about 3V (1.5...4)")
+        c.check(1.5 < v < 4, "Measured value must be about 3V (1.5...6)")
         c.edpro_ps.cmd(f"cal vac {v:0.6f}")
         c.edpro_ps.cmd("set l 0")
         c.edpro_ps.cmd("cal vacp")
