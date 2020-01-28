@@ -78,7 +78,7 @@ class MMTestVAC(Scenario):
         for d in t.data:
             t.meter.set_vac_range(d.v)
             t.generator.set_ac(to_amp(d.v), d.f)
-            t.wait(1)
+            t.wait(1.25)
 
             t.meter.measure_vac()  # duty cycle
             expected = t.meter.measure_vac()
@@ -100,7 +100,7 @@ class MMTestVAC(Scenario):
 
 
 if __name__ == "__main__":
-    custom_data = make_data(freq=[10_000, 20_000, 30_000],
+    custom_data = make_data(freq=[10_000],
                             volt=[0.1, 0.2, 0.4, 1.0, 2.0, 4.0])
 
     MMTestVAC().run()
