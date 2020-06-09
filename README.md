@@ -5,10 +5,10 @@
 ```bash
 mkdir amperia
 cd amperia
-git clone https://github.com/edpro/firmware.git
+git clone https://github.com/edpro/amp-firmware.git
 
 # windows toolchain:
-git clone https://github.com/edpro/toolchain.git
+git clone https://github.com/edpro/amp-toolchain.git
 ```
 
 
