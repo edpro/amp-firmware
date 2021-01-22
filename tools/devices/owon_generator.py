@@ -43,10 +43,17 @@ class OwonGenerator:
     def connect(self):
         logger.info("connect")
 
+        # noinspection PyBroadException
         def matcher(it):
-            return it.idVendor == 0x5345 \
-                   and it.idProduct == 0x1234 \
-                   and it.serial_number.startswith("AG051")
+            # it.serial_number fail on some phantom USB devices on Windows
+            try:
+                serial_num = it.serial_number
+                return it.idVendor == 0x5345 \
+                       and it.idProduct == 0x1234 \
+                       and serial_num.startswith("AG051")
+            except Exception as e:
+                logger.trace(e)
+                return False
 
         found_list = list(usb.core.find(find_all=True, custom_match=matcher))
 
@@ -139,19 +146,17 @@ class OwonGenerator:
         self.read(BUF_SIZE)
 
 
-def _run():
+def test():
     dev = OwonGenerator()
     dev.connect()
     dev.get_info()
-    dev.reset()
     # dev.set_ac(2, 500)
-    dev.set_dc(3)
     # dev.set_on()
     dev.close()
 
 
 if __name__ == '__main__':
     try:
-        _run()
+        test()
     except LoggedError:
         pass

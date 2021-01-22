@@ -44,10 +44,17 @@ class OwonPower:
 
         logger.info("connect")
 
+        # noinspection PyBroadException
         def matcher(it):
-            return it.idVendor == 0x5345 \
-                   and it.idProduct == 0x1234 \
-                   and it.serial_number.startswith("ODP3031")
+            # it.serial_number might fail on some phantom USB devices on Windows
+            try:
+                serial_num = it.serial_number
+                return it.idVendor == 0x5345 \
+                       and it.idProduct == 0x1234 \
+                       and serial_num.startswith("ODP3031")
+            except Exception as e:
+                logger.trace(e)
+                return False
 
         found_list = list(usb.core.find(find_all=True, custom_match=matcher))
 
@@ -100,7 +107,7 @@ class OwonPower:
         self.write(f':CURR:OUT:IND1 {value:0.3f}')
 
 
-def main():
+def test():
     dev = OwonPower()
     dev.connect()
     dev.get_info()
@@ -109,6 +116,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        test()
     except LoggedError:
         pass
