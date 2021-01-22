@@ -1,31 +1,28 @@
 # EdPro Amperia tools
 
-### Download firmware and toolchain:
+## Download firmware and toolchain:
 
 ```bash
+
+# create working folder
 mkdir amperia
 cd amperia
+
+# clone windows toolchain:
+git clone https://github.com/edpro/amp-toolchain.git
+
+# clone firmware tools
 git clone https://github.com/edpro/amp-firmware.git
 
-# windows toolchain:
-git clone https://github.com/edpro/amp-toolchain.git
 ```
 
+## Install Toolchain:
 
-### OSX Toolchain:
-
-On OSX only firmware flushing is supported (no calibration & tests)
-
-* Install python3
-
-* Install python libs: 
-
-  `pip install esptool`
-
-* Install UART driver: [Silicon Labs CP210x USB to UART Bridge](https://www.silabs.com/products/development-tools/software/usb-to-uart-bridge-vcp-drivers)  
+Follow instructions in `amperia\amp-toolchain\README.md`: \
+https://github.com/edpro/amp-toolchain/blob/master/README.md
 
 
-### Commands
+## Commands
 
 ```
 ./multimeter.sh

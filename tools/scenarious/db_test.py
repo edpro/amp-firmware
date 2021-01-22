@@ -5,7 +5,7 @@ from tools.scenarious.scenario import Scenario
 
 
 def db_run_test():
-    scr_prompt("Disconnect multimeter and powersource from the board!")
+    scr_prompt("Disconnect multimeter and powersource from the board, then press <ENTER>...")
     DBTest().run()
 
 
