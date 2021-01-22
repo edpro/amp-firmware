@@ -25,6 +25,8 @@ class EdproMM(EdproDevice):
 
     def get_values(self) -> MMValues:
         r = self.request("v")
+        if (r["value"] == "ovf"):
+            r["value"] = "inf"
         return MMValues(mode=r["mode"],
                         rdiv=int(r["rdiv"]),
                         gain=int(r["gain"]),
