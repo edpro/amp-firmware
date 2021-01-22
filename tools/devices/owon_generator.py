@@ -45,7 +45,7 @@ class OwonGenerator:
 
         # noinspection PyBroadException
         def matcher(it):
-            # it.serial_number fail on some phantom USB devices on Windows
+            # it.serial_number fail on Windows if GoogleChrome has been launched
             try:
                 serial_num = it.serial_number
                 return it.idVendor == 0x5345 \
