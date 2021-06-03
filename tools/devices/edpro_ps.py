@@ -14,7 +14,7 @@ class EdproPS(EdproDevice):
     def __init__(self):
         super().__init__("ps")
         self.expect_name = "Powersource"
-        self.expect_version = "0.30"
+        self.expect_version = "0.7"
 
     def get_values(self) -> PSValues:
         r = self.request("v")
