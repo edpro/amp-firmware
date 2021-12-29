@@ -23,10 +23,13 @@ def make_data(freq: List[int], volt: List[float]) -> List[TData]:
     data = []
     for f in freq:
         for v in volt:
+            abs = VAC_ABS if v > 0.2 else 2 * VAC_ABS
+            rel = VAC_REL if v > 0.2 else 2 * VAC_REL
             if 100 < f <= 50_000:
-                data.append(TData(freq=f, volt=v, abs=VAC_ABS, rel=VAC_REL))
+                rel += 0
             else:
-                data.append(TData(freq=f, volt=v, abs=VAC_ABS, rel=VAC_REL + 0.01))
+                rel += 0.01
+            data.append(TData(freq=f, volt=v, abs=abs, rel=rel))
     return data
 
 
