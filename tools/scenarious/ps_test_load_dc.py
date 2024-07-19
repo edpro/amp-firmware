@@ -24,6 +24,7 @@ class PSTestLoadDC(Scenario):
         t.devboard.set_off()
         t.edpro_ps.set_mode("dc")
         t.edpro_ps.set_volt(5)
+        t.wait(0.5)
         initial = t.edpro_ps.get_values()
         t.check_abs(initial.U, 5, 0.1, "Cannot set requiret voltage")
 
@@ -44,6 +45,7 @@ class PSTestLoadDC(Scenario):
 
         for volt in [0.2, 0.4, 0.8, 2, 4, 5]:
             t.edpro_ps.set_volt(volt)
+            t.wait(0.5)
             initial_values = t.edpro_ps.get_values()
             t.check_abs(initial_values.U, volt, 0.1, "Cannot set required voltage")
 
